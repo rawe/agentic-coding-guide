@@ -70,8 +70,10 @@ Template:
 For YouTube videos, `meta.md` and `transcript.md` are auto-generated:
 
 ```
-uv run tools/yt-extract.py <youtube-url>
+uv run .claude/skills/yt-extract/scripts/yt-extract.py <youtube-url>
 ```
+
+Or via the Claude Code skill: `/yt-extract <youtube-url>`
 
 ### `transcript.md` — Full Transcript
 
@@ -121,7 +123,7 @@ The file `index.md` tracks all sources in one place. See that file for the curre
 
 ### YouTube Videos
 
-1. Run `uv run tools/yt-extract.py <url>` — creates folder, `meta.md`, and `transcript.md`
+1. Run `uv run .claude/skills/yt-extract/scripts/yt-extract.py <url>` — creates folder, `meta.md`, and `transcript.md`
 2. Add tags to `meta.md`
 3. Write `summary.md`
 4. Update `index.md`

@@ -14,7 +14,7 @@ Knowledge base for agentic coding best practices. Currently in material collecti
 
 - `sources/` — collected references. See [sources/README.md](sources/README.md) for structure, templates, and workflow.
 - `guides/` — distilled best practices (phase 2).
-- `tools/` — processing scripts (phase 3).
+- `.claude/skills/` — processing skills (e.g. `/yt-extract <url>`).
 
 ## Commit Rules
 

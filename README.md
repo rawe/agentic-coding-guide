@@ -22,7 +22,7 @@ A personal knowledge base for collecting, processing, and documenting best pract
 │           ├── transcript.md   # Full transcript (when extracted)
 │           └── summary.md     # Key points, takeaways
 ├── guides/                # Processed guides and best practices (phase 2)
-└── tools/                 # Scripts for processing materials (phase 3)
+└── .claude/skills/        # Claude Code skills (e.g. /yt-extract)
 ```
 
 ## Source Types
@@ -34,12 +34,8 @@ A personal knowledge base for collecting, processing, and documenting best pract
 | Documentation | `sources/docs/` | Official docs, specs, READMEs |
 | Papers | `sources/papers/` | Research papers, whitepapers |
 
-## How to Contribute a Source
+## Adding Sources
 
-1. Add an entry to `sources/index.md`
-2. Create a folder under the appropriate type directory
-3. Fill in the `meta.md` template
-4. Process the source (extract transcript, write summary)
-5. Update the index status to `processed`
+For YouTube videos: `/yt-extract <url>` (Claude Code skill) or run the script directly.
 
-See [sources/README.md](sources/README.md) for detailed instructions and templates.
+For all source types and templates, see [sources/README.md](sources/README.md).
