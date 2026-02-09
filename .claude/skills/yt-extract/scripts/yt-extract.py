@@ -88,9 +88,6 @@ def write_meta(folder: Path, info: dict, url: str):
 | **Duration**  | {duration} |
 | **Category**  | {categories} |
 | **Tags**      | {tags} |
-| **Views**     | {info.get("view_count", "n/a"):,} |
-| **Likes**     | {info.get("like_count", "n/a"):,} |
-| **Status**    | transcript-extracted |
 
 ## Description
 

@@ -7,7 +7,7 @@ This folder contains all collected reference materials for the agentic coding kn
 ```
 sources/
 ├── README.md          # This file
-├── index.md           # Master index — single place to see all sources and their status
+├── index.md           # Master index — single place to see all sources
 ├── youtube/           # YouTube videos
 │   └── <slug>/
 │       ├── meta.md
@@ -58,9 +58,6 @@ Template:
 | **Duration**  | <for videos, e.g. "20 min"> |
 | **Category**  | <e.g. "Science & Technology"> |
 | **Tags**      | <comma-separated, e.g. "context-engineering, claude-code, harness-design"> |
-| **Views**     | <view count at time of extraction> |
-| **Likes**     | <like count at time of extraction> |
-| **Status**    | raw / transcript-extracted / summarized / processed |
 
 ## Description
 
@@ -73,7 +70,7 @@ For YouTube videos, `meta.md` and `transcript.md` are auto-generated:
 uv run .claude/skills/yt-extract/scripts/yt-extract.py <youtube-url>
 ```
 
-Or via the Claude Code skill: `/yt-extract <youtube-url>`
+Or via the skill: `/yt-extract <youtube-url>`
 
 ### `transcript.md` — Full Transcript
 
@@ -81,39 +78,34 @@ For videos and talks. Contains the extracted transcript, cleaned up for readabil
 
 ### `summary.md` — Processed Summary
 
-The distilled version of the source. Template:
+The distilled version of the source. Three sections, no filler.
 
 ```markdown
-# Summary: <Title>
+# <Title>
 
-> Source: [<Title>](<URL>) by <Author>
+> Source: [<Title>](<URL>) by <Channel>
 
-## TL;DR
+## Overview
 
-<2-3 sentence overview>
+<2-3 sentences: what it covers, who the speaker is, why it matters.>
 
-## Key Points
+## Key Takeaways
 
-- <Point 1>
-- <Point 2>
-- ...
+- <Core insights — each point self-contained>
 
-## Detailed Notes
+## Notes
 
-<Structured notes, organized by topic or chronologically>
+### <Topic A>
 
-## Actionable Takeaways
+<Substance organized by topic, not chronologically.
+Concepts, techniques, examples. Inline quotes where relevant.>
 
-- <What to apply from this source>
+### <Topic B>
 
-## Quotes
-
-> "<Notable quote>" — <timestamp or section>
-
-## Related Sources
-
-- [<Related source title>](../relative-path/meta.md)
+...
 ```
+
+For YouTube videos, use the skill `/yt-summarize <source-folder-path>` for guided summarization.
 
 ## Master Index
 
@@ -123,10 +115,11 @@ The file `index.md` tracks all sources in one place. See that file for the curre
 
 ### YouTube Videos
 
-1. Run `uv run .claude/skills/yt-extract/scripts/yt-extract.py <url>` — creates folder, `meta.md`, and `transcript.md`
-2. Add tags to `meta.md`
-3. Write `summary.md`
-4. Update `index.md`
+Use the skills for extraction and summarization:
+
+1. Skill `/yt-extract <url>` — creates folder, `meta.md`, and `transcript.md`
+2. Skill `/yt-summarize <source-folder-path>` — interactive section-by-section summarization
+3. Update `index.md`
 
 ### Articles / Docs / Papers
 

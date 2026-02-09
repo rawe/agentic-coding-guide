@@ -9,9 +9,6 @@
 | **Duration**  | 24 min |
 | **Category**  | Science & Technology |
 | **Tags**      | multi-agent-orchestration, claude-code, agent-teams, tmux, observability, agent-sandboxes, opus-4-6 |
-| **Views**     | 192 |
-| **Likes**     | 18 |
-| **Status**    | transcript-extracted |
 
 ## Description
 

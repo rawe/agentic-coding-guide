@@ -9,9 +9,6 @@
 | **Duration**  | 20 min |
 | **Category**  | Science & Technology |
 | **Tags**      |  |
-| **Views**     | 307,566 |
-| **Likes**     | 11,074 |
-| **Status**    | transcript-extracted |
 
 ## Description
 
