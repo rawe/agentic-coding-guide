@@ -12,7 +12,8 @@ sources/
 │   └── <slug>/
 │       ├── meta.md
 │       ├── transcript.md
-│       └── summary.md
+│       ├── summary.md
+│       └── notes.md       # optional: personal takeaways
 ├── articles/          # Blog posts, written content
 │   └── <slug>/
 │       ├── meta.md
@@ -106,6 +107,10 @@ Concepts, techniques, examples. Inline quotes where relevant.>
 ```
 
 For YouTube videos, use the skill `/yt-summarize <source-folder-path>` for guided summarization.
+
+### `notes.md` — Personal Takeaways
+
+Optional. Personal observations, conclusions, and connections added after the summary. This is where subjective interpretation lives — what matters most for building guides, what to apply, what to investigate further.
 
 ## Master Index
 
