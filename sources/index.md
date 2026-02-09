@@ -16,6 +16,7 @@ Master index of all collected materials. Update this file whenever a new source 
 | # | Slug | Title | Channel | Status | Tags |
 |---|------|-------|---------|--------|------|
 | 1 | 2025-12-ai-engineer-no-vibes-allowed-solving-hard-problems-in-complex-codebases | No Vibes Allowed: Solving Hard Problems in Complex Codebases | AI Engineer | transcript | context-engineering, complex-codebases |
+| 2 | 2026-02-indydevdan-claude-code-multi-agent-orchestration-with-opus-4-6-tmux-and- | Claude Code Multi-Agent Orchestration with Opus 4.6, Tmux and Agent Sandboxes | IndyDevDan | transcript | multi-agent-orchestration, claude-code, agent-teams, tmux, observability, agent-sandboxes, opus-4-6 |
 
 ## Articles
 
