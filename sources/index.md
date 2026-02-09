@@ -13,9 +13,9 @@ Master index of all collected materials. Update this file whenever a new source 
 
 ## YouTube Videos
 
-| # | Slug | Title | Author | Status | Tags |
-|---|------|-------|--------|--------|------|
-| | | | | | |
+| # | Slug | Title | Channel | Status | Tags |
+|---|------|-------|---------|--------|------|
+| 1 | 2025-12-ai-engineer-no-vibes-allowed-solving-hard-problems-in-complex-codebases | No Vibes Allowed: Solving Hard Problems in Complex Codebases | AI Engineer | transcript | context-engineering, complex-codebases |
 
 ## Articles
 

@@ -49,23 +49,28 @@ Template:
 ```markdown
 # <Title>
 
-| Field       | Value |
-|-------------|-------|
-| **URL**     | <original URL> |
-| **Type**    | youtube / article / docs / paper |
-| **Author**  | <name or channel> |
+| Field         | Value |
+|---------------|-------|
+| **URL**       | <original URL> |
+| **Type**      | youtube / article / docs / paper |
+| **Channel**   | <name or channel> |
 | **Published** | <YYYY-MM-DD or YYYY-MM> |
-| **Duration** | <for videos, e.g. "45 min"> |
-| **Tags**    | <comma-separated, e.g. "claude, prompt-engineering, harness-design"> |
-| **Status**  | raw / transcript-extracted / summarized / processed |
+| **Duration**  | <for videos, e.g. "20 min"> |
+| **Category**  | <e.g. "Science & Technology"> |
+| **Tags**      | <comma-separated, e.g. "context-engineering, claude-code, harness-design"> |
+| **Views**     | <view count at time of extraction> |
+| **Likes**     | <like count at time of extraction> |
+| **Status**    | raw / transcript-extracted / summarized / processed |
 
 ## Description
 
-<Brief description of what this source covers and why it's relevant.>
+<Original description from the source.>
+```
 
-## Original Description
+For YouTube videos, `meta.md` and `transcript.md` are auto-generated:
 
-<Copy of the original video/article description, for reference.>
+```
+uv run tools/yt-extract.py <youtube-url>
 ```
 
 ### `transcript.md` — Full Transcript
@@ -114,8 +119,16 @@ The file `index.md` tracks all sources in one place. See that file for the curre
 
 ## Processing Workflow
 
-1. **Add source** — Create the folder and `meta.md` with URL and basic info
-2. **Extract content** — For videos: extract transcript. For articles: save key content
-3. **Summarize** — Write `summary.md` with key points and takeaways
-4. **Tag and index** — Update `index.md`, add relevant tags
-5. **Cross-reference** — Link related sources to each other
+### YouTube Videos
+
+1. Run `uv run tools/yt-extract.py <url>` — creates folder, `meta.md`, and `transcript.md`
+2. Add tags to `meta.md`
+3. Write `summary.md`
+4. Update `index.md`
+
+### Articles / Docs / Papers
+
+1. Create folder under the correct type directory
+2. Fill in `meta.md` manually
+3. Write `summary.md`
+4. Update `index.md`
