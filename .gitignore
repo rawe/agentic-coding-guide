@@ -20,3 +20,6 @@
 
 # Node (for future tooling)
 node_modules/
+
+# Generated content
+generated-images/
