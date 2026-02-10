@@ -10,16 +10,18 @@ Add to `~/.zshrc` (or `~/.bashrc`):
 # Claude Code with agent teams (experimental multi-agent collaboration)
 alias clt='CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1 claude'
 alias cltc='CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1 claude --chrome'
+alias cltcy='CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1 claude --chrome --dangerously-skip-permissions'
 ```
 
 Reload: `source ~/.zshrc`
 
 ## What they do
 
-| Alias  | Description |
-|--------|-------------|
-| `clt`  | Claude Code with agent teams enabled |
-| `cltc` | Same + Chrome browser control |
+| Alias   | Description |
+|---------|-------------|
+| `clt`   | Claude Code with agent teams enabled |
+| `cltc`  | Same + Chrome browser control |
+| `cltcy` | Same + Chrome + YOLO (skip all permission prompts) |
 
 **Agent teams** (`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`): Enables multi-agent collaboration where Claude can spawn teammate agents that work in parallel.
 
