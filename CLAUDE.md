@@ -21,3 +21,17 @@ Knowledge base for agentic coding best practices. Currently in material collecti
 - Never mention AI, co-authors, Claude, or any coding model in commit messages.
 - No `Co-Authored-By` lines.
 - Write commits as if a human wrote them. Short, descriptive, conventional.
+
+## Python & Dependencies
+
+- Use `uv` for all dependency management. Never use `pip`, `pip3`, or `pip install`.
+- Use `python`, not `python3`.
+- For scripts with dependencies, use inline uv shebangs:
+  ```
+  #!/usr/bin/env -S uv run --with package1 --with package2
+  ```
+- For one-off commands needing a dependency:
+  ```
+  uv tool run --with <package> python -c "..."
+  ```
+- Never install packages globally or with `--system`. Use inline deps or virtual envs.
