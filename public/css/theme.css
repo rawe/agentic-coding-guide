@@ -1,0 +1,48 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  --bg-deep: #0a0e1a;
+  --bg-card: rgba(15, 20, 35, 0.85);
+  --border-subtle: rgba(255, 255, 255, 0.06);
+
+  --research-primary: #38bdf8;
+  --research-glow: rgba(56, 189, 248, 0.15);
+  --research-dark: #0c4a6e;
+
+  --plan-primary: #34d399;
+  --plan-glow: rgba(52, 211, 153, 0.15);
+  --plan-dark: #064e3b;
+
+  --implement-primary: #fb923c;
+  --implement-glow: rgba(251, 146, 60, 0.15);
+  --implement-dark: #7c2d12;
+
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-deep);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+a {
+  color: var(--text-muted);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(100, 116, 139, 0.3);
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+a:hover {
+  color: var(--research-primary);
+  border-color: var(--research-primary);
+}

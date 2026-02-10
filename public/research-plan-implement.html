@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Research → Plan → Implement — No Vibes Allowed</title>
+  <link rel="stylesheet" href="css/theme.css">
+  <style>
+    /* ── Page-specific: background image & overlay ── */
+    body {
+      background-image: url('assets/bg-dark-abstract.png');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(10, 14, 26, 0.92) 0%,
+        rgba(10, 14, 26, 0.80) 40%,
+        rgba(10, 14, 26, 0.88) 100%
+      );
+      z-index: 0;
+    }
+
+    .page-wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 60px 40px 80px;
+    }
+
+    /* ── Header ── */
+    header {
+      text-align: center;
+      margin-bottom: 72px;
+    }
+
+    .badge {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--research-primary);
+      background: var(--research-glow);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      padding: 6px 16px;
+      border-radius: 20px;
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      font-size: clamp(2.2rem, 5vw, 3.6rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, var(--research-primary) 0%, var(--plan-primary) 50%, var(--implement-primary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      font-size: 1.15rem;
+      color: var(--text-secondary);
+      max-width: 640px;
+      margin: 0 auto;
+      line-height: 1.6;
+      font-weight: 400;
+    }
+
+    /* ── Source attribution (bottom-left) ── */
+    .source-attribution {
+      position: fixed;
+      bottom: 20px;
+      left: 24px;
+      z-index: 10;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      opacity: 0.6;
+      transition: opacity 0.3s ease;
+    }
+
+    .source-attribution:hover {
+      opacity: 1;
+    }
+
+    /* ── Pipeline connector ── */
+    .pipeline {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      margin-bottom: 72px;
+      flex-wrap: wrap;
+    }
+
+    .phase-card {
+      flex: 1;
+      min-width: 280px;
+      max-width: 360px;
+      border-radius: 16px;
+      padding: 36px 28px 32px;
+      position: relative;
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .phase-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .phase-card.research {
+      background: linear-gradient(160deg, rgba(56, 189, 248, 0.08) 0%, var(--bg-card) 100%);
+      box-shadow: 0 0 40px rgba(56, 189, 248, 0.06);
+    }
+    .phase-card.research:hover { box-shadow: 0 8px 40px rgba(56, 189, 248, 0.12); }
+
+    .phase-card.plan {
+      background: linear-gradient(160deg, rgba(52, 211, 153, 0.08) 0%, var(--bg-card) 100%);
+      box-shadow: 0 0 40px rgba(52, 211, 153, 0.06);
+    }
+    .phase-card.plan:hover { box-shadow: 0 8px 40px rgba(52, 211, 153, 0.12); }
+
+    .phase-card.implement {
+      background: linear-gradient(160deg, rgba(251, 146, 60, 0.08) 0%, var(--bg-card) 100%);
+      box-shadow: 0 0 40px rgba(251, 146, 60, 0.06);
+    }
+    .phase-card.implement:hover { box-shadow: 0 8px 40px rgba(251, 146, 60, 0.12); }
+
+    .phase-number {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    .phase-card.research .phase-number { color: var(--research-primary); }
+    .phase-card.plan .phase-number { color: var(--plan-primary); }
+    .phase-card.implement .phase-number { color: var(--implement-primary); }
+
+    .phase-icon {
+      margin-bottom: 20px;
+    }
+
+    .phase-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+
+    .phase-io {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .phase-io-item {
+      font-size: 0.75rem;
+      line-height: 1.4;
+    }
+
+    .phase-io-label {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .phase-card.research .phase-io-label { color: var(--research-primary); }
+    .phase-card.plan .phase-io-label { color: var(--plan-primary); }
+    .phase-card.implement .phase-io-label { color: var(--implement-primary); }
+
+    .phase-io-value {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+    }
+
+    .phase-io-separator {
+      color: var(--text-muted);
+      opacity: 0.4;
+      align-self: center;
+      font-size: 0.85rem;
+    }
+
+    .phase-output {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      padding: 4px 10px;
+      border-radius: 6px;
+      display: inline-block;
+      margin-bottom: 16px;
+    }
+
+    .phase-card.research .phase-output {
+      color: var(--research-primary);
+      background: var(--research-glow);
+    }
+    .phase-card.plan .phase-output {
+      color: var(--plan-primary);
+      background: var(--plan-glow);
+    }
+    .phase-card.implement .phase-output {
+      color: var(--implement-primary);
+      background: var(--implement-glow);
+    }
+
+
+    .phase-desc {
+      font-size: 0.92rem;
+      color: var(--text-secondary);
+      line-height: 1.65;
+    }
+
+    .phase-list {
+      list-style: none;
+      margin-top: 16px;
+    }
+
+    .phase-list li {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      padding: 4px 0;
+      padding-left: 18px;
+      position: relative;
+    }
+
+    .phase-list li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 11px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+
+    .phase-card.research .phase-list li::before { background: var(--research-primary); }
+    .phase-card.plan .phase-list li::before { background: var(--plan-primary); }
+    .phase-card.implement .phase-list li::before { background: var(--implement-primary); }
+
+    /* ── Arrow connectors ── */
+    .arrow-connector {
+      flex-shrink: 0;
+      width: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    @media (max-width: 960px) {
+      .arrow-connector { display: none; }
+      .pipeline { gap: 24px; }
+    }
+
+    /* ── Key Insight Section ── */
+    .insight-section {
+      margin-bottom: 72px;
+    }
+
+    .insight-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 40px;
+    }
+
+    .insight-card h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 24px;
+      letter-spacing: -0.02em;
+    }
+
+    .insight-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+    }
+
+    @media (max-width: 700px) {
+      .insight-grid { grid-template-columns: 1fr; }
+    }
+
+    .insight-item h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--text-primary);
+    }
+
+    .insight-item p {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+
+  </style>
+</head>
+<body>
+
+<div class="page-wrapper">
+
+  <!-- Header -->
+  <header>
+    <div class="badge">Context Engineering</div>
+    <h1>Research &rarr; Plan &rarr; Implement</h1>
+    <p class="subtitle">
+      Three phases of intentional context compaction for solving hard problems
+      in complex codebases with AI coding agents.
+    </p>
+  </header>
+
+  <!-- Three Phase Cards -->
+  <div class="pipeline">
+
+    <!-- Phase 1: Research -->
+    <div class="phase-card research">
+      <div class="phase-number">Session 1</div>
+      <div class="phase-icon">
+        <svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="56" height="56" rx="14" fill="rgba(56,189,248,0.1)"/>
+          <circle cx="25" cy="25" r="9" stroke="#38bdf8" stroke-width="2.5" fill="none"/>
+          <line x1="31.5" y1="31.5" x2="40" y2="40" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M22 22 L25 19 L28 22" stroke="#38bdf8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <line x1="25" y1="19" x2="25" y2="29" stroke="#38bdf8" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h3 class="phase-title">Research</h3>
+      <div class="phase-io">
+        <div class="phase-io-item"><span class="phase-io-label">In</span><span class="phase-io-value">Task + Codebase</span></div>
+        <span class="phase-io-separator">&rarr;</span>
+        <div class="phase-io-item"><span class="phase-io-label">Out</span><span class="phase-output">research.md</span></div>
+      </div>
+      <p class="phase-desc">
+        Investigate the actual codebase. Extract compressed truth about how the relevant parts of the system work right now.
+      </p>
+      <ul class="phase-list">
+        <li>Read the real code, not stale docs</li>
+        <li>Explore relevant modules &amp; interfaces</li>
+        <li>Output disposable truth, not documentation</li>
+      </ul>
+    </div>
+
+    <!-- Arrow 1→2 -->
+    <div class="arrow-connector">
+      <svg width="48" height="24" viewBox="0 0 48 24" fill="none">
+        <defs>
+          <linearGradient id="arrow1" x1="0" y1="12" x2="48" y2="12" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#38bdf8"/>
+            <stop offset="1" stop-color="#34d399"/>
+          </linearGradient>
+        </defs>
+        <line x1="0" y1="12" x2="38" y2="12" stroke="url(#arrow1)" stroke-width="2" stroke-linecap="round"/>
+        <polyline points="34,6 42,12 34,18" stroke="url(#arrow1)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+
+    <!-- Phase 2: Plan -->
+    <div class="phase-card plan">
+      <div class="phase-number">Session 2</div>
+      <div class="phase-icon">
+        <svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="56" height="56" rx="14" fill="rgba(52,211,153,0.1)"/>
+          <rect x="16" y="14" width="24" height="28" rx="3" stroke="#34d399" stroke-width="2.5" fill="none"/>
+          <line x1="21" y1="22" x2="35" y2="22" stroke="#34d399" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="21" y1="27" x2="32" y2="27" stroke="#34d399" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="21" y1="32" x2="29" y2="32" stroke="#34d399" stroke-width="1.5" stroke-linecap="round"/>
+          <polyline points="21,37 24,34 27,37" stroke="#34d399" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+      </div>
+      <h3 class="phase-title">Plan</h3>
+      <div class="phase-io">
+        <div class="phase-io-item"><span class="phase-io-label">In</span><span class="phase-io-value">research.md + Task</span></div>
+        <span class="phase-io-separator">&rarr;</span>
+        <div class="phase-io-item"><span class="phase-io-label">Out</span><span class="phase-output">plan.md</span></div>
+      </div>
+      <p class="phase-desc">
+        Combine research with the original request. Design concrete steps, file references, and code snippets. Compress intent.
+      </p>
+      <ul class="phase-list">
+        <li>Research + task as combined input</li>
+        <li>Concrete steps with file references</li>
+        <li>Code snippets to guide implementation</li>
+      </ul>
+    </div>
+
+    <!-- Arrow 2→3 -->
+    <div class="arrow-connector">
+      <svg width="48" height="24" viewBox="0 0 48 24" fill="none">
+        <defs>
+          <linearGradient id="arrow2" x1="0" y1="12" x2="48" y2="12" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#34d399"/>
+            <stop offset="1" stop-color="#fb923c"/>
+          </linearGradient>
+        </defs>
+        <line x1="0" y1="12" x2="38" y2="12" stroke="url(#arrow2)" stroke-width="2" stroke-linecap="round"/>
+        <polyline points="34,6 42,12 34,18" stroke="url(#arrow2)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+
+    <!-- Phase 3: Implement -->
+    <div class="phase-card implement">
+      <div class="phase-number">Session 3</div>
+      <div class="phase-icon">
+        <svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="56" height="56" rx="14" fill="rgba(251,146,60,0.1)"/>
+          <!-- Rocket icon — launch / ship code -->
+          <path d="M28 16 C28 16 22 22 22 32 L28 28 L34 32 C34 22 28 16 28 16Z" stroke="#fb923c" stroke-width="2" stroke-linejoin="round" fill="none"/>
+          <circle cx="28" cy="25" r="2" fill="#fb923c"/>
+          <path d="M22 32 L18 36" stroke="#fb923c" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M34 32 L38 36" stroke="#fb923c" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M24 38 L28 34 L32 38" stroke="#fb923c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <path d="M26 40 L28 37 L30 40" stroke="#fb923c" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.6"/>
+        </svg>
+      </div>
+      <h3 class="phase-title">Implement</h3>
+      <div class="phase-io">
+        <div class="phase-io-item"><span class="phase-io-label">In</span><span class="phase-io-value">plan.md</span></div>
+        <span class="phase-io-separator">&rarr;</span>
+        <div class="phase-io-item"><span class="phase-io-label">Out</span><span class="phase-output">code + tests</span></div>
+      </div>
+      <p class="phase-desc">
+        Execute the plan in a clean context window. No accumulated noise from research or exploration. Just the plan.
+      </p>
+      <ul class="phase-list">
+        <li>Plan as only input &mdash; clean context</li>
+        <li>Step-by-step execution</li>
+        <li>Code changes verified by tests</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- Key Insights -->
+  <div class="insight-section">
+    <div class="insight-card">
+      <h2>Why This Works</h2>
+      <div class="insight-grid">
+        <div class="insight-item">
+          <h3>Fresh Context Each Phase</h3>
+          <p>Each session starts a clean context window. No accumulated noise from prior exploration. The output of each phase is a compressed artifact that carries only what matters forward.</p>
+        </div>
+        <div class="insight-item">
+          <h3>On-Demand Truth</h3>
+          <p>Static documentation drifts from reality. Research reads the actual code for each task, extracting truth that is current, relevant, and disposable after use.</p>
+        </div>
+        <div class="insight-item">
+          <h3>Progressive Compression</h3>
+          <p>Codebase &rarr; research.md &rarr; plan.md &rarr; code. Each step distills the prior into a denser, more actionable form. This is intentional context compaction.</p>
+        </div>
+        <div class="insight-item">
+          <h3>Scales Beyond Documentation</h3>
+          <p>Progressive disclosure via layered docs works for small projects. For 300k+ LOC codebases, documentation grows proportionally and becomes lies the agent trusts.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+</div>
+
+<!-- Discrete source attribution bottom-left -->
+<div class="source-attribution">
+  Dex Horthy, HumanLayer<br>
+  <a href="https://www.youtube.com/watch?v=rmvDxxNubIg" target="_blank" rel="noopener">Watch the talk &rsaquo;</a>
+</div>
+
+</body>
+</html>
