@@ -48,7 +48,7 @@
       line-height: 1.1;
       letter-spacing: -0.03em;
       margin-bottom: 16px;
-      background: linear-gradient(135deg, var(--research-primary) 0%, var(--skills-primary) 50%, var(--mcp-primary) 100%);
+      background: linear-gradient(135deg, var(--index-gradient-start) 0%, var(--index-gradient-mid) 50%, var(--index-gradient-end) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -111,6 +111,17 @@
       border-left-color: var(--_accent);
     }
 
+    .index-card.coral {
+      --_accent: var(--subagent-primary);
+      background: linear-gradient(160deg, color-mix(in srgb, var(--_accent) 6%, transparent) 0%, var(--bg-card) 100%);
+      box-shadow: 0 0 40px color-mix(in srgb, var(--_accent) 4%, transparent);
+      border-left: 3px solid color-mix(in srgb, var(--_accent) 30%, transparent);
+    }
+    .index-card.coral:hover {
+      box-shadow: 0 8px 48px color-mix(in srgb, var(--_accent) 14%, transparent);
+      border-left-color: var(--_accent);
+    }
+
     /* ── Card content ── */
     .index-card .card-title {
       font-size: 1.4rem;
@@ -122,6 +133,7 @@
 
     .index-card.cyan .card-title { color: var(--research-primary); }
     .index-card.purple .card-title { color: var(--skills-primary); }
+    .index-card.coral .card-title { color: var(--subagent-primary); }
 
     .index-card .card-subtext {
       font-size: 0.95rem;
@@ -198,6 +210,12 @@
     <a href="skills-mcp-commands.html" class="index-card purple">
       <div class="card-title">Three Layers, Three Jobs</div>
       <p class="card-subtext">Distinguishing Skills, MCP Servers, and Custom Commands &mdash; the three extensibility layers of Claude Code.</p>
+      <span class="card-arrow">&rsaquo;</span>
+    </a>
+
+    <a href="subagents-vs-teams.html" class="index-card coral">
+      <div class="card-title">Subagents vs Agent Teams</div>
+      <p class="card-subtext">Choose based on whether workers need to communicate &mdash; two architecture patterns for delegating work in Claude Code.</p>
       <span class="card-arrow">&rsaquo;</span>
     </a>
 

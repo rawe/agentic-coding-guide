@@ -5,6 +5,10 @@
   --bg-card: rgba(15, 20, 35, 0.85);
   --border-subtle: rgba(255, 255, 255, 0.06);
 
+  --index-gradient-start: #38bdf8;
+  --index-gradient-mid: #7c6ef0;
+  --index-gradient-end: #c466f5;
+
   --research-primary: #38bdf8;
   --research-glow: rgba(56, 189, 248, 0.15);
   --research-dark: #0c4a6e;
@@ -25,6 +29,22 @@
 
   --commands-primary: #3ec97a;
   --commands-glow: rgba(62, 201, 122, 0.15);
+
+  --subagent-primary: #e8845f;
+  --subagent-light: #f4a98a;
+  --subagent-glow: rgba(232, 132, 95, 0.15);
+  --subagent-dark: #35261e;
+
+  --agentteam-primary: #6dca8c;
+  --agentteam-light: #a3e4b8;
+  --agentteam-glow: rgba(109, 202, 140, 0.15);
+  --agentteam-dark: #1a2e22;
+
+  --tasklist-stroke: #bfa84f;
+  --tasklist-dark: #2a2714;
+  --tasklist-text: #d4c06a;
+
+  --warn: #f06e6e;
 
   --text-primary: #f1f5f9;
   --text-secondary: #94a3b8;

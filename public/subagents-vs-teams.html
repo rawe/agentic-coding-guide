@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Subagents vs Agent Teams — Agentic Coding</title>
+  <link rel="stylesheet" href="css/theme.css">
+  <style>
+    /* ── Page-local variables ── */
+    :root {
+      --surface: #181a24;
+      --surface-raised: #1e2130;
+      --border: #2a2d3e;
+    }
+
+    /* ── Background image & overlay ── */
+    body {
+      background-image: url('assets/bg-dark-abstract.png');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(10, 14, 26, 0.92) 0%,
+        rgba(10, 14, 26, 0.80) 40%,
+        rgba(10, 14, 26, 0.88) 100%
+      );
+      z-index: 0;
+    }
+
+    .page-wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 60px 40px 80px;
+    }
+
+    /* ── Header ── */
+    header {
+      text-align: center;
+      margin-bottom: 56px;
+      position: relative;
+    }
+
+    header::after {
+      content: '';
+      display: block;
+      width: 120px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--subagent-primary), var(--agentteam-primary));
+      margin: 24px auto 0;
+      border-radius: 2px;
+    }
+
+    .badge {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--subagent-primary);
+      background: var(--subagent-glow);
+      border: 1px solid rgba(232, 132, 95, 0.2);
+      padding: 6px 16px;
+      border-radius: 20px;
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      font-size: clamp(2.2rem, 5vw, 3.6rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, var(--subagent-primary) 0%, var(--agentteam-primary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      font-size: 1.15rem;
+      color: var(--text-secondary);
+      max-width: 640px;
+      margin: 0 auto;
+      line-height: 1.6;
+      font-weight: 400;
+    }
+
+    /* ── Source attribution (bottom-left) ── */
+    .source-attribution {
+      position: fixed;
+      bottom: 20px;
+      left: 24px;
+      z-index: 10;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      opacity: 0.6;
+      transition: opacity 0.3s ease;
+    }
+
+    .source-attribution:hover {
+      opacity: 1;
+    }
+
+    /* ── Main comparison grid ── */
+    .comparison {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      margin-bottom: 48px;
+    }
+
+    /* ── Panel ── */
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      backdrop-filter: blur(20px);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .panel:hover {
+      transform: translateY(-4px);
+    }
+
+    .panel--sub { box-shadow: 0 0 40px var(--subagent-glow); }
+    .panel--sub:hover { box-shadow: 0 8px 40px rgba(232, 132, 95, 0.12); }
+    .panel--team { box-shadow: 0 0 40px var(--agentteam-glow); }
+    .panel--team:hover { box-shadow: 0 8px 40px rgba(109, 202, 140, 0.12); }
+
+    .panel-header {
+      padding: 24px 28px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .panel-header .badge {
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      padding: 5px 12px;
+      border-radius: 6px;
+      margin-bottom: 0;
+    }
+
+    .panel--sub .panel-header .badge {
+      background: var(--subagent-glow);
+      color: var(--subagent-light);
+      border: 1px solid rgba(232, 132, 95, 0.3);
+    }
+
+    .panel--team .panel-header .badge {
+      background: var(--agentteam-glow);
+      color: var(--agentteam-light);
+      border: 1px solid rgba(109, 202, 140, 0.3);
+    }
+
+    .panel-header h2 {
+      font-weight: 700;
+      font-size: 1.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    .panel--sub .panel-header h2 { color: var(--subagent-light); }
+    .panel--team .panel-header h2 { color: var(--agentteam-light); }
+
+    /* ── SVG diagram area ── */
+    .diagram-wrap {
+      padding: 28px 20px 24px;
+      display: flex;
+      justify-content: center;
+      background: var(--surface-raised);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .diagram-wrap svg { display: block; }
+
+    /* ── SVG CSS classes ── */
+    .node-main { fill: #2a3352; stroke: var(--research-primary); stroke-width: 2; rx: 12; }
+    .node-sub-worker { fill: var(--subagent-dark); stroke: var(--subagent-primary); stroke-width: 2; rx: 10; }
+    .node-team-worker { fill: var(--agentteam-dark); stroke: var(--agentteam-primary); stroke-width: 2; rx: 10; }
+    .node-tasklist { fill: var(--tasklist-dark); stroke: var(--tasklist-stroke); stroke-width: 2; rx: 10; }
+
+    .label-main { fill: #92bff8; font-family: var(--font-sans); font-weight: 700; font-size: 13px; text-anchor: middle; }
+    .label-sub { fill: #aab; font-family: var(--font-sans); font-weight: 500; font-size: 11px; text-anchor: middle; }
+    .label-worker { fill: var(--text-primary); font-family: var(--font-sans); font-weight: 600; font-size: 12.5px; text-anchor: middle; }
+    .label-task-title { fill: var(--tasklist-text); font-family: var(--font-mono); font-weight: 600; font-size: 10px; text-anchor: middle; letter-spacing: 0.08em; }
+    .label-task { fill: var(--text-primary); font-family: var(--font-sans); font-size: 11.5px; }
+    .label-task-desc { fill: var(--text-secondary); font-family: var(--font-mono); font-size: 11px; text-anchor: middle; }
+    .label-result { fill: var(--subagent-light); font-family: var(--font-mono); font-size: 9.5px; text-anchor: middle; }
+
+    .edge-down { stroke: var(--text-secondary); stroke-width: 1.5; fill: none; }
+    .edge-blocked { stroke: var(--warn); stroke-width: 2; stroke-dasharray: 6 4; }
+    .edge-bidir { stroke: var(--agentteam-primary); stroke-width: 1.5; fill: none; }
+    .edge-task { stroke: var(--tasklist-stroke); stroke-width: 1.2; stroke-dasharray: 5 4; fill: none; }
+    .edge-return { stroke: var(--text-secondary); stroke-width: 1; stroke-dasharray: 4 3; }
+
+    .x-mark { fill: var(--warn); font-family: var(--font-sans); font-weight: 700; font-size: 18px; text-anchor: middle; }
+
+    /* ── Results / Tasks info area ── */
+    .info-section {
+      padding: 24px 28px 28px;
+    }
+
+    .info-section h3 {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-secondary);
+      margin-bottom: 14px;
+    }
+
+    .result-item, .task-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      margin-bottom: 6px;
+      font-size: 0.92rem;
+      background: var(--surface-raised);
+      border: 1px solid var(--border);
+    }
+
+    .result-item code {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      color: var(--subagent-light);
+      white-space: nowrap;
+      margin-right: 4px;
+    }
+
+    .task-item .check {
+      flex-shrink: 0;
+      width: 18px;
+      height: 18px;
+      border-radius: 4px;
+      border: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 2px;
+    }
+
+    .task-item .check.done {
+      background: var(--agentteam-primary);
+      border-color: var(--agentteam-primary);
+    }
+
+    .task-item .check.done::after {
+      content: '\2713';
+      color: var(--bg-deep);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .caption {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      font-style: italic;
+      text-align: center;
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── When-to-use section ── */
+    .when-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+    }
+
+    .when-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px 28px 24px;
+      backdrop-filter: blur(20px);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .when-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .when-card h3 {
+      font-weight: 700;
+      font-size: 1.15rem;
+      margin-bottom: 16px;
+      letter-spacing: -0.02em;
+    }
+
+    .when-card--sub h3 { color: var(--subagent-light); }
+    .when-card--sub { box-shadow: 0 0 30px var(--subagent-glow); }
+    .when-card--sub:hover { box-shadow: 0 8px 40px rgba(232, 132, 95, 0.12); }
+
+    .when-card--team h3 { color: var(--agentteam-light); }
+    .when-card--team { box-shadow: 0 0 30px var(--agentteam-glow); }
+    .when-card--team:hover { box-shadow: 0 8px 40px rgba(109, 202, 140, 0.12); }
+
+    .when-card ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .when-card li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.95rem;
+      color: var(--text-primary);
+    }
+
+    .when-card li .dot {
+      flex-shrink: 0;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+    }
+
+    .when-card--sub li .dot { background: var(--subagent-primary); }
+    .when-card--team li .dot { background: var(--agentteam-primary); }
+
+    /* ── Responsive ── */
+    @media (max-width: 860px) {
+      .comparison { grid-template-columns: 1fr; }
+      .when-section { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-wrapper">
+
+  <!-- Header -->
+  <header>
+    <div class="badge">Agent Architecture</div>
+    <h1>Subagents vs Agent Teams</h1>
+    <p class="subtitle">Choose based on whether workers need to communicate</p>
+  </header>
+
+  <!-- Main Comparison -->
+  <div class="comparison">
+
+    <!-- Left Panel: Subagents -->
+    <div class="panel panel--sub">
+      <div class="panel-header">
+        <span class="badge">Pattern A</span>
+        <h2>Subagents</h2>
+      </div>
+      <div class="diagram-wrap">
+        <svg width="460" height="310" viewBox="0 0 460 310" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <marker id="arrowGray" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+              <path d="M0,0 L8,3 L0,6" fill="none" stroke="#8b8fa6" stroke-width="1.2"/>
+            </marker>
+          </defs>
+
+          <!-- Main Agent node -->
+          <rect class="node-main" x="148" y="16" width="164" height="56"/>
+          <text class="label-main" x="230" y="40">Main Agent</text>
+          <text class="label-sub" x="230" y="56">(Claude Code)</text>
+
+          <!-- Edges from main to workers -->
+          <line x1="193" y1="72" x2="80" y2="148" class="edge-down" marker-end="url(#arrowGray)"/>
+          <line x1="230" y1="72" x2="230" y2="148" class="edge-down" marker-end="url(#arrowGray)"/>
+          <line x1="267" y1="72" x2="380" y2="148" class="edge-down" marker-end="url(#arrowGray)"/>
+
+          <!-- Worker 1 -->
+          <rect class="node-sub-worker" x="18" y="150" width="124" height="46"/>
+          <text class="label-worker" x="80" y="178">Explore</text>
+
+          <!-- Worker 2 -->
+          <rect class="node-sub-worker" x="168" y="150" width="124" height="46"/>
+          <text class="label-worker" x="230" y="178">Explore</text>
+
+          <!-- Worker 3 -->
+          <rect class="node-sub-worker" x="318" y="150" width="124" height="46"/>
+          <text class="label-worker" x="380" y="178">Explore</text>
+
+          <!-- Blocked markers between workers -->
+          <line x1="142" y1="163" x2="168" y2="163" class="edge-blocked"/>
+          <text class="x-mark" x="155" y="180">&#x2717;</text>
+          <line x1="292" y1="163" x2="318" y2="163" class="edge-blocked"/>
+          <text class="x-mark" x="305" y="180">&#x2717;</text>
+
+          <!-- Task labels under workers -->
+          <text class="label-task-desc" x="80" y="218" text-anchor="middle">"auth patterns"</text>
+          <text class="label-task-desc" x="230" y="218" text-anchor="middle">"query perf"</text>
+          <text class="label-task-desc" x="380" y="218" text-anchor="middle">"scan CVEs"</text>
+
+          <!-- Dashed return arrows -->
+          <line x1="80" y1="196" x2="80" y2="250" class="edge-return"/>
+          <line x1="230" y1="196" x2="230" y2="268" class="edge-return"/>
+          <line x1="380" y1="196" x2="380" y2="286" class="edge-return"/>
+
+          <!-- Result text -->
+          <text class="label-result" x="80" y="264" text-anchor="middle">JWT, 24h expiry</text>
+          <text class="label-result" x="230" y="282" text-anchor="middle">Line 142 is O(n&#178;)</text>
+          <text class="label-result" x="380" y="300" text-anchor="middle">CVE-2021-23337</text>
+        </svg>
+      </div>
+      <div class="info-section">
+        <h3>Results</h3>
+        <div class="result-item"><code>auth patterns</code> Auth uses JWT, 24h expiry</div>
+        <div class="result-item"><code>query perf</code> Query on line 142 is O(n&#178;)</div>
+        <div class="result-item"><code>scan CVEs</code> lodash has CVE-2021-23337</div>
+        <p class="caption">Reports back only &mdash; no coordination</p>
+      </div>
+    </div>
+
+    <!-- Right Panel: Agent Teams -->
+    <div class="panel panel--team">
+      <div class="panel-header">
+        <span class="badge">Pattern B</span>
+        <h2>Agent Teams</h2>
+      </div>
+      <div class="diagram-wrap">
+        <svg width="460" height="310" viewBox="0 0 460 310" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <marker id="arrowGray2" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+              <path d="M0,0 L8,3 L0,6" fill="none" stroke="#8b8fa6" stroke-width="1.2"/>
+            </marker>
+            <marker id="arrowGreen" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+              <path d="M0,0 L8,3 L0,6" fill="none" stroke="#6dca8c" stroke-width="1.2"/>
+            </marker>
+            <marker id="arrowGreenRev" markerWidth="8" markerHeight="6" refX="0" refY="3" orient="auto">
+              <path d="M8,0 L0,3 L8,6" fill="none" stroke="#6dca8c" stroke-width="1.2"/>
+            </marker>
+            <marker id="arrowGold" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto">
+              <path d="M0,0 L7,2.5 L0,5" fill="none" stroke="#bfa84f" stroke-width="1"/>
+            </marker>
+          </defs>
+
+          <!-- Lead Agent node -->
+          <rect class="node-main" x="148" y="16" width="164" height="56"/>
+          <text class="label-main" x="230" y="40">Lead Agent</text>
+          <text class="label-sub" x="230" y="56">(Claude Code)</text>
+
+          <!-- Edges from lead to workers -->
+          <line x1="193" y1="72" x2="80" y2="148" class="edge-down" marker-end="url(#arrowGray2)"/>
+          <line x1="230" y1="72" x2="230" y2="148" class="edge-down" marker-end="url(#arrowGray2)"/>
+          <line x1="267" y1="72" x2="380" y2="148" class="edge-down" marker-end="url(#arrowGray2)"/>
+
+          <!-- Worker 1: Frontend -->
+          <rect class="node-team-worker" x="18" y="150" width="124" height="46"/>
+          <text class="label-worker" x="80" y="178">Frontend</text>
+
+          <!-- Worker 2: Backend -->
+          <rect class="node-team-worker" x="168" y="150" width="124" height="46"/>
+          <text class="label-worker" x="230" y="178">Backend</text>
+
+          <!-- Worker 3: Database -->
+          <rect class="node-team-worker" x="318" y="150" width="124" height="46"/>
+          <text class="label-worker" x="380" y="178">Database</text>
+
+          <!-- Bidirectional arrows between workers -->
+          <line x1="142" y1="168" x2="168" y2="168" class="edge-bidir" marker-end="url(#arrowGreen)" marker-start="url(#arrowGreenRev)"/>
+          <line x1="292" y1="168" x2="318" y2="168" class="edge-bidir" marker-end="url(#arrowGreen)" marker-start="url(#arrowGreenRev)"/>
+
+          <!-- Curved arrow between Frontend and Database (under) -->
+          <path d="M80,196 Q80,220 230,225 Q380,220 380,196" class="edge-bidir" fill="none" marker-end="url(#arrowGreen)" marker-start="url(#arrowGreenRev)"/>
+
+          <!-- Dashed lines from workers to task list -->
+          <line x1="80" y1="196" x2="140" y2="252" class="edge-task" marker-end="url(#arrowGold)"/>
+          <line x1="230" y1="196" x2="230" y2="245" class="edge-task" marker-end="url(#arrowGold)"/>
+          <line x1="380" y1="196" x2="320" y2="252" class="edge-task" marker-end="url(#arrowGold)"/>
+
+          <!-- Shared Task List box -->
+          <rect class="node-tasklist" x="100" y="248" width="260" height="56"/>
+          <text class="label-task-title" x="230" y="264">SHARED TASK LIST</text>
+
+          <!-- Task items inside -->
+          <text class="label-task" x="140" y="280">&#9744; Define API contract</text>
+          <text class="label-task" x="140" y="295">&#9745; Set up database schema</text>
+        </svg>
+      </div>
+      <div class="info-section">
+        <h3>Shared Task List</h3>
+        <div class="task-item"><span class="check"></span> Define API contract</div>
+        <div class="task-item"><span class="check done"></span> Set up database schema</div>
+        <div class="task-item"><span class="check"></span> Build chat UI components</div>
+        <p class="caption">Peer-to-peer + shared context</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- When to Use -->
+  <div class="when-section">
+    <div class="when-card when-card--sub">
+      <h3>Use Subagents When</h3>
+      <ul>
+        <li><span class="dot"></span> Quick, focused tasks (usually research)</li>
+        <li><span class="dot"></span> Only the result matters (not the process)</li>
+        <li><span class="dot"></span> Cost / token sensitive</li>
+      </ul>
+    </div>
+    <div class="when-card when-card--team">
+      <h3>Use Agent Teams When</h3>
+      <ul>
+        <li><span class="dot"></span> Complex multi-component builds</li>
+        <li><span class="dot"></span> Agents need to coordinate</li>
+        <li><span class="dot"></span> Work requires collaboration</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<!-- Source attribution bottom-left -->
+<div class="source-attribution">
+  Agentic Coding<br>
+  Best practices collection
+</div>
+
+</body>
+</html>

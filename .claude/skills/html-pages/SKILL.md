@@ -114,7 +114,7 @@ Generated images are large (1024x1024+). Always optimize before use:
 
 ## Index Page Integration
 
-When adding a new page, update `public/index.html`:
+When adding a new page, update `public/index.html`. Note: the index h1 gradient uses its own variables (`--index-gradient-*` in `theme.css`) and is never modified when adding pages.
 
 ### 1. Add a card variant
 
@@ -144,10 +144,6 @@ Define the accent using `--_accent` with `color-mix()`:
 </a>
 ```
 
-### 3. Update h1 gradient
-
-Add the new page's primary accent as a gradient stop in the index h1.
-
 ## Checklist
 
 For every new HTML page:
@@ -156,5 +152,4 @@ For every new HTML page:
 3. Generate teaser images with `/chatgpt-image` if needed
 4. Optimize images (720x450), archive originals
 5. Add index card with `color-mix()` accent pattern
-6. Update index h1 gradient stops
-7. Verify in browser (spawn HTTP server, check with Chrome)
+6. Verify in browser (spawn HTTP server, check with Chrome)
