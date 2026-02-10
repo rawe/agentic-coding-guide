@@ -26,3 +26,7 @@ node_modules/
 
 # Generated content
 generated-images/
+
+# Original full-resolution images (keep .gitkeep only)
+public/assets/originals/*
+!public/assets/originals/.gitkeep
