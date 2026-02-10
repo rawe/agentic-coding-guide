@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agentic Coding</title>
+  <link rel="stylesheet" href="css/theme.css">
+  <style>
+    /* ── Background image & overlay ── */
+    body {
+      background-image: url('assets/bg-dark-abstract.png');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(10, 14, 26, 0.92) 0%,
+        rgba(10, 14, 26, 0.80) 40%,
+        rgba(10, 14, 26, 0.88) 100%
+      );
+      z-index: 0;
+    }
+
+    .page-wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 80px 40px 100px;
+    }
+
+    /* ── Header ── */
+    header {
+      text-align: center;
+      margin-bottom: 56px;
+    }
+
+    h1 {
+      font-size: clamp(2.4rem, 5vw, 3.6rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, var(--research-primary) 0%, var(--skills-primary) 50%, var(--mcp-primary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      max-width: 520px;
+      margin: 0 auto;
+      line-height: 1.6;
+      font-weight: 400;
+    }
+
+    /* ── Card list ── */
+    .card-list {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* ── Index card (clickable link) ── */
+    .index-card {
+      display: block;
+      text-decoration: none;
+      border: none;
+      border-radius: 16px;
+      padding: 36px 32px;
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+    }
+
+    .index-card:hover {
+      transform: translateY(-4px);
+      border-color: transparent;
+    }
+
+    /* ── Color variants ── */
+    .index-card.cyan {
+      --_accent: var(--research-primary);
+      background: linear-gradient(160deg, color-mix(in srgb, var(--_accent) 6%, transparent) 0%, var(--bg-card) 100%);
+      box-shadow: 0 0 40px color-mix(in srgb, var(--_accent) 4%, transparent);
+      border-left: 3px solid color-mix(in srgb, var(--_accent) 30%, transparent);
+    }
+    .index-card.cyan:hover {
+      box-shadow: 0 8px 48px color-mix(in srgb, var(--_accent) 14%, transparent);
+      border-left-color: var(--_accent);
+    }
+
+    .index-card.purple {
+      --_accent: var(--skills-primary);
+      background: linear-gradient(160deg, color-mix(in srgb, var(--_accent) 6%, transparent) 0%, var(--bg-card) 100%);
+      box-shadow: 0 0 40px color-mix(in srgb, var(--_accent) 4%, transparent);
+      border-left: 3px solid color-mix(in srgb, var(--_accent) 30%, transparent);
+    }
+    .index-card.purple:hover {
+      box-shadow: 0 8px 48px color-mix(in srgb, var(--_accent) 14%, transparent);
+      border-left-color: var(--_accent);
+    }
+
+    /* ── Card content ── */
+    .index-card .card-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 10px;
+      transition: color 0.2s ease;
+    }
+
+    .index-card.cyan .card-title { color: var(--research-primary); }
+    .index-card.purple .card-title { color: var(--skills-primary); }
+
+    .index-card .card-subtext {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .index-card .card-arrow {
+      position: absolute;
+      right: 32px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      opacity: 0;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .index-card:hover .card-arrow {
+      opacity: 1;
+      transform: translateY(-50%) translateX(4px);
+    }
+
+    /* ── Source attribution (bottom-left) ── */
+    .source-attribution {
+      position: fixed;
+      bottom: 20px;
+      left: 24px;
+      z-index: 10;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      opacity: 0.6;
+      transition: opacity 0.3s ease;
+    }
+
+    .source-attribution:hover {
+      opacity: 1;
+    }
+
+    @media (max-width: 600px) {
+      .page-wrapper {
+        padding: 48px 20px 80px;
+      }
+
+      .index-card {
+        padding: 28px 24px;
+      }
+
+      .index-card .card-arrow {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-wrapper">
+
+  <header>
+    <h1>Agentic Coding</h1>
+    <p class="subtitle">Best practices for building with AI coding agents.</p>
+  </header>
+
+  <div class="card-list">
+
+    <a href="research-plan-implement.html" class="index-card cyan">
+      <div class="card-title">Research &rarr; Plan &rarr; Implement</div>
+      <p class="card-subtext">Three phases of intentional context compaction for solving hard problems in complex codebases with AI coding agents.</p>
+      <span class="card-arrow">&rsaquo;</span>
+    </a>
+
+    <a href="skills-mcp-commands.html" class="index-card purple">
+      <div class="card-title">Three Layers, Three Jobs</div>
+      <p class="card-subtext">Distinguishing Skills, MCP Servers, and Custom Commands &mdash; the three extensibility layers of Claude Code.</p>
+      <span class="card-arrow">&rsaquo;</span>
+    </a>
+
+  </div>
+
+</div>
+
+<div class="source-attribution">
+  Agentic Coding<br>
+  Best practices collection
+</div>
+
+</body>
+</html>

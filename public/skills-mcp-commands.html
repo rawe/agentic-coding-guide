@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Skills vs MCP Servers vs Custom Commands</title>
+  <link rel="stylesheet" href="css/theme.css">
+  <style>
+    /* ── Background image & overlay ── */
+    body {
+      background-image: url('assets/bg-dark-abstract.png');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(10, 14, 26, 0.92) 0%,
+        rgba(10, 14, 26, 0.80) 40%,
+        rgba(10, 14, 26, 0.88) 100%
+      );
+      z-index: 0;
+    }
+
+    .page-wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 60px 40px 80px;
+    }
+
+    /* ── Header ── */
+    header {
+      text-align: center;
+      margin-bottom: 72px;
+    }
+
+    .badge {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--skills-primary);
+      background: var(--skills-glow);
+      border: 1px solid rgba(124, 110, 240, 0.2);
+      padding: 6px 16px;
+      border-radius: 20px;
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      font-size: clamp(2.2rem, 5vw, 3.6rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, var(--skills-primary) 0%, var(--mcp-primary) 50%, var(--commands-primary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      font-size: 1.15rem;
+      color: var(--text-secondary);
+      max-width: 640px;
+      margin: 0 auto;
+      line-height: 1.6;
+      font-weight: 400;
+    }
+
+    /* ── Source attribution (bottom-left) ── */
+    .source-attribution {
+      position: fixed;
+      bottom: 20px;
+      left: 24px;
+      z-index: 10;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      opacity: 0.6;
+      transition: opacity 0.3s ease;
+    }
+
+    .source-attribution:hover {
+      opacity: 1;
+    }
+
+    /* ── Pipeline connector ── */
+    .pipeline {
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      gap: 0;
+      margin-bottom: 72px;
+      flex-wrap: wrap;
+    }
+
+    .phase-card {
+      flex: 1;
+      min-width: 280px;
+      max-width: 360px;
+      border-radius: 16px;
+      padding: 0;
+      position: relative;
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      overflow: hidden;
+    }
+
+    .phase-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .phase-card.skills {
+      background: linear-gradient(160deg, rgba(124, 110, 240, 0.08) 0%, var(--bg-card) 100%);
+      box-shadow: 0 0 40px rgba(124, 110, 240, 0.06);
+    }
+    .phase-card.skills:hover { box-shadow: 0 8px 40px rgba(124, 110, 240, 0.12); }
+
+    .phase-card.mcp {
+      background: linear-gradient(160deg, rgba(196, 102, 245, 0.08) 0%, var(--bg-card) 100%);
+      box-shadow: 0 0 40px rgba(196, 102, 245, 0.06);
+    }
+    .phase-card.mcp:hover { box-shadow: 0 8px 40px rgba(196, 102, 245, 0.12); }
+
+    .phase-card.commands {
+      background: linear-gradient(160deg, rgba(62, 201, 122, 0.08) 0%, var(--bg-card) 100%);
+      box-shadow: 0 0 40px rgba(62, 201, 122, 0.06);
+    }
+    .phase-card.commands:hover { box-shadow: 0 8px 40px rgba(62, 201, 122, 0.12); }
+
+    /* ── Card image area ── */
+    .card-image {
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.03);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    code {
+      font-family: var(--font-mono);
+      font-size: 0.85em;
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.06);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .card-body {
+      padding: 28px 28px 32px;
+    }
+
+    .phase-label {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+
+    .phase-card.skills .phase-label {
+      color: var(--skills-primary);
+      background: var(--skills-glow);
+    }
+    .phase-card.mcp .phase-label {
+      color: var(--mcp-primary);
+      background: var(--mcp-glow);
+    }
+    .phase-card.commands .phase-label {
+      color: var(--commands-primary);
+      background: var(--commands-glow);
+    }
+
+    .phase-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+
+    .phase-desc {
+      font-size: 0.92rem;
+      color: var(--text-secondary);
+      line-height: 1.65;
+    }
+
+    .phase-list {
+      list-style: none;
+      margin-top: 16px;
+    }
+
+    .phase-list li {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      padding: 4px 0;
+      padding-left: 18px;
+      position: relative;
+    }
+
+    .phase-list li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 11px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+
+    .phase-card.skills .phase-list li::before { background: var(--skills-primary); }
+    .phase-card.mcp .phase-list li::before { background: var(--mcp-primary); }
+    .phase-card.commands .phase-list li::before { background: var(--commands-primary); }
+
+    /* ── Arrow connectors ── */
+    .arrow-connector {
+      flex-shrink: 0;
+      width: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      align-self: center;
+    }
+
+    @media (max-width: 960px) {
+      .arrow-connector { display: none; }
+      .pipeline { gap: 24px; }
+    }
+
+    /* ── Comparison Section ── */
+    .comparison-section {
+      margin-bottom: 72px;
+    }
+
+    .comparison-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 40px;
+    }
+
+    .comparison-card h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 28px;
+      letter-spacing: -0.02em;
+    }
+
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: 140px 1fr 1fr 1fr;
+      gap: 0;
+    }
+
+    .comparison-header {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .comparison-header.col-skills { color: var(--skills-primary); }
+    .comparison-header.col-mcp { color: var(--mcp-primary); }
+    .comparison-header.col-commands { color: var(--commands-primary); }
+
+    .comparison-cell {
+      padding: 14px 16px;
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+      line-height: 1.5;
+    }
+
+    .comparison-cell.aspect-label {
+      font-weight: 600;
+      color: var(--text-primary);
+      font-size: 0.85rem;
+    }
+
+    .comparison-cell.col-skills {
+      border-left: 2px solid rgba(124, 110, 240, 0.2);
+    }
+
+    .comparison-cell.col-mcp {
+      border-left: 2px solid rgba(196, 102, 245, 0.2);
+    }
+
+    .comparison-cell.col-commands {
+      border-left: 2px solid rgba(62, 201, 122, 0.2);
+    }
+
+    .comparison-grid > .comparison-cell:nth-child(8n+5),
+    .comparison-grid > .comparison-cell:nth-child(8n+6),
+    .comparison-grid > .comparison-cell:nth-child(8n+7),
+    .comparison-grid > .comparison-cell:nth-child(8n+8) {
+      background: rgba(255, 255, 255, 0.015);
+    }
+
+    @media (max-width: 700px) {
+      .comparison-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .comparison-header {
+        display: none;
+      }
+
+      .comparison-cell {
+        padding: 12px 16px;
+      }
+
+      .comparison-cell.aspect-label {
+        background: rgba(255, 255, 255, 0.03);
+        border-bottom: none;
+        padding-bottom: 4px;
+        margin-top: 12px;
+      }
+
+      .comparison-cell.col-skills,
+      .comparison-cell.col-mcp,
+      .comparison-cell.col-commands {
+        border-left: none;
+        padding-left: 16px;
+        font-size: 0.82rem;
+      }
+
+      .comparison-cell.col-skills::before,
+      .comparison-cell.col-mcp::before,
+      .comparison-cell.col-commands::before {
+        font-family: var(--font-mono);
+        font-size: 0.65rem;
+        font-weight: 600;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        display: block;
+        margin-bottom: 4px;
+      }
+
+      .comparison-cell.col-skills::before { content: 'Skills'; color: var(--skills-primary); }
+      .comparison-cell.col-mcp::before { content: 'MCP'; color: var(--mcp-primary); }
+      .comparison-cell.col-commands::before { content: 'Commands'; color: var(--commands-primary); }
+    }
+
+    /* ── Better Together Section ── */
+    .together-section {
+      margin-bottom: 72px;
+    }
+
+    .together-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 40px;
+    }
+
+    .together-card h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 28px;
+      letter-spacing: -0.02em;
+    }
+
+    .together-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 32px;
+    }
+
+    @media (max-width: 700px) {
+      .together-grid { grid-template-columns: 1fr; }
+    }
+
+    .together-item {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .together-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .together-dot.mcp-dot { background: var(--mcp-primary); box-shadow: 0 0 12px var(--mcp-glow); }
+    .together-dot.skills-dot { background: var(--skills-primary); box-shadow: 0 0 12px var(--skills-glow); }
+    .together-dot.commands-dot { background: var(--commands-primary); box-shadow: 0 0 12px var(--commands-glow); }
+
+    .together-item h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .together-item p {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .together-summary {
+      font-size: 1.05rem;
+      color: var(--text-secondary);
+      text-align: center;
+      max-width: 640px;
+      margin: 36px auto 0;
+      line-height: 1.6;
+      font-weight: 400;
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-wrapper">
+
+  <!-- Header -->
+  <header>
+    <div class="badge">Claude Code Extensibility</div>
+    <h1>Three Layers, Three Jobs</h1>
+    <p class="subtitle">
+      MCP adds tools. Skills teach best practices. Commands automate prompts.
+    </p>
+  </header>
+
+  <!-- Three Cards -->
+  <div class="pipeline">
+
+    <!-- Card 1: Skills -->
+    <div class="phase-card skills">
+      <div class="card-image">
+        <img src="assets/teaser-skills.png" alt="Skills overview">
+      </div>
+      <div class="card-body">
+        <span class="phase-label">Auto-Activates</span>
+        <h3 class="phase-title">Skills</h3>
+        <p class="phase-desc">
+          Markdown files that teach Claude domain knowledge and specialized workflows. Activated automatically when context matches.
+        </p>
+        <ul class="phase-list">
+          <li>Markdown files with instructions + resources</li>
+          <li>Auto-activates based on context keywords</li>
+          <li>Teaches workflows, not new capabilities</li>
+          <li>Makes Claude smarter with existing tools</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Arrow 1 -> 2 -->
+    <div class="arrow-connector">
+      <svg width="48" height="24" viewBox="0 0 48 24" fill="none">
+        <defs>
+          <linearGradient id="arrow1" x1="0" y1="12" x2="48" y2="12" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#7c6ef0"/>
+            <stop offset="1" stop-color="#c466f5"/>
+          </linearGradient>
+        </defs>
+        <line x1="0" y1="12" x2="38" y2="12" stroke="url(#arrow1)" stroke-width="2" stroke-linecap="round"/>
+        <polyline points="34,6 42,12 34,18" stroke="url(#arrow1)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+
+    <!-- Card 2: MCP Servers -->
+    <div class="phase-card mcp">
+      <div class="card-image">
+        <img src="assets/teaser-mcp.png" alt="MCP Servers overview">
+      </div>
+      <div class="card-body">
+        <span class="phase-label">Always Available</span>
+        <h3 class="phase-title">MCP Servers</h3>
+        <p class="phase-desc">
+          External servers that give Claude entirely new capabilities: browser automation, databases, APIs, file systems.
+        </p>
+        <ul class="phase-list">
+          <li>JSON config entry in Claude Code settings</li>
+          <li>Always available once configured</li>
+          <li>Browser automation, databases, APIs</li>
+          <li>Extends what Claude can do</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Arrow 2 -> 3 -->
+    <div class="arrow-connector">
+      <svg width="48" height="24" viewBox="0 0 48 24" fill="none">
+        <defs>
+          <linearGradient id="arrow2" x1="0" y1="12" x2="48" y2="12" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#c466f5"/>
+            <stop offset="1" stop-color="#3ec97a"/>
+          </linearGradient>
+        </defs>
+        <line x1="0" y1="12" x2="38" y2="12" stroke="url(#arrow2)" stroke-width="2" stroke-linecap="round"/>
+        <polyline points="34,6 42,12 34,18" stroke="url(#arrow2)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+
+    <!-- Card 3: Custom Commands -->
+    <div class="phase-card commands">
+      <div class="card-image">
+        <img src="assets/teaser-commands.png" alt="Custom Commands overview">
+      </div>
+      <div class="card-body">
+        <span class="phase-label">Manual Trigger</span>
+        <h3 class="phase-title">Custom Commands</h3>
+        <p class="phase-desc">
+          Prompt templates triggered manually via <code>/command-name</code>. Shortcuts for repeated instructions you type often.
+        </p>
+        <ul class="phase-list">
+          <li>Triggered by you via <code>/command-name</code></li>
+          <li>Prompt templates and shortcuts</li>
+          <li>Saves typing on repeated instructions</li>
+          <li>No new capabilities added</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Comparison Section -->
+  <div class="comparison-section">
+    <div class="comparison-card">
+      <h2>At a Glance</h2>
+      <div class="comparison-grid">
+        <!-- Header Row -->
+        <div class="comparison-header">Aspect</div>
+        <div class="comparison-header col-skills">Skills</div>
+        <div class="comparison-header col-mcp">MCP Servers</div>
+        <div class="comparison-header col-commands">Commands</div>
+
+        <!-- Row 1: Purpose -->
+        <div class="comparison-cell aspect-label">Purpose</div>
+        <div class="comparison-cell col-skills">Teaches HOW</div>
+        <div class="comparison-cell col-mcp">Adds NEW TOOLS</div>
+        <div class="comparison-cell col-commands">Reusable Prompts</div>
+
+        <!-- Row 2: Activation -->
+        <div class="comparison-cell aspect-label">Activation</div>
+        <div class="comparison-cell col-skills">Auto-activates on context</div>
+        <div class="comparison-cell col-mcp">Always available</div>
+        <div class="comparison-cell col-commands">Manual <code>/command</code> trigger</div>
+
+        <!-- Row 3: What it adds -->
+        <div class="comparison-cell aspect-label">What it adds</div>
+        <div class="comparison-cell col-skills">Knowledge &amp; workflows</div>
+        <div class="comparison-cell col-mcp">External APIs &amp; integrations</div>
+        <div class="comparison-cell col-commands">Prompt shortcuts</div>
+
+        <!-- Row 4: Format -->
+        <div class="comparison-cell aspect-label">Format</div>
+        <div class="comparison-cell col-skills">Markdown files</div>
+        <div class="comparison-cell col-mcp">JSON config entry</div>
+        <div class="comparison-cell col-commands"><code>/command</code> templates</div>
+
+        <!-- Row 5: Capabilities -->
+        <div class="comparison-cell aspect-label">Capabilities</div>
+        <div class="comparison-cell col-skills">Enhances existing tools</div>
+        <div class="comparison-cell col-mcp">Adds entirely new ones</div>
+        <div class="comparison-cell col-commands">No new capabilities</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Better Together Section -->
+  <div class="together-section">
+    <div class="together-card">
+      <h2>Better Together</h2>
+      <div class="together-grid">
+        <div class="together-item">
+          <h3><span class="together-dot skills-dot"></span> Skills Teach Best Practices</h3>
+          <p>Skills inject domain expertise so Claude uses those tools correctly. A Playwright MCP without a testing skill is a tool without technique.</p>
+        </div>
+        <div class="together-item">
+          <h3><span class="together-dot mcp-dot"></span> MCP Adds the Tools</h3>
+          <p>MCP servers connect Claude to external systems &mdash; browsers, databases, APIs. Without MCP, Claude can only read and write files.</p>
+        </div>
+        <div class="together-item">
+          <h3><span class="together-dot commands-dot"></span> Commands Automate the Prompt</h3>
+          <p>Commands package your best prompts for one-click reuse. The workflow stays consistent even when the person changes.</p>
+        </div>
+      </div>
+      <p class="together-summary">
+        MCP expands reach. Skills sharpen judgment. Commands remove friction.
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<!-- Source attribution bottom-left -->
+<div class="source-attribution">
+  Claude Code Docs<br>
+  <a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener">docs.anthropic.com</a>
+</div>
+
+</body>
+</html>
