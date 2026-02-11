@@ -14,18 +14,13 @@ sources/
 │       ├── transcript.md
 │       ├── summary.md
 │       └── notes.md       # optional: personal takeaways
-├── articles/          # Blog posts, written content
-│   └── <slug>/
-│       ├── meta.md
-│       └── summary.md
-├── docs/              # Official documentation, specs
-│   └── <slug>/
-│       ├── meta.md
-│       └── summary.md
-└── papers/            # Research papers, whitepapers
+└── docs/              # Documents (PDFs, guides, whitepapers, etc.)
     └── <slug>/
+        ├── _raw-source/   # gitignored, original binary
         ├── meta.md
-        └── summary.md
+        ├── content.md
+        ├── summary.md
+        └── notes.md       # optional: personal takeaways
 ```
 
 ## Naming Convention
@@ -53,7 +48,7 @@ Template:
 | Field         | Value |
 |---------------|-------|
 | **URL**       | <original URL> |
-| **Type**      | youtube / article / docs / paper |
+| **Type**      | youtube / docs |
 | **Channel**   | <name or channel> |
 | **Published** | <YYYY-MM-DD or YYYY-MM> |
 | **Duration**  | <for videos, e.g. "20 min"> |
@@ -126,9 +121,9 @@ Use the skills for extraction and summarization:
 2. Skill `/yt-summarize <source-folder-path>` — interactive section-by-section summarization
 3. Update `index.md`
 
-### Articles / Docs / Papers
+### Documents
 
-1. Create folder under the correct type directory
-2. Fill in `meta.md` manually
-3. Write `summary.md`
-4. Update `index.md`
+Use the command for extraction:
+
+1. Command `/doc-extract <url-or-filepath>` — creates folder, downloads/copies file, converts to `content.md`, enriches `meta.md`
+2. Update `index.md`

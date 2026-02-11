@@ -11,20 +11,8 @@ Master index of all collected materials. Update this file whenever a new source 
 | 3 | 2026-02-leon-van-zyl-claude-code-skills-the-only-tutorial-you-need | Claude Code Skills - The Only Tutorial You Need | Leon van Zyl | claude-code, skills, mcp-servers, custom-commands, skill-creation, context-window, image-generation, workflow-automation |
 | 4 | 2026-02-cole-medin-claude-code-s-agent-teams-are-insane-multiple-ai-agents-codin | Claude Code's Agent Teams Are Insane - Multiple AI Agents Coding Together in Real Time | Cole Medin | claude-code, agent-teams, subagents, multi-agent, tmux, parallel-agents, contract-first-spawning, token-efficiency, collaboration-vs-isolation, skills, opus-4-6 |
 
-## Articles
+## Documents
 
 | # | Slug | Title | Author | Tags |
 |---|------|-------|--------|------|
-| | | | | |
-
-## Documentation
-
-| # | Slug | Title | Source | Tags |
-|---|------|-------|--------|------|
-| | | | | |
-
-## Papers
-
-| # | Slug | Title | Authors | Tags |
-|---|------|-------|---------|------|
-| | | | | |
+| 1 | 2026-02-anthropic-complete-guide-building-skills-for-claude | The Complete Guide to Building Skills for Claude | Anthropic | skills, claude-code, skill-design, mcp, testing, distribution, prompt-engineering, workflow-automation |
