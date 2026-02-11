@@ -135,6 +135,18 @@
     .index-card.purple .card-title { color: var(--skills-primary); }
     .index-card.coral .card-title { color: var(--subagent-primary); }
 
+    .index-card.amber {
+      --_accent: #f59e0b;
+      background: linear-gradient(160deg, color-mix(in srgb, var(--_accent) 6%, transparent) 0%, var(--bg-card) 100%);
+      box-shadow: 0 0 40px color-mix(in srgb, var(--_accent) 4%, transparent);
+      border-left: 3px solid color-mix(in srgb, var(--_accent) 30%, transparent);
+    }
+    .index-card.amber:hover {
+      box-shadow: 0 8px 48px color-mix(in srgb, var(--_accent) 14%, transparent);
+      border-left-color: var(--_accent);
+    }
+    .index-card.amber .card-title { color: #f59e0b; }
+
     .index-card .card-subtext {
       font-size: 0.95rem;
       color: var(--text-secondary);
@@ -210,6 +222,12 @@
     <a href="skills-mcp-commands.html" class="index-card purple">
       <div class="card-title">Three Layers, Three Jobs</div>
       <p class="card-subtext">Distinguishing Skills, MCP Servers, and Custom Commands &mdash; the three extensibility layers of Claude Code.</p>
+      <span class="card-arrow">&rsaquo;</span>
+    </a>
+
+    <a href="skills-in-practice.html" class="index-card amber">
+      <div class="card-title">Skills in Practice</div>
+      <p class="card-subtext">From installation to composition &mdash; the practical workflow for extending Claude Code with skills, based on Leon van Zyl's tutorial.</p>
       <span class="card-arrow">&rsaquo;</span>
     </a>
 
