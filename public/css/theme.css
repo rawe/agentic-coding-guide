@@ -35,6 +35,9 @@
   --subagent-glow: rgba(232, 132, 95, 0.15);
   --subagent-dark: #35261e;
 
+  --journey-primary: #22d3ee;
+  --journey-glow: rgba(34, 211, 238, 0.15);
+
   --agentteam-primary: #6dca8c;
   --agentteam-light: #a3e4b8;
   --agentteam-glow: rgba(109, 202, 140, 0.15);

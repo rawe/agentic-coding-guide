@@ -147,6 +147,18 @@
     }
     .index-card.amber .card-title { color: #f59e0b; }
 
+    .index-card.teal {
+      --_accent: var(--journey-primary);
+      background: linear-gradient(160deg, color-mix(in srgb, var(--_accent) 6%, transparent) 0%, var(--bg-card) 100%);
+      box-shadow: 0 0 40px color-mix(in srgb, var(--_accent) 4%, transparent);
+      border-left: 3px solid color-mix(in srgb, var(--_accent) 30%, transparent);
+    }
+    .index-card.teal:hover {
+      box-shadow: 0 8px 48px color-mix(in srgb, var(--_accent) 14%, transparent);
+      border-left-color: var(--_accent);
+    }
+    .index-card.teal .card-title { color: var(--journey-primary); }
+
     .index-card .card-subtext {
       font-size: 0.95rem;
       color: var(--text-secondary);
@@ -234,6 +246,12 @@
     <a href="subagents-vs-teams.html" class="index-card coral">
       <div class="card-title">Subagents vs Agent Teams</div>
       <p class="card-subtext">Choose based on whether workers need to communicate &mdash; two architecture patterns for delegating work in Claude Code.</p>
+      <span class="card-arrow">&rsaquo;</span>
+    </a>
+
+    <a href="command-skill-journey.html" class="index-card teal">
+      <div class="card-title">The Command &amp; Skill Journey</div>
+      <p class="card-subtext">From ad-hoc prompts to modular architecture &mdash; how Claude Code workflows evolve in four steps.</p>
       <span class="card-arrow">&rsaquo;</span>
     </a>
 

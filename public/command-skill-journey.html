@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Command &amp; Skill Journey</title>
+  <link rel="stylesheet" href="css/theme.css">
+  <style>
+    /* ── Background image & overlay ── */
+    body {
+      background-image: url('assets/bg-dark-abstract.png');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(10, 14, 26, 0.92) 0%,
+        rgba(10, 14, 26, 0.80) 40%,
+        rgba(10, 14, 26, 0.88) 100%
+      );
+      z-index: 0;
+    }
+
+    .page-wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 60px 40px 80px;
+    }
+
+    /* ── Header ── */
+    header {
+      text-align: center;
+      margin-bottom: 72px;
+    }
+
+    .badge {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--journey-primary);
+      background: var(--journey-glow);
+      border: 1px solid rgba(34, 211, 238, 0.2);
+      padding: 6px 16px;
+      border-radius: 20px;
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      font-size: clamp(2.2rem, 5vw, 3.6rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, #f59e0b 0%, var(--skills-primary) 50%, var(--journey-primary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      font-size: 1.15rem;
+      color: var(--text-secondary);
+      max-width: 640px;
+      margin: 0 auto;
+      line-height: 1.6;
+      font-weight: 400;
+    }
+
+    /* ── Source attribution (bottom-left) ── */
+    .source-attribution {
+      position: fixed;
+      bottom: 20px;
+      left: 24px;
+      z-index: 10;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      opacity: 0.6;
+      transition: opacity 0.3s ease;
+    }
+
+    .source-attribution:hover {
+      opacity: 1;
+    }
+
+    /* ── Section shared ── */
+    .section {
+      margin-bottom: 72px;
+    }
+
+    .section-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 40px;
+    }
+
+    .section-card h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+
+    .section-card .section-intro {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 28px;
+      max-width: 700px;
+    }
+
+    /* ── Inline code ── */
+    code {
+      font-family: var(--font-mono);
+      font-size: 0.85em;
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.06);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    /* ── Code blocks ── */
+    .code-block {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 20px 24px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      line-height: 1.7;
+      color: var(--text-secondary);
+      overflow-x: auto;
+      margin-top: 16px;
+      white-space: pre-wrap;
+    }
+
+    .code-block .comment { color: var(--text-muted); }
+    .code-block .folder-name { color: #f59e0b; }
+    .code-block .file-name { color: var(--skills-primary); }
+    .code-block .keyword { color: var(--skills-primary); }
+    .code-block .string { color: var(--plan-primary); }
+
+    /* ── Step label badges ── */
+    .step-label {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 6px;
+      margin-bottom: 16px;
+    }
+
+    .step-label.step-1 {
+      color: var(--text-muted);
+      background: rgba(100, 116, 139, 0.15);
+    }
+
+    .step-label.step-2 {
+      color: #f59e0b;
+      background: rgba(245, 158, 11, 0.15);
+    }
+
+    .step-label.step-3 {
+      color: var(--skills-primary);
+      background: var(--skills-glow);
+    }
+
+    .step-label.step-4 {
+      color: var(--journey-primary);
+      background: var(--journey-glow);
+    }
+
+    /* ── Gain / Limitation callouts ── */
+    .callouts {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .callout {
+      padding: 14px 18px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      line-height: 1.5;
+    }
+
+    .callout-gain {
+      background: rgba(52, 211, 153, 0.06);
+      border: 1px solid rgba(52, 211, 153, 0.15);
+      color: var(--text-secondary);
+    }
+
+    .callout-gain strong {
+      color: var(--plan-primary);
+    }
+
+    .callout-limit {
+      background: rgba(251, 146, 60, 0.06);
+      border: 1px solid rgba(251, 146, 60, 0.15);
+      color: var(--text-secondary);
+    }
+
+    .callout-limit strong {
+      color: #fb923c;
+    }
+
+    /* ── Bullet list inside step content ── */
+    .step-bullets {
+      list-style: none;
+      margin-top: 12px;
+      margin-bottom: 8px;
+    }
+
+    .step-bullets li {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      padding: 3px 0 3px 18px;
+      position: relative;
+      line-height: 1.5;
+    }
+
+    .step-bullets li::before {
+      content: '\2022';
+      position: absolute;
+      left: 0;
+      color: var(--text-muted);
+    }
+
+    /* ── Usage callout ── */
+    .usage {
+      margin-top: 16px;
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* ── Definition grid (What Is What) ── */
+    .definition-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 24px;
+    }
+
+    .definition-card {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 24px;
+      border-radius: 12px;
+      border: 1px solid var(--border-subtle);
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .definition-card h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .def-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .def-dot.amber { background: #f59e0b; box-shadow: 0 0 12px rgba(245, 158, 11, 0.3); }
+    .def-dot.purple { background: var(--skills-primary); box-shadow: 0 0 12px var(--skills-glow); }
+    .def-dot.teal { background: var(--journey-primary); box-shadow: 0 0 12px var(--journey-glow); }
+
+    .definition-card .def-list {
+      list-style: none;
+    }
+
+    .definition-card .def-list li {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      padding: 3px 0 3px 18px;
+      position: relative;
+      line-height: 1.5;
+    }
+
+    .definition-card .def-list li::before {
+      content: '\2022';
+      position: absolute;
+      left: 0;
+      color: var(--text-muted);
+    }
+
+    .definition-card .def-metaphor {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      font-style: italic;
+      margin-top: auto;
+    }
+
+    /* ── Comparison grid (summary table) ── */
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: 140px 1fr 1fr 1fr;
+      gap: 0;
+    }
+
+    .comparison-header {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .comparison-header.col-reusable { color: var(--plan-primary); }
+    .comparison-header.col-portable { color: var(--skills-primary); }
+    .comparison-header.col-triggers { color: var(--journey-primary); }
+
+    .comparison-cell {
+      padding: 14px 16px;
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+      line-height: 1.5;
+    }
+
+    .comparison-cell.step-label-cell {
+      font-weight: 600;
+      color: var(--text-primary);
+      font-size: 0.85rem;
+    }
+
+    .comparison-cell.col-reusable {
+      border-left: 2px solid rgba(52, 211, 153, 0.2);
+    }
+
+    .comparison-cell.col-portable {
+      border-left: 2px solid rgba(124, 110, 240, 0.2);
+    }
+
+    .comparison-cell.col-triggers {
+      border-left: 2px solid rgba(34, 211, 238, 0.2);
+    }
+
+    /* Alternate row backgrounds */
+    .comparison-grid > .comparison-cell:nth-child(8n+5),
+    .comparison-grid > .comparison-cell:nth-child(8n+6),
+    .comparison-grid > .comparison-cell:nth-child(8n+7),
+    .comparison-grid > .comparison-cell:nth-child(8n+8) {
+      background: rgba(255, 255, 255, 0.015);
+    }
+
+    .yes-mark { color: var(--plan-primary); }
+    .no-mark { color: var(--text-muted); }
+
+    /* ── Step-specific file-name color overrides ── */
+    .step-1-block .file-name { color: var(--text-muted); }
+    .step-2-block .file-name { color: #f59e0b; }
+    .step-3-block .file-name { color: var(--skills-primary); }
+    .step-4-block .file-name { color: var(--journey-primary); }
+
+    /* ── Code block label ── */
+    .code-label {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-top: 20px;
+      margin-bottom: 4px;
+    }
+
+    /* ── Recap list ── */
+    .recap-list {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .recap-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .recap-item .step-label {
+      flex-shrink: 0;
+      margin-bottom: 0;
+    }
+
+    .recap-text {
+      font-size: 0.92rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin: 0;
+      padding-top: 2px;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 700px) {
+      .definition-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .callouts {
+        grid-template-columns: 1fr;
+      }
+
+      .comparison-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .comparison-header {
+        display: none;
+      }
+
+      .comparison-cell {
+        padding: 12px 16px;
+      }
+
+      .comparison-cell.step-label-cell {
+        background: rgba(255, 255, 255, 0.03);
+        border-bottom: none;
+        padding-bottom: 4px;
+        margin-top: 12px;
+      }
+
+      .comparison-cell.col-reusable,
+      .comparison-cell.col-portable,
+      .comparison-cell.col-triggers {
+        border-left: none;
+        padding-left: 16px;
+        font-size: 0.82rem;
+      }
+
+      .comparison-cell.col-reusable::before,
+      .comparison-cell.col-portable::before,
+      .comparison-cell.col-triggers::before {
+        font-family: var(--font-mono);
+        font-size: 0.65rem;
+        font-weight: 600;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        display: block;
+        margin-bottom: 4px;
+      }
+
+      .comparison-cell.col-reusable::before { content: 'Reusable'; color: var(--plan-primary); }
+      .comparison-cell.col-portable::before { content: 'Portable'; color: var(--skills-primary); }
+      .comparison-cell.col-triggers::before { content: 'Multiple Triggers'; color: var(--journey-primary); }
+    }
+
+    @media (max-width: 600px) {
+      .page-wrapper {
+        padding: 40px 20px 60px;
+      }
+
+      .section-card {
+        padding: 28px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-wrapper">
+
+  <!-- Header -->
+  <header>
+    <div class="badge">Workflow Evolution</div>
+    <h1>The Command &amp; Skill Journey</h1>
+    <p class="subtitle">
+      From ad-hoc prompts to modular architecture &mdash; how Claude Code workflows evolve in four steps.
+    </p>
+  </header>
+
+  <!-- Introduction: The Goal -->
+  <div class="section">
+    <div class="section-card" style="border-left: 3px solid var(--journey-primary);">
+      <h2>The Goal</h2>
+      <p class="section-intro" style="max-width: 800px;">
+        You have a PDF. You want it as markdown. You ask Claude Code: <em>"Convert report.pdf to markdown."</em>
+        Claude writes a script, runs it, hands you the result. Done.
+      </p>
+      <p class="section-intro" style="max-width: 800px; margin-bottom: 16px;">
+        Next week you do the same thing. Claude writes the script again &mdash; differently this time.
+        The week after that, your colleague needs it too, in another project. They start from zero.
+      </p>
+      <p class="section-intro" style="max-width: 800px; margin-bottom: 0;">
+        The real task isn't converting one document. It's making the conversion <strong style="color: var(--text-primary);">repeatable</strong>,
+        <strong style="color: var(--text-primary);">consistent</strong>, and
+        <strong style="color: var(--text-primary);">shareable</strong>.
+        Claude Code gives you two building blocks for this: <strong style="color: #f59e0b;">commands</strong> (triggers that start an action) and
+        <strong style="color: var(--skills-primary);">skills</strong> (packages that encapsulate knowledge and scripts).
+        This guide walks through four steps of using them &mdash; from a one-off prompt to a modular, reusable architecture.
+      </p>
+    </div>
+  </div>
+
+  <!-- Section 1: Step 1 — Ad-Hoc -->
+  <div class="section">
+    <div class="section-card">
+      <span class="step-label step-1">Step 1</span>
+      <h2>Ad-Hoc: Just Ask Claude</h2>
+      <p class="section-intro">
+        You describe the task. Claude writes a script, runs it, done. Nothing persists.
+      </p>
+
+      <ul class="step-bullets">
+        <li>"Convert report.pdf to markdown"</li>
+        <li>Claude writes a Docling script, executes it, delivers the output</li>
+        <li>Tomorrow you ask again &mdash; Claude rewrites from scratch</li>
+      </ul>
+
+      <div class="code-block step-1-block">
+<span class="folder-name">project/</span>
+<span class="comment">  |</span>
+<span class="comment">  +--</span> <span class="file-name">report.md</span>              <span class="comment"># only the output survives</span></div>
+
+      <div class="callouts">
+        <div class="callout callout-limit">
+          <strong>Limitation:</strong> No memory. No consistency. Different solution each time.
+        </div>
+        <div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 2: Step 2 — Command -->
+  <div class="section">
+    <div class="section-card">
+      <span class="step-label step-2">Step 2</span>
+      <h2>Command: Reusable Trigger</h2>
+      <p class="section-intro">
+        Extract the script. Create a command as a stable entry point with arguments.
+      </p>
+
+      <div class="code-block step-2-block">
+<span class="folder-name">project/</span>
+<span class="comment">  |</span>
+<span class="comment">  |--</span> <span class="folder-name">scripts/</span>
+<span class="comment">  |    +--</span> <span class="file-name">doc-convert.py</span>         <span class="comment"># permanent script</span>
+<span class="comment">  |</span>
+<span class="comment">  +--</span> <span class="folder-name">.claude/</span>
+<span class="comment">       +--</span> <span class="folder-name">commands/</span>
+<span class="comment">            +--</span> <span class="file-name">doc-convert.md</span>     <span class="comment"># reusable trigger</span></div>
+
+      <div class="code-label">Inside the command</div>
+      <div class="code-block">
+<span class="comment"># .claude/commands/doc-convert.md</span>
+<span class="comment">---</span>
+<span class="keyword">description</span>: <span class="string">Convert a document to markdown.</span>
+<span class="keyword">argument-hint</span>: <span class="string">[filepath]</span>
+<span class="comment">---</span>
+
+Run <span class="keyword">`python scripts/doc-convert.py '$ARGUMENTS'`</span></div>
+
+      <p class="usage">Usage: <code>/doc-convert report.pdf</code></p>
+
+      <div class="callouts">
+        <div class="callout callout-gain">
+          <strong>Gain:</strong> Repeatable. Consistent interface. One command, always the same script.
+        </div>
+        <div class="callout callout-limit">
+          <strong>Limitation:</strong> Script lives loose in <code>scripts/</code>. Not portable. Command is coupled to one path.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 3: Step 3 — Skill -->
+  <div class="section">
+    <div class="section-card">
+      <span class="step-label step-3">Step 3</span>
+      <h2>Skill: Portable &amp; Self-Contained</h2>
+      <p class="section-intro">
+        Package script + instructions into one folder. Shareable across projects. The skill IS the trigger.
+      </p>
+
+      <div class="code-block step-3-block">
+<span class="folder-name">project/</span>
+<span class="comment">  |</span>
+<span class="comment">  +--</span> <span class="folder-name">.claude/</span>
+<span class="comment">       +--</span> <span class="folder-name">skills/</span>
+<span class="comment">            +--</span> <span class="folder-name">doc-convert/</span>               <span class="comment"># self-contained package</span>
+<span class="comment">                 |--</span> <span class="file-name">SKILL.md</span>               <span class="comment"># trigger + instructions</span>
+<span class="comment">                 +--</span> <span class="folder-name">scripts/</span>
+<span class="comment">                      +--</span> <span class="file-name">doc-convert.py</span>     <span class="comment"># moved here</span></div>
+
+      <div class="code-label">Inside the skill</div>
+      <div class="code-block">
+<span class="comment"># .claude/skills/doc-convert/SKILL.md</span>
+<span class="comment">---</span>
+<span class="keyword">name</span>: <span class="string">doc-convert</span>
+<span class="keyword">description</span>: <span class="string">Convert documents (PDF, DOCX) to markdown.</span>
+<span class="keyword">user-invocable</span>: <span class="string">true</span>
+<span class="keyword">argument-hint</span>: <span class="string">[filepath]</span>
+<span class="comment">---</span>
+
+<span class="comment"># Document Conversion</span>
+
+Given a file path via <span class="keyword">`$ARGUMENTS`</span>:
+1. Run: <span class="keyword">`scripts/doc-convert.py '$ARGUMENTS'`</span>
+2. Validate output exists</div>
+
+      <p class="usage">Usage: <code>/doc-convert report.pdf</code> &mdash; same interface, now portable.</p>
+
+      <div class="callouts">
+        <div class="callout callout-gain">
+          <strong>Gain:</strong> Copy the folder to any project. Script, process, and trigger travel together.
+        </div>
+        <div class="callout callout-limit">
+          <strong>Limitation:</strong> One skill = one trigger. As workflows grow, you need multiple entry points sharing the same knowledge.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 4: Step 4 — Separated / Modular -->
+  <div class="section">
+    <div class="section-card">
+      <span class="step-label step-4">Step 4</span>
+      <h2>Separated: Modular Architecture</h2>
+      <p class="section-intro">
+        The conversion script works. But you realize you need it in two different contexts:
+      </p>
+
+      <ul class="step-bullets">
+        <li><strong style="color: var(--text-primary);">/doc-convert</strong> &mdash; Convert a file to markdown. One file in, one file out. That's it.</li>
+        <li><strong style="color: var(--text-primary);">/doc-ingest</strong> &mdash; Ingest a document into your knowledge base. Creates a dated folder (<code>2026-02-some-paper/</code>), copies the original into it, converts it, writes metadata with tags and summary, updates the project index.</li>
+      </ul>
+
+      <p class="section-intro" style="margin-top: 16px; margin-bottom: 12px;">
+        Both use the same conversion script. But <code>/doc-ingest</code> also needs to know <em>where to put things</em>:
+        How should the folder be named? What files go inside? What does <code>meta.md</code> look like?
+        That structural knowledge lives in <code>references/structure.md</code> inside the skill &mdash; loaded only when the ingestion workflow needs it.
+      </p>
+
+      <p class="section-intro" style="margin-bottom: 12px;">
+        The skill stops being a trigger. It becomes a <strong style="color: var(--text-primary);">knowledge container</strong> &mdash;
+        renamed from verb (<code>doc-convert</code>) to noun (<code>doc-processing</code>).
+        It holds the scripts, the process description, and the reference material.
+        Commands become thin triggers that load the skill and decide how much of it to use.
+      </p>
+
+      <p class="section-intro" style="margin-bottom: 28px;">
+        Here is what each command produces:
+      </p>
+
+      <div class="callouts" style="margin-top: 0; margin-bottom: 28px;">
+        <div class="callout" style="background: rgba(245, 158, 11, 0.06); border: 1px solid rgba(245, 158, 11, 0.15);">
+          <strong style="color: #f59e0b;">/doc-convert report.pdf</strong> &rarr;
+          <div class="code-block" style="margin-top: 10px; padding: 12px 16px; font-size: 0.75rem;">
+<span class="file-name" style="color: #f59e0b;">report.md</span>              <span class="comment"># markdown file, same directory</span></div>
+        </div>
+        <div class="callout" style="background: rgba(34, 211, 238, 0.06); border: 1px solid rgba(34, 211, 238, 0.15);">
+          <strong style="color: var(--journey-primary);">/doc-ingest report.pdf</strong> &rarr;
+          <div class="code-block" style="margin-top: 10px; padding: 12px 16px; font-size: 0.75rem;">
+<span class="folder-name">sources/docs/2026-02-quarterly-report/</span>
+<span class="comment">  |--</span> <span class="file-name" style="color: var(--journey-primary);">content.md</span>       <span class="comment"># converted markdown</span>
+<span class="comment">  |--</span> <span class="file-name" style="color: var(--journey-primary);">meta.md</span>          <span class="comment"># tags, summary, attribution</span>
+<span class="comment">  +--</span> <span class="folder-name">_raw-source/</span>
+<span class="comment">       +--</span> <span class="file-name" style="color: var(--journey-primary);">report.pdf</span>   <span class="comment"># original copy</span></div>
+        </div>
+      </div>
+
+      <p class="section-intro" style="margin-bottom: 28px;">
+        Same conversion script underneath. Completely different scope. The skill holds all the knowledge &mdash;
+        each command picks how much to use.
+      </p>
+
+      <div class="code-block step-4-block">
+<span class="folder-name">project/</span>
+<span class="comment">  |</span>
+<span class="comment">  +--</span> <span class="folder-name">.claude/</span>
+<span class="comment">       |--</span> <span class="folder-name">commands/</span>
+<span class="comment">       |    |--</span> <span class="file-name">doc-convert.md</span>           <span class="comment"># convert only</span>
+<span class="comment">       |    +--</span> <span class="file-name">doc-ingest.md</span>            <span class="comment"># full workflow</span>
+<span class="comment">       |</span>
+<span class="comment">       +--</span> <span class="folder-name">skills/</span>
+<span class="comment">            +--</span> <span class="folder-name">doc-processing/</span>          <span class="comment"># noun &mdash; knowledge container</span>
+<span class="comment">                 |--</span> <span class="file-name">SKILL.md</span>             <span class="comment"># process description</span>
+<span class="comment">                 |--</span> <span class="folder-name">scripts/</span>
+<span class="comment">                 |    +--</span> <span class="file-name">doc-convert.py</span>   <span class="comment"># conversion script</span>
+<span class="comment">                 +--</span> <span class="folder-name">references/</span>
+<span class="comment">                      +--</span> <span class="file-name">structure.md</span>     <span class="comment"># folder naming, meta.md template</span></div>
+
+      <div class="code-label">The skill &mdash; all the knowledge, not a trigger</div>
+      <div class="code-block">
+<span class="comment"># .claude/skills/doc-processing/SKILL.md</span>
+<span class="comment">---</span>
+<span class="keyword">name</span>: <span class="string">doc-processing</span>
+<span class="keyword">description</span>: <span class="string">Convert and organize documents into the knowledge base.</span>
+<span class="keyword">user-invocable</span>: <span class="string">false</span>
+<span class="comment">---</span>
+
+For folder layout and meta.md template see <span class="keyword">`references/structure.md`</span>
+
+<span class="comment">## Process</span>
+1. Determine slug, create folder per <span class="keyword">`references/structure.md`</span>
+2. Copy original file into <span class="keyword">`_raw-source/`</span>
+3. Run <span class="keyword">`scripts/doc-convert.py &lt;input&gt; &lt;output&gt;`</span>
+4. Write <span class="keyword">`meta.md`</span> using template from references
+5. Enrich metadata from converted content</div>
+
+      <div class="code-label">/doc-convert &mdash; uses only step 3 from the skill</div>
+      <div class="code-block">
+<span class="comment"># .claude/commands/doc-convert.md</span>
+<span class="comment">---</span>
+<span class="keyword">description</span>: <span class="string">Convert a document to markdown.</span>
+<span class="keyword">argument-hint</span>: <span class="string">[filepath]</span>
+<span class="comment">---</span>
+
+Load the <span class="keyword">`doc-processing`</span> skill.
+Run only the conversion script on <span class="keyword">`$ARGUMENTS`</span>. No folder structure, no metadata.</div>
+
+      <div class="code-label">/doc-ingest &mdash; runs the full process from the skill</div>
+      <div class="code-block">
+<span class="comment"># .claude/commands/doc-ingest.md</span>
+<span class="comment">---</span>
+<span class="keyword">description</span>: <span class="string">Ingest a document into the knowledge base.</span>
+<span class="keyword">argument-hint</span>: <span class="string">[filepath]</span>
+<span class="comment">---</span>
+
+Load the <span class="keyword">`doc-processing`</span> skill, then process <span class="keyword">`$ARGUMENTS`</span>.
+Follow all steps in the skill.</div>
+
+      <div class="callouts">
+        <div class="callout callout-gain">
+          <strong>Gain:</strong> Two commands, one skill. <code>/doc-convert</code> picks step 3. <code>/doc-ingest</code> runs everything.
+          The conversion script is shared. The folder structure knowledge is shared. Each command decides its own scope.
+        </div>
+        <div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 5: What Is What — Definitions -->
+  <div class="section">
+    <div class="section-card">
+      <h2>What Is What</h2>
+      <p class="section-intro">
+        Three concepts, each with a distinct role in the architecture.
+      </p>
+
+      <div class="definition-grid">
+        <div class="definition-card">
+          <h3><span class="def-dot amber"></span> Command</h3>
+          <ul class="def-list">
+            <li><strong>Purpose:</strong> Trigger an action</li>
+            <li><strong>Location:</strong> <code>.claude/commands/&lt;verb&gt;.md</code></li>
+            <li><strong>Naming:</strong> Verb &mdash; what it does</li>
+            <li><strong>Contains:</strong> Description, argument hint, one instruction to load a skill</li>
+          </ul>
+          <p class="def-metaphor">Think of it as: the button you press</p>
+        </div>
+
+        <div class="definition-card">
+          <h3><span class="def-dot purple"></span> Skill</h3>
+          <ul class="def-list">
+            <li><strong>Purpose:</strong> Encapsulate knowledge, process, and scripts</li>
+            <li><strong>Location:</strong> <code>.claude/skills/&lt;noun&gt;/SKILL.md</code></li>
+            <li><strong>Naming:</strong> Noun &mdash; what it covers</li>
+            <li><strong>Contains:</strong> Process description, bundled scripts, reference docs</li>
+          </ul>
+          <p class="def-metaphor">Think of it as: the manual the button activates</p>
+        </div>
+
+        <div class="definition-card">
+          <h3><span class="def-dot teal"></span> User-Invocable Skill</h3>
+          <ul class="def-list">
+            <li>Skill is both trigger and knowledge</li>
+            <li>Set <code>user-invocable: true</code> in frontmatter</li>
+            <li>Trade-off: convenient but less flexible</li>
+            <li>Best for single-purpose tools</li>
+          </ul>
+          <p class="def-metaphor">The shortcut &mdash; one skill, one entry point</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 6: Recap -->
+  <div class="section">
+    <div class="section-card">
+      <h2>What You Take Away</h2>
+
+      <div class="recap-list">
+        <div class="recap-item">
+          <span class="step-label step-1">Step 1</span>
+          <p class="recap-text">Without structure, every request starts from zero. Claude solves it, but the solution is gone tomorrow.</p>
+        </div>
+        <div class="recap-item">
+          <span class="step-label step-2">Step 2</span>
+          <p class="recap-text">A <strong style="color: #f59e0b;">command</strong> gives a script a name and an argument. Now it's repeatable &mdash; same interface, same result, every time.</p>
+        </div>
+        <div class="recap-item">
+          <span class="step-label step-3">Step 3</span>
+          <p class="recap-text">A <strong style="color: var(--skills-primary);">skill</strong> packages script + instructions into one folder. It becomes portable &mdash; copy it to any project and it works.</p>
+        </div>
+        <div class="recap-item">
+          <span class="step-label step-4">Step 4</span>
+          <p class="recap-text">Separate <strong style="color: var(--journey-primary);">what you know</strong> from <strong style="color: var(--journey-primary);">how you start it</strong>. The skill holds all the knowledge. Commands are thin triggers that decide which parts to use. One skill, many entry points.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Source attribution bottom-left -->
+<div class="source-attribution">
+  Agentic Coding<br>
+  Best practices collection
+</div>
+
+</body>
+</html>
