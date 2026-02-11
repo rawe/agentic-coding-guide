@@ -27,6 +27,9 @@ node_modules/
 # Generated content
 generated-images/
 
+# Raw source documents (PDFs, docx, etc. — not committed)
+sources/**/_raw-source/
+
 # Original full-resolution images (keep .gitkeep only)
 public/assets/originals/*
 !public/assets/originals/.gitkeep
