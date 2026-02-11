@@ -14,6 +14,6 @@ Given a YouTube URL via `$ARGUMENTS`:
    uv run .claude/skills/yt-extract/scripts/yt-extract.py '$ARGUMENTS'
    ```
 2. Add relevant tags to the generated `meta.md`
-3. Update `sources/index.md` with the new entry
+3. Append entry to `sources/index.md` (see column format in `sources/README.md`)
 
 Output structure and field definitions: see [sources/README.md](../../../sources/README.md).

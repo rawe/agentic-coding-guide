@@ -49,7 +49,7 @@ Follow the field rules in [references/structure.md](references/structure.md).
 
 ### 5. Update index
 
-Add entry to `sources/index.md`.
+Append entry to `sources/index.md` (see column format in `sources/README.md`).
 
 ## Script Interfaces
 

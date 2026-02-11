@@ -101,7 +101,7 @@ Concepts, techniques, examples. Inline quotes where relevant.>
 ...
 ```
 
-For YouTube videos, use the skill `/yt-summarize <source-folder-path>` for guided summarization.
+Use `/summarize <source-folder-path>` for guided, interactive summarization of any source.
 
 ### `notes.md` — Personal Takeaways
 
@@ -109,7 +109,27 @@ Optional. Personal observations, conclusions, and connections added after the su
 
 ## Master Index
 
-The file `index.md` tracks all sources in one place. See that file for the current state of all collected materials.
+The file `index.md` tracks all sources in one place. Each source type has its own table with type-specific columns.
+
+### YouTube Videos
+
+| Column | Source |
+|--------|--------|
+| **#** | Sequential number |
+| **Slug** | Folder name |
+| **Title** | From `meta.md` title |
+| **Channel** | From `meta.md` Channel field |
+| **Tags** | From `meta.md` Tags field |
+
+### Documents
+
+| Column | Source |
+|--------|--------|
+| **#** | Sequential number |
+| **Slug** | Folder name |
+| **Title** | From `meta.md` title |
+| **Author** | From `meta.md` Author field |
+| **Tags** | From `meta.md` Tags field |
 
 ## Processing Workflow
 
@@ -117,13 +137,14 @@ The file `index.md` tracks all sources in one place. See that file for the curre
 
 Use the skills for extraction and summarization:
 
-1. Skill `/yt-extract <url>` — creates folder, `meta.md`, and `transcript.md`
-2. Skill `/yt-summarize <source-folder-path>` — interactive section-by-section summarization
-3. Update `index.md`
+1. `/yt-extract <url>` — creates folder, `meta.md`, and `transcript.md`
+2. `/summarize <source-folder-path>` — interactive section-by-section summarization
+3. Append entry to `index.md`
 
 ### Documents
 
 Use the command for extraction:
 
-1. Command `/doc-extract <url-or-filepath>` — creates folder, downloads/copies file, converts to `content.md`, enriches `meta.md`
-2. Update `index.md`
+1. `/doc-extract <url-or-filepath>` — creates folder, downloads/copies file, converts to `content.md`, enriches `meta.md`
+2. `/summarize <source-folder-path>` — interactive section-by-section summarization
+3. Append entry to `index.md`
