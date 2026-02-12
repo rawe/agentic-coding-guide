@@ -728,12 +728,12 @@
     </div>
   </div>
 
-  <!-- Section 2: Meet yt-extract -->
+  <!-- Section 2: Meet doc-processing -->
   <div class="section">
     <div class="section-card">
-      <h2>Meet yt-extract</h2>
+      <h2>Meet doc-processing</h2>
       <p class="section-intro">
-        To make skills concrete, we'll use a real one throughout this page. <code>yt-extract</code> takes a YouTube URL and produces structured source files &mdash; metadata, transcript, and tags &mdash; without you writing any extraction code. You type one command, and Claude handles the rest: running a Python script, parsing the output, and updating your project's source index.
+        To make skills concrete, we'll use a real one throughout this page. <code>doc-processing</code> takes a document &mdash; PDF, DOCX, or any supported format &mdash; from a URL or local file and produces clean markdown with structured metadata. You point it at a document, and Claude handles the rest: downloading the file, converting it to markdown, writing metadata, and updating your project's source index.
       </p>
       <p class="section-intro" style="margin-bottom: 0;">
         Let's open it up and see what's inside.
@@ -746,38 +746,40 @@
     <div class="section-card">
       <h2>Anatomy of a Skill</h2>
       <p class="section-intro">
-        A skill is a folder with a SKILL.md file and optional supporting resources. Here's the real <code>yt-extract</code> skill.
+        A skill is a folder with a SKILL.md file and optional supporting resources. Here's the real <code>doc-processing</code> skill &mdash; it uses all three resource types.
       </p>
 
       <div class="anatomy-grid">
         <div class="code-block">
-<span class="folder-name">.claude/skills/yt-extract/</span>
+<span class="folder-name">.claude/skills/doc-processing/</span>
 <span class="comment">  |</span>
 <span class="comment">  |--</span> <span class="file-name">SKILL.md</span>              <span class="comment"># Frontmatter (metadata)</span>
 <span class="comment">  |                          # + body (instructions)</span>
 <span class="comment">  |</span>
 <span class="comment">  +--</span> <span class="folder-name">scripts/</span>
-<span class="comment">       +--</span> <span class="file-name">yt-extract.py</span>   <span class="comment"># 144-line extraction script</span>
-<span class="comment">                              # inline uv deps, runs as</span>
-<span class="comment">                              # subprocess</span>
+<span class="comment">  |    |--</span> <span class="file-name">doc-download.py</span> <span class="comment"># fetches files from URLs</span>
+<span class="comment">  |    +--</span> <span class="file-name">doc-convert.py</span>  <span class="comment"># converts any format to markdown</span>
+<span class="comment">  |</span>
+<span class="comment">  +--</span> <span class="folder-name">references/</span>
+<span class="comment">       +--</span> <span class="file-name">structure.md</span>    <span class="comment"># folder layout &amp; meta.md template</span>
         </div>
 
         <div class="anatomy-right">
           <div class="anatomy-trait">
             <h4>SKILL.md Frontmatter</h4>
-            <p>YAML block with <code>name</code>, <code>description</code>, <code>argument-hint</code>, <code>user-invocable</code>. This is the only part always in context.</p>
+            <p>YAML block with <code>name</code>, <code>description</code>, and <code>user-invocable</code>. This is the only part always in context.</p>
           </div>
           <div class="anatomy-trait">
             <h4>SKILL.md Body</h4>
-            <p>Step-by-step instructions the agent follows when the skill is activated. References scripts and output locations explicitly.</p>
+            <p>Five-step workflow the agent follows when activated. Covers obtaining the document, converting it, creating metadata, enriching with tags, and updating the index.</p>
           </div>
           <div class="anatomy-trait">
             <h4>scripts/</h4>
-            <p>Executables that run as subprocesses. In general <code>scripts/</code> is optional, but for <code>yt-extract</code> it's the heart of the skill &mdash; the Python script does all the heavy lifting. It declares its own dependencies via inline shebangs and never enters the context window.</p>
+            <p>Two executables that run as subprocesses. <code>doc-download.py</code> fetches files from URLs using httpx. <code>doc-convert.py</code> converts any document format to markdown using docling. Both declare dependencies via inline shebangs &mdash; zero context cost.</p>
           </div>
           <div class="anatomy-trait">
             <h4>references/</h4>
-            <p>Optional. Templates, schemas, or examples that the agent reads selectively. Only loaded when the skill instructions say to read them.</p>
+            <p><code>structure.md</code> defines the target folder layout, slug convention, and <code>meta.md</code> template. Loaded selectively when Claude needs the template &mdash; small context cost, only when needed.</p>
           </div>
         </div>
       </div>
@@ -801,45 +803,48 @@
         <div class="layer-card layer-1">
           <span class="layer-label">Layer 1 &mdash; Metadata</span>
           <h3>Always Loaded</h3>
-          <p>The YAML frontmatter &mdash; <code>name</code> and <code>description</code> &mdash; is always in context. The description is the primary triggering mechanism: Claude reads it to decide if this skill is relevant to the current task.</p>
+          <p>The YAML frontmatter &mdash; <code>name</code> and <code>description</code> &mdash; is always in context. The description is the primary triggering mechanism: Claude reads it to decide if this skill is relevant to the current task. With <code>user-invocable: false</code>, the skill is automatically loaded when Claude recognizes it's relevant &mdash; not directly invoked. Setting it to <code>true</code> would additionally register the skill as a slash command.</p>
           <div class="code-block">
 <span class="comment">---</span>
-<span class="keyword">name</span>: yt-extract
-<span class="keyword">description</span>: <span class="string">Extract metadata and transcript from a YouTube video into the sources folder.</span>
-<span class="keyword">argument-hint</span>: [youtube-url]
-<span class="keyword">user-invocable</span>: true
+<span class="keyword">name</span>: doc-processing
+<span class="keyword">description</span>: <span class="string">Extract and convert documents (PDF, DOCX, etc.) into structured
+              markdown with metadata.</span>
+<span class="keyword">user-invocable</span>: false
 <span class="comment">---</span>
           </div>
           <div class="token-bar">
-            <div class="token-bar-fill" style="width: 4%; background: var(--skills-primary); box-shadow: 0 0 8px var(--skills-glow);"></div>
+            <div class="token-bar-fill" style="width: 5%; background: var(--skills-primary); box-shadow: 0 0 8px var(--skills-glow);"></div>
           </div>
           <div class="token-label">
             <span>Context cost</span>
-            <span>~20 tokens</span>
+            <span>~25 tokens</span>
           </div>
         </div>
 
         <!-- Layer 2 -->
         <div class="layer-card layer-2">
           <span class="layer-label">Layer 2 &mdash; Full Instructions</span>
-          <h3>Loaded When Triggered</h3>
-          <p>The SKILL.md body loads only after Claude decides the skill is relevant (or the user invokes it directly). Contains the step-by-step workflow, kept under 500 lines.</p>
+          <h3>Loaded When Activated</h3>
+          <p>The SKILL.md body loads only after the skill is activated &mdash; by a command, another skill, or a matching task. Contains the five-step workflow with conditional logic for URLs vs. local files.</p>
           <div class="code-block">
-<span class="comment"># YouTube Extraction</span>
+<span class="comment"># Document Extraction</span>
 
-Given a YouTube URL via <span class="keyword">`$ARGUMENTS`</span>:
+Given a document via <span class="keyword">`$ARGUMENTS`</span>:
 
-1. Run the extraction script:
-   <span class="string">uv run .claude/skills/yt-extract/scripts/yt-extract.py '$ARGUMENTS'</span>
-2. Add relevant tags to the generated <span class="keyword">`meta.md`</span>
-3. Update <span class="keyword">`sources/index.md`</span> with the new entry
+1. Obtain document &mdash; download (URL) or copy (local file)
+   <span class="string">uv run .../doc-download.py '&lt;URL&gt;' '&lt;folder&gt;/_raw-source'</span>
+2. Convert to markdown
+   <span class="string">uv run .../doc-convert.py '&lt;input&gt;' '&lt;folder&gt;/content.md'</span>
+3. Create <span class="keyword">`meta.md`</span> using template from <span class="keyword">`references/`</span>
+4. Enrich metadata with tags and summary
+5. Update <span class="keyword">`sources/index.md`</span> with the new entry
           </div>
           <div class="token-bar">
-            <div class="token-bar-fill" style="width: 15%; background: #f59e0b; box-shadow: 0 0 8px rgba(245, 158, 11, 0.3);"></div>
+            <div class="token-bar-fill" style="width: 20%; background: #f59e0b; box-shadow: 0 0 8px rgba(245, 158, 11, 0.3);"></div>
           </div>
           <div class="token-label">
             <span>Context cost</span>
-            <span>~100 tokens</span>
+            <span>~200 tokens</span>
           </div>
         </div>
 
@@ -847,33 +852,37 @@ Given a YouTube URL via <span class="keyword">`$ARGUMENTS`</span>:
         <div class="layer-card layer-3">
           <span class="layer-label">Layer 3 &mdash; Bundled Resources</span>
           <h3>Loaded or Executed on Demand</h3>
-          <p><strong>scripts/</strong> run as subprocesses &mdash; zero context cost. <strong>references/</strong> are read selectively when Claude needs them. <strong>assets/</strong> are used in output only. The heavy lifting stays outside the context window.</p>
+          <p><strong>scripts/</strong> run as subprocesses &mdash; zero context cost. <strong>references/</strong> are read selectively when Claude needs a template or schema &mdash; small cost, only when needed. The heavy lifting stays outside the context window.</p>
           <div class="code-block">
+<span class="comment"># doc-convert.py &mdash; runs as subprocess</span>
 <span class="comment"># /// script</span>
-<span class="comment"># dependencies = ["yt-dlp", "youtube-transcript-api"]</span>
-<span class="comment"># requires-python = ">=3.9"</span>
+<span class="comment"># dependencies = ["docling"]</span>
 <span class="comment"># ///</span>
-<span class="keyword">"""</span>Extract metadata and transcript from a YouTube video.<span class="keyword">"""</span>
-<span class="comment">  ... 144 lines total — runs as subprocess, not loaded into context</span>
+<span class="keyword">"""</span>Convert a document (PDF, DOCX, etc.) to markdown.<span class="keyword">"""</span>
+<span class="comment">  ... runs as subprocess, never enters context</span>
+
+<span class="comment"># references/structure.md &mdash; read selectively</span>
+<span class="comment">  ... folder layout, slug convention, meta.md template</span>
+<span class="comment">  ... loaded only when Claude needs the template</span>
           </div>
           <div class="token-bar">
-            <div class="token-bar-fill" style="width: 0%; background: var(--plan-primary);"></div>
+            <div class="token-bar-fill" style="width: 3%; background: var(--plan-primary); box-shadow: 0 0 6px var(--plan-glow);"></div>
           </div>
           <div class="token-label">
             <span>Context cost</span>
-            <span>0 tokens (subprocess)</span>
+            <span>0 tokens (scripts) · ~150 tokens (references, when read)</span>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Section 5: Walk-through: yt-extract -->
+  <!-- Section 5: Walk-through: doc-processing -->
   <div class="section">
     <div class="section-card">
-      <h2>Walk-through: yt-extract</h2>
+      <h2>Walk-through: doc-processing</h2>
       <p class="section-intro">
-        <code>yt-extract</code> is a skill that takes a YouTube URL and produces structured source files &mdash; metadata, transcript, and tags &mdash; without you writing a single line of extraction code. Here's what happens when you use it, traced through all three disclosure layers.
+        <code>doc-processing</code> takes a document and produces structured markdown with metadata &mdash; without you writing any conversion code. Here's what happens when you use it, traced through all three disclosure layers.
       </p>
 
       <div class="timeline">
@@ -882,45 +891,53 @@ Given a YouTube URL via <span class="keyword">`$ARGUMENTS`</span>:
           <h4>Claude sees the description</h4>
           <p>At session start, only the frontmatter occupies context. Claude knows this skill exists and what it does &mdash; nothing more.</p>
           <div class="code-block">
-<span class="keyword">name</span>: yt-extract
-<span class="keyword">description</span>: <span class="string">Extract metadata and transcript from a YouTube
-              video into the sources folder.</span>
+<span class="keyword">name</span>: doc-processing
+<span class="keyword">description</span>: <span class="string">Extract and convert documents (PDF, DOCX, etc.)
+              into structured markdown with metadata.</span>
           </div>
         </div>
 
         <div class="timeline-step">
           <div class="timeline-number">2</div>
-          <h4>You trigger it</h4>
-          <p>Type <code>/yt-extract https://youtube.com/watch?v=...</code> in Claude Code. The <code>user-invocable: true</code> flag makes the slash command available. Claude can also trigger it autonomously if a task matches the description.</p>
+          <h4>The skill activates</h4>
+          <p>A command, another skill, or a matching task triggers activation. The full SKILL.md body enters context &mdash; Claude now has a five-step workflow with conditional logic and explicit script paths.</p>
+          <div class="code-block">
+1. Obtain document &mdash; download or copy into <span class="keyword">`_raw-source/`</span>
+2. Convert to markdown via <span class="string">doc-convert.py</span>
+3. Create <span class="keyword">`meta.md`</span> using template from <span class="keyword">`references/`</span>
+4. Enrich metadata with tags and summary
+5. Update <span class="keyword">`sources/index.md`</span>
+          </div>
         </div>
 
         <div class="timeline-step">
           <div class="timeline-number">3</div>
-          <h4>Claude loads the full instructions</h4>
-          <p>The SKILL.md body enters context. Claude now has a 3-step workflow to follow: run the script, tag the output, update the index.</p>
+          <h4>Claude runs the scripts</h4>
+          <p><code>doc-download.py</code> fetches the file from the URL using httpx. <code>doc-convert.py</code> converts it to markdown using docling. Both run as subprocesses with inline uv dependencies &mdash; zero tokens consumed, only the output paths return to context.</p>
           <div class="code-block">
-1. Run the extraction script:
-   <span class="string">uv run .claude/skills/yt-extract/scripts/yt-extract.py '$ARGUMENTS'</span>
-2. Add relevant tags to the generated <span class="keyword">meta.md</span>
-3. Update <span class="keyword">sources/index.md</span> with the new entry
+<span class="comment"># /// script</span>
+<span class="comment"># dependencies = ["httpx"]</span>
+<span class="comment"># ///</span>
+<span class="keyword">"""</span>Download a document from a URL.<span class="keyword">"""</span>
+
+<span class="comment"># /// script</span>
+<span class="comment"># dependencies = ["docling"]</span>
+<span class="comment"># ///</span>
+<span class="keyword">"""</span>Convert a document (PDF, DOCX, etc.) to markdown.<span class="keyword">"""</span>
           </div>
         </div>
 
         <div class="timeline-step">
           <div class="timeline-number">4</div>
-          <h4>Claude executes the script</h4>
-          <p>The 144-line Python script runs as a subprocess. It uses <code>yt-dlp</code> and <code>youtube-transcript-api</code> (declared as inline uv dependencies). The script fetches metadata and transcript, writes <code>meta.md</code> and <code>transcript.md</code>. Zero tokens consumed &mdash; only the output path returns to context.</p>
+          <h4>Claude enriches and indexes</h4>
+          <p>Claude reads <code>references/structure.md</code> for the <code>meta.md</code> template, then writes metadata with tags and a two-sentence summary derived from the content. Finally, it appends the new entry to the project's source index.</p>
           <div class="code-block">
-<span class="comment"># /// script</span>
-<span class="comment"># dependencies = ["yt-dlp", "youtube-transcript-api"]</span>
-<span class="comment"># requires-python = ">=3.9"</span>
-<span class="comment"># ///</span>
-
-<span class="keyword">import</span> argparse, re, sys
-<span class="keyword">from</span> pathlib <span class="keyword">import</span> Path
-<span class="keyword">import</span> yt_dlp
-<span class="keyword">from</span> youtube_transcript_api <span class="keyword">import</span> YouTubeTranscriptApi
-<span class="comment">  ... extracts video metadata, transcript → writes to sources/</span>
+<span class="comment"># references/structure.md (loaded selectively)</span>
+<span class="keyword">| Field     | Value |</span>
+<span class="keyword">| URL       |</span> <span class="string">&lt;source URL&gt;</span>
+<span class="keyword">| Author    |</span> <span class="string">&lt;author&gt;</span>
+<span class="keyword">| Tags      |</span> <span class="string">&lt;derived from content&gt;</span>
+<span class="keyword">| Summary   |</span> <span class="string">&lt;2 sentences, no filler&gt;</span>
           </div>
         </div>
       </div>
@@ -970,53 +987,56 @@ Given a YouTube URL via <span class="keyword">`$ARGUMENTS`</span>:
     <div class="section-card">
       <h2>Creating Your Own</h2>
       <p class="section-intro">
-        Here's how <code>yt-extract</code> was actually built &mdash; not by writing the SKILL.md by hand, but by collaborating with Claude Code and the <code>/skill-creator</code> meta-skill (installable from <a href="https://skills.sh" target="_blank" rel="noopener">skills.sh</a>).
+        Here's how <code>doc-processing</code> was actually built &mdash; not by writing the SKILL.md by hand, but by collaborating with Claude Code and the <code>/skill-creator</code> meta-skill (installable from <a href="https://skills.sh" target="_blank" rel="noopener">skills.sh</a>).
       </p>
 
       <div class="creation-steps">
         <div class="creation-step">
           <span class="step-number">Step 1</span>
-          <h4>Build the Script</h4>
-          <p>Guide Claude Code through writing the extraction logic &mdash; iterate on the Python script together until it works.</p>
+          <h4>Build the Scripts</h4>
+          <p>Guide Claude Code through writing the download and conversion scripts &mdash; iterate together until they handle all target formats.</p>
         </div>
 
         <div class="creation-step">
           <span class="step-number">Step 2</span>
           <h4>Run /skill-creator</h4>
-          <p>Point the skill creator at your working script. It generates the SKILL.md with frontmatter and instructions.</p>
+          <p>Point the skill creator at your working scripts and reference files. It generates the SKILL.md with frontmatter and instructions.</p>
         </div>
 
         <div class="creation-step">
           <span class="step-number">Step 3</span>
           <h4>Organize the Folder</h4>
-          <p>Move the script into the <code>scripts/</code> subfolder so the skill follows the standard layout.</p>
+          <p>Arrange scripts, references, and SKILL.md into the standard layout under <code>.claude/skills/</code>.</p>
         </div>
 
         <div class="creation-step">
           <span class="step-number">Step 4</span>
           <h4>Test &amp; Refine</h4>
-          <p>Run <code>/yt-extract</code> on a real URL, check the output, and tweak the instructions if needed.</p>
+          <p>Run the skill on a real document, check the markdown output and metadata, tweak the instructions if needed.</p>
         </div>
       </div>
 
       <div class="io-grid">
         <div class="io-card input-card">
-          <h4>How yt-extract Was Made</h4>
+          <h4>How doc-processing Was Made</h4>
           <ul>
-            <li>Guided Claude Code to write a Python script that uses <code>yt-dlp</code> and <code>youtube-transcript-api</code> to extract video metadata and transcripts</li>
-            <li>Iterated until the script handled edge cases (missing transcripts, slug generation, timestamps)</li>
-            <li>Ran <code>/skill-creator</code> &mdash; it analyzed the script and generated the SKILL.md with the three-step workflow</li>
-            <li>Moved <code>yt-extract.py</code> into <code>.claude/skills/yt-extract/scripts/</code></li>
+            <li>Guided Claude Code to write a download script (httpx) and a conversion script (docling) for handling PDFs, DOCX, and other formats</li>
+            <li>Created <code>references/structure.md</code> to codify the folder layout, slug convention, and <code>meta.md</code> template</li>
+            <li>Ran <code>/skill-creator</code> &mdash; it analyzed the scripts and reference, generating SKILL.md with the five-step workflow</li>
+            <li>Set <code>user-invocable: false</code> &mdash; the skill is loaded by commands or triggered autonomously</li>
           </ul>
         </div>
 
         <div class="io-card output-card">
           <h4>The Result</h4>
           <div class="code-block" style="margin-top: 0;">
-<span class="folder-name">.claude/skills/yt-extract/</span>
-<span class="comment">  |--</span> <span class="file-name">SKILL.md</span>       <span class="comment"># generated by /skill-creator</span>
+<span class="folder-name">.claude/skills/doc-processing/</span>
+<span class="comment">  |--</span> <span class="file-name">SKILL.md</span>         <span class="comment"># generated by /skill-creator</span>
 <span class="comment">  +--</span> <span class="folder-name">scripts/</span>
-<span class="comment">       +--</span> <span class="file-name">yt-extract.py</span> <span class="comment"># built collaboratively</span>
+<span class="comment">  |    |--</span> <span class="file-name">doc-download.py</span> <span class="comment"># built collaboratively</span>
+<span class="comment">  |    +--</span> <span class="file-name">doc-convert.py</span>
+<span class="comment">  +--</span> <span class="folder-name">references/</span>
+<span class="comment">       +--</span> <span class="file-name">structure.md</span>
           </div>
           <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 14px; line-height: 1.5;">
             The same skill you saw dissected above &mdash; created in one session, reusable forever.
