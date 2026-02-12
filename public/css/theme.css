@@ -47,6 +47,17 @@
   --tasklist-dark: #2a2714;
   --tasklist-text: #d4c06a;
 
+  --claudemd-primary: #e879f9;
+  --claudemd-glow: rgba(232, 121, 249, 0.15);
+
+  --context-primary: #38bdf8;
+  --context-secondary: #a78bfa;
+  --context-glow: rgba(56, 189, 248, 0.15);
+
+  --workflow-primary: #fb923c;
+  --workflow-secondary: #fbbf24;
+  --workflow-glow: rgba(251, 146, 60, 0.15);
+
   --warn: #f06e6e;
 
   --text-primary: #f1f5f9;

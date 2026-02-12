@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Developer's Daily Loop — Agentic Coding</title>
+  <link rel="stylesheet" href="css/theme.css">
+  <style>
+    /* ── Background image & overlay ── */
+    body {
+      background-image: url('assets/bg-dark-abstract.png');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(10, 14, 26, 0.92) 0%,
+        rgba(10, 14, 26, 0.80) 40%,
+        rgba(10, 14, 26, 0.88) 100%
+      );
+      z-index: 0;
+    }
+
+    .page-wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 60px 40px 80px;
+    }
+
+    /* ── Header ── */
+    header {
+      text-align: center;
+      margin-bottom: 72px;
+    }
+
+    .badge {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--implement-primary);
+      background: var(--implement-glow);
+      border: 1px solid rgba(251, 146, 60, 0.2);
+      padding: 6px 16px;
+      border-radius: 20px;
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      font-size: clamp(2.2rem, 5vw, 3.6rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, #fb923c 0%, #fbbf24 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      font-size: 1.15rem;
+      color: var(--text-secondary);
+      max-width: 640px;
+      margin: 0 auto;
+      line-height: 1.6;
+      font-weight: 400;
+    }
+
+    /* ── Day timeline (hero) ── */
+    .day-timeline {
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+      margin-bottom: 72px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .day-slot {
+      flex: 1;
+      padding: 20px 16px;
+      text-align: center;
+      border-right: 1px solid var(--border-subtle);
+      position: relative;
+    }
+
+    .day-slot:last-child {
+      border-right: none;
+    }
+
+    .day-slot .time-label {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .day-slot .activity {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    .day-slot:nth-child(1) {
+      background: linear-gradient(180deg, rgba(251, 146, 60, 0.10) 0%, rgba(15, 20, 35, 0.6) 100%);
+    }
+    .day-slot:nth-child(1) .time-label { color: #fb923c; }
+
+    .day-slot:nth-child(2) {
+      background: linear-gradient(180deg, rgba(56, 189, 248, 0.10) 0%, rgba(15, 20, 35, 0.6) 100%);
+    }
+    .day-slot:nth-child(2) .time-label { color: #38bdf8; }
+
+    .day-slot:nth-child(3) {
+      background: linear-gradient(180deg, rgba(52, 211, 153, 0.10) 0%, rgba(15, 20, 35, 0.6) 100%);
+    }
+    .day-slot:nth-child(3) .time-label { color: #34d399; }
+
+    .day-slot:nth-child(4) {
+      background: linear-gradient(180deg, rgba(124, 110, 240, 0.10) 0%, rgba(15, 20, 35, 0.6) 100%);
+    }
+    .day-slot:nth-child(4) .time-label { color: #7c6ef0; }
+
+    /* ── Section shared ── */
+    .section {
+      margin-bottom: 72px;
+    }
+
+    .section-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 40px;
+    }
+
+    .section-card h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+
+    .section-card .section-intro {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 28px;
+      max-width: 700px;
+    }
+
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--implement-primary);
+      margin-bottom: 10px;
+    }
+
+    /* ── Inline code ── */
+    code {
+      font-family: var(--font-mono);
+      font-size: 0.85em;
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.06);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    /* ── Code blocks ── */
+    .code-block {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 20px 24px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      line-height: 1.7;
+      color: var(--text-secondary);
+      overflow-x: auto;
+      margin-top: 16px;
+      white-space: pre-wrap;
+    }
+
+    .code-block .comment    { color: var(--text-muted); }
+    .code-block .keyword    { color: #fb923c; }
+    .code-block .string     { color: var(--plan-primary); }
+    .code-block .frontmatter { color: var(--skills-primary); }
+    .code-block .argument   { color: #f59e0b; }
+    .code-block .file-name  { color: #fb923c; }
+
+    .code-label {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-top: 20px;
+      margin-bottom: 0;
+    }
+
+    /* ── Callout ── */
+    .callout {
+      margin-top: 24px;
+      padding: 20px 24px;
+      border-radius: 10px;
+      background: linear-gradient(160deg, rgba(251, 146, 60, 0.06) 0%, rgba(15, 20, 35, 0.6) 100%);
+      border: 1px solid rgba(251, 146, 60, 0.15);
+      border-left: 3px solid var(--implement-primary);
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .callout strong {
+      color: #fb923c;
+    }
+
+    /* ── Timeline ── */
+    .timeline {
+      position: relative;
+      padding-left: 40px;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 14px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .timeline-step {
+      position: relative;
+      margin-bottom: 32px;
+    }
+
+    .timeline-step:last-child {
+      margin-bottom: 0;
+    }
+
+    .timeline-number {
+      position: absolute;
+      left: -40px;
+      top: 0;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      z-index: 1;
+    }
+
+    .timeline-step:nth-child(1) .timeline-number {
+      background: var(--implement-glow);
+      color: #fb923c;
+      border: 2px solid #fb923c;
+    }
+
+    .timeline-step:nth-child(2) .timeline-number {
+      background: rgba(251, 191, 36, 0.15);
+      color: #fbbf24;
+      border: 2px solid #fbbf24;
+    }
+
+    .timeline-step:nth-child(3) .timeline-number {
+      background: var(--plan-glow);
+      color: var(--plan-primary);
+      border: 2px solid var(--plan-primary);
+    }
+
+    .timeline-step:nth-child(4) .timeline-number {
+      background: var(--research-glow);
+      color: var(--research-primary);
+      border: 2px solid var(--research-primary);
+    }
+
+    .timeline-step h4 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .timeline-step > p {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      margin-bottom: 8px;
+    }
+
+    .timeline-step .code-block {
+      margin-top: 8px;
+      font-size: 0.75rem;
+      padding: 14px 18px;
+    }
+
+    /* ── Parallel sessions visual ── */
+    .terminal-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .terminal-card {
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 14px 16px;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      line-height: 1.5;
+    }
+
+    .terminal-card .term-title {
+      font-weight: 600;
+      font-size: 0.68rem;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .terminal-card:nth-child(1) .term-title { color: #fb923c; }
+    .terminal-card:nth-child(2) .term-title { color: #38bdf8; }
+    .terminal-card:nth-child(3) .term-title { color: #34d399; }
+    .terminal-card:nth-child(4) .term-title { color: #7c6ef0; }
+    .terminal-card:nth-child(5) .term-title { color: #fbbf24; }
+
+    .terminal-card .term-cmd {
+      color: var(--text-muted);
+    }
+
+    .terminal-card .term-status {
+      color: var(--text-muted);
+      font-style: italic;
+      margin-top: 4px;
+    }
+
+    /* ── TDD cycle ── */
+    .tdd-cycle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      margin: 28px 0 20px;
+      flex-wrap: wrap;
+    }
+
+    .tdd-phase {
+      padding: 18px 28px;
+      border-radius: 10px;
+      border: 1px solid var(--border-subtle);
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      font-weight: 600;
+      position: relative;
+    }
+
+    .tdd-phase.red {
+      background: rgba(240, 110, 110, 0.08);
+      border-color: rgba(240, 110, 110, 0.25);
+      color: #f06e6e;
+    }
+
+    .tdd-phase.green {
+      background: rgba(52, 211, 153, 0.08);
+      border-color: rgba(52, 211, 153, 0.25);
+      color: #34d399;
+    }
+
+    .tdd-phase.refactor {
+      background: rgba(56, 189, 248, 0.08);
+      border-color: rgba(56, 189, 248, 0.25);
+      color: #38bdf8;
+    }
+
+    .tdd-phase-label {
+      font-size: 0.65rem;
+      font-weight: 400;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      display: block;
+      margin-top: 4px;
+      opacity: 0.7;
+    }
+
+    .tdd-arrow {
+      font-size: 1.4rem;
+      color: var(--text-muted);
+      opacity: 0.4;
+      padding: 0 14px;
+    }
+
+    /* ── Workflow detail list ── */
+    .workflow-list {
+      list-style: none;
+      margin-top: 20px;
+    }
+
+    .workflow-list li {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      padding: 8px 0 8px 20px;
+      position: relative;
+      line-height: 1.5;
+    }
+
+    .workflow-list li::before {
+      content: '\203A';
+      position: absolute;
+      left: 0;
+      color: #fb923c;
+      font-weight: 700;
+    }
+
+    /* ── IO Grid ── */
+    .io-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-top: 28px;
+    }
+
+    .io-card {
+      border-radius: 12px;
+      padding: 24px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .io-card.input-card {
+      background: linear-gradient(160deg, rgba(251, 146, 60, 0.06) 0%, rgba(15, 20, 35, 0.6) 100%);
+      border-left: 3px solid #fb923c;
+    }
+
+    .io-card.output-card {
+      background: linear-gradient(160deg, rgba(52, 211, 153, 0.06) 0%, rgba(15, 20, 35, 0.6) 100%);
+      border-left: 3px solid var(--plan-primary);
+    }
+
+    .io-card h4 {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .io-card.input-card h4 { color: #fb923c; }
+    .io-card.output-card h4 { color: var(--plan-primary); }
+
+    .io-card ul { list-style: none; }
+
+    .io-card ul li {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      padding: 4px 0 4px 18px;
+      position: relative;
+      line-height: 1.5;
+    }
+
+    .io-card ul li::before {
+      content: '\2022';
+      position: absolute;
+      left: 0;
+      color: var(--text-muted);
+    }
+
+    /* ── Command card grid ── */
+    .command-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .cmd-card {
+      padding: 18px 20px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .cmd-card .cmd-name {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #fb923c;
+      margin-bottom: 6px;
+    }
+
+    .cmd-card .cmd-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* ── Progression arrow flow ── */
+    .progression {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      margin: 24px 0;
+      flex-wrap: wrap;
+    }
+
+    .progression-step {
+      padding: 12px 20px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-subtle);
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      text-align: center;
+    }
+
+    .progression-arrow {
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      opacity: 0.4;
+      padding: 0 10px;
+    }
+
+    /* ── Outer loop key-value list ── */
+    .kv-list {
+      margin-top: 20px;
+    }
+
+    .kv-item {
+      display: flex;
+      gap: 16px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      align-items: baseline;
+    }
+
+    .kv-item:last-child {
+      border-bottom: none;
+    }
+
+    .kv-key {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #fb923c;
+      white-space: nowrap;
+      min-width: 140px;
+    }
+
+    .kv-val {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* ── Source attribution ── */
+    .source-attribution {
+      position: fixed;
+      bottom: 20px;
+      left: 24px;
+      z-index: 10;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      opacity: 0.6;
+      transition: opacity 0.3s ease;
+    }
+
+    .source-attribution:hover {
+      opacity: 1;
+    }
+
+    .source-attribution a {
+      color: var(--text-muted);
+      text-decoration: none;
+      border-bottom: 1px dotted var(--text-muted);
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 700px) {
+      .io-grid { grid-template-columns: 1fr; }
+      .terminal-grid { grid-template-columns: 1fr 1fr; }
+      .command-grid { grid-template-columns: 1fr; }
+      .tdd-cycle { gap: 8px; }
+      .tdd-arrow { padding: 0 6px; font-size: 1rem; }
+      .tdd-phase { padding: 14px 18px; font-size: 0.78rem; }
+      .day-timeline { flex-direction: column; }
+      .day-slot { border-right: none; border-bottom: 1px solid var(--border-subtle); }
+      .day-slot:last-child { border-bottom: none; }
+      .progression { gap: 4px; }
+      .progression-step { font-size: 0.7rem; padding: 8px 12px; }
+      .progression-arrow { padding: 0 4px; font-size: 0.9rem; }
+      .kv-item { flex-direction: column; gap: 4px; }
+      .kv-key { min-width: auto; }
+    }
+
+    @media (max-width: 600px) {
+      .page-wrapper {
+        padding: 40px 20px 60px;
+      }
+
+      .section-card {
+        padding: 28px 20px;
+      }
+
+      .terminal-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-wrapper">
+
+  <!-- Header -->
+  <header>
+    <div class="badge">Daily Workflows</div>
+    <h1>The Developer's Daily Loop</h1>
+    <p class="subtitle">
+      Six workflow patterns that define how experienced developers actually use Claude Code
+    </p>
+  </header>
+
+  <!-- Day-in-the-life timeline -->
+  <div class="day-timeline">
+    <div class="day-slot">
+      <div class="time-label">Morning</div>
+      <div class="activity">Parallel sessions &mdash; feature branches, bug fixes, refactors running simultaneously</div>
+    </div>
+    <div class="day-slot">
+      <div class="time-label">Midday</div>
+      <div class="activity">Debugging with screenshots, stack traces, and MCP-fed context</div>
+    </div>
+    <div class="day-slot">
+      <div class="time-label">Afternoon</div>
+      <div class="activity">TDD loop for a new module &mdash; red, green, refactor with subagents</div>
+    </div>
+    <div class="day-slot">
+      <div class="time-label">Evening</div>
+      <div class="activity">PR creation, code review, slash commands for the final push</div>
+    </div>
+  </div>
+
+  <!-- Section 1: The Inner Loop -->
+  <div class="section">
+    <div class="section-card">
+      <div class="section-label">Pattern 1</div>
+      <h2>The Inner Loop &mdash; Plan, Execute, Verify</h2>
+      <p class="section-intro">
+        The core rhythm of working with Claude Code. Boris Cherny (creator of Claude Code) describes it: iterate in Plan Mode until you like the plan, switch to auto-accept, let Claude implement in one shot.
+      </p>
+
+      <div class="timeline">
+        <div class="timeline-step">
+          <div class="timeline-number">1</div>
+          <h4>Plan</h4>
+          <p>Activate Plan Mode with <code>Shift+Tab</code> twice. Describe the task. Iterate on the plan until every step is clear and scoped. A good plan eliminates 50%+ of rework.</p>
+          <div class="code-block"><span class="comment"># Enter plan mode and iterate</span>
+<span class="keyword">&gt;</span> <span class="string">Add authentication middleware using JWT with 24h expiry.</span>
+<span class="keyword">&gt;</span> <span class="string">Include refresh token rotation and rate limiting.</span>
+
+<span class="comment"># Claude outputs a step-by-step plan &mdash; review, ask questions, refine</span></div>
+        </div>
+
+        <div class="timeline-step">
+          <div class="timeline-number">2</div>
+          <h4>Execute</h4>
+          <p>Once the plan looks right, switch to auto-accept mode. Claude implements the entire plan in one pass without stopping for approval at each file edit.</p>
+          <div class="code-block"><span class="comment"># Switch to auto-accept (Shift+Tab to cycle modes)</span>
+<span class="comment"># Claude creates files, edits code, runs commands</span>
+<span class="comment"># You watch &mdash; intervene only if something goes off-track</span></div>
+        </div>
+
+        <div class="timeline-step">
+          <div class="timeline-number">3</div>
+          <h4>Verify</h4>
+          <p>Run tests, compile, check output before committing. Never trust &mdash; always verify. Use the actual compiler and test output, not Claude&rsquo;s summary.</p>
+          <div class="code-block"><span class="comment"># Verify the implementation</span>
+<span class="keyword">npm test</span>
+<span class="keyword">npm run build</span>
+<span class="comment"># Review diff before committing</span>
+<span class="keyword">git diff</span></div>
+        </div>
+
+        <div class="timeline-step">
+          <div class="timeline-number">4</div>
+          <h4>Checkpoint or Rollback</h4>
+          <p>Use <code>/rewind</code> to checkpoint and rollback failed attempts. It restores conversation state, code changes, or both independently.</p>
+          <div class="code-block"><span class="comment"># Something went wrong? Roll back</span>
+<span class="keyword">/rewind</span>
+<span class="comment"># Choose: restore conversation, code, or both</span></div>
+        </div>
+      </div>
+
+      <div class="callout">
+        <strong>Key insight:</strong> Plan Mode significantly reduces rework compared to direct implementation. As Cherny puts it: &ldquo;A good plan is really important!&rdquo; The time spent planning is almost always recovered during execution.
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 2: Parallel Sessions -->
+  <div class="section">
+    <div class="section-card">
+      <div class="section-label">Pattern 2</div>
+      <h2>Parallel Sessions &mdash; Working Like a Manager</h2>
+      <p class="section-intro">
+        Experienced users don&rsquo;t run one Claude instance. Boris Cherny runs 5 local + 5&ndash;10 browser sessions simultaneously, each with its own git checkout. The mental model shift: you&rsquo;re a manager dispatching tasks, not a typist.
+      </p>
+
+      <div class="terminal-grid">
+        <div class="terminal-card">
+          <div class="term-title">Session 1 &mdash; auth-feature</div>
+          <div class="term-cmd">$ claude --resume auth</div>
+          <div class="term-status">Implementing JWT middleware&hellip;</div>
+        </div>
+        <div class="terminal-card">
+          <div class="term-title">Session 2 &mdash; fix-query-perf</div>
+          <div class="term-cmd">$ claude --resume perf</div>
+          <div class="term-status">Profiling database queries&hellip;</div>
+        </div>
+        <div class="terminal-card">
+          <div class="term-title">Session 3 &mdash; refactor-api</div>
+          <div class="term-cmd">$ claude --resume api</div>
+          <div class="term-status">Awaiting input&hellip;</div>
+        </div>
+        <div class="terminal-card">
+          <div class="term-title">Session 4 &mdash; write-tests</div>
+          <div class="term-cmd">$ claude --resume tests</div>
+          <div class="term-status">Running test suite&hellip;</div>
+        </div>
+        <div class="terminal-card">
+          <div class="term-title">Session 5 &mdash; docs-update</div>
+          <div class="term-cmd">$ claude --resume docs</div>
+          <div class="term-status">Generating API docs&hellip;</div>
+        </div>
+      </div>
+
+      <ul class="workflow-list">
+        <li>Use <strong>git worktrees</strong> for file isolation between parallel sessions &mdash; each session gets its own working directory from the same repo</li>
+        <li>Terminal tabs with <strong>OS notifications</strong> alert you when a session needs input</li>
+        <li>Browser sessions on <strong>claude.com</strong> work as supplementary workers for research and planning</li>
+        <li>Name sessions with <code>/rename</code> and resume later with <code>claude --resume &lt;name&gt;</code></li>
+        <li>~10&ndash;20% of sessions get <strong>abandoned</strong> &mdash; this is normal, not failure. Recognize dead ends early.</li>
+      </ul>
+
+      <div class="callout">
+        <strong>Worktree setup:</strong> <code>git worktree add ../project-auth feature/auth</code> creates an isolated checkout. Each Claude session operates on its own worktree, preventing file conflicts between parallel tasks.
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 3: Test-Driven Agent Development -->
+  <div class="section">
+    <div class="section-card">
+      <div class="section-label">Pattern 3</div>
+      <h2>Test-Driven Agent Development</h2>
+      <p class="section-intro">
+        Claude&rsquo;s natural instinct is implementation-first. TDD flips this. Context isolation between phases (separate subagents) prevents &ldquo;implementation bleed&rdquo; into tests &mdash; the test-writer has no knowledge of planned implementation, producing more honest coverage.
+      </p>
+
+      <div class="tdd-cycle">
+        <div class="tdd-phase red">
+          RED
+          <span class="tdd-phase-label">Write failing test</span>
+        </div>
+        <span class="tdd-arrow">&rarr;</span>
+        <div class="tdd-phase green">
+          GREEN
+          <span class="tdd-phase-label">Implement to pass</span>
+        </div>
+        <span class="tdd-arrow">&rarr;</span>
+        <div class="tdd-phase refactor">
+          REFACTOR
+          <span class="tdd-phase-label">Clean up code</span>
+        </div>
+        <span class="tdd-arrow">&circlearrowright;</span>
+      </div>
+
+      <div class="io-grid">
+        <div class="io-card input-card">
+          <h4>CLAUDE.md Rules</h4>
+          <div class="code-block" style="margin-top: 0;"><span class="comment"># CLAUDE.md &mdash; TDD enforcement</span>
+
+<span class="keyword">## Testing Rules</span>
+<span class="string">- Always write tests before implementation</span>
+<span class="string">- Never modify tests during green phase</span>
+<span class="string">- Use subagents: test-writer sees only</span>
+<span class="string">  requirements, implementer sees only tests</span>
+<span class="string">- Run full test suite before committing</span></div>
+        </div>
+        <div class="io-card output-card">
+          <h4>Why It Works</h4>
+          <ul>
+            <li>Test-writer subagent sees only requirements &mdash; no anticipated implementation</li>
+            <li>Implementer subagent sees only tests &mdash; no knowledge of original intent</li>
+            <li>Context isolation prevents the LLM from designing tests around its own implementation</li>
+            <li>Hooks enforce discipline: <code>UserPromptSubmit</code> evaluation hooks check compliance</li>
+          </ul>
+        </div>
+      </div>
+
+      <p class="code-label">Example /tdd skill</p>
+      <div class="code-block"><span class="comment"># .claude/commands/tdd.md</span>
+<span class="keyword">Write failing tests for:</span> <span class="argument">$ARGUMENTS</span>
+
+<span class="string">Phase 1 (Red):</span> Use a subagent to write comprehensive tests
+  based only on the requirements. Do not implement anything yet.
+  Run the tests &mdash; they should all fail.
+
+<span class="string">Phase 2 (Green):</span> Implement the minimum code to make
+  all tests pass. Do not modify the tests.
+
+<span class="string">Phase 3 (Refactor):</span> Clean up the implementation.
+  Tests must still pass after refactoring.</div>
+
+      <div class="callout">
+        <strong>Hook-based evaluation:</strong> A <code>UserPromptSubmit</code> hook can check whether the developer&rsquo;s prompt matches TDD patterns, increasing automatic skill activation from ~20% to ~84%.
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 4: Debugging -->
+  <div class="section">
+    <div class="section-card">
+      <div class="section-label">Pattern 4</div>
+      <h2>Debugging &mdash; Feed the Loop</h2>
+      <p class="section-intro">
+        Debugging with Claude Code is an iterative feedback loop, not a one-shot prompt. The principle: &ldquo;Never describe when you can show.&rdquo; Paste screenshots, compiler output, and stack traces directly.
+      </p>
+
+      <div class="timeline">
+        <div class="timeline-step">
+          <div class="timeline-number">1</div>
+          <h4>Show Context</h4>
+          <p>Paste the actual error, screenshot, or stack trace. Don&rsquo;t describe the bug &mdash; show it. Claude handles images, terminal output, and log files natively.</p>
+        </div>
+
+        <div class="timeline-step">
+          <div class="timeline-number">2</div>
+          <h4>Get Analysis</h4>
+          <p>Claude reads the error, traces the code path, and proposes a fix with reasoning.</p>
+        </div>
+
+        <div class="timeline-step">
+          <div class="timeline-number">3</div>
+          <h4>Apply &amp; Re-test</h4>
+          <p>Apply the fix, run the failing test or reproduce the scenario. Paste the new output back.</p>
+        </div>
+
+        <div class="timeline-step">
+          <div class="timeline-number">4</div>
+          <h4>Iterate or Close</h4>
+          <p>If the fix works, move on. If not, paste the new error and repeat. Use <code>/clear</code> and restart if context gets polluted.</p>
+        </div>
+      </div>
+
+      <ul class="workflow-list">
+        <li><strong>Screenshot debugging:</strong> paste browser screenshots, console output, or styling issues directly into the prompt</li>
+        <li><strong>MCP integrations:</strong> Chrome DevTools, Playwright, and Sentry MCP servers feed real-time context automatically</li>
+        <li><strong>Use real output:</strong> paste actual compiler errors and test failures, not your description of them</li>
+        <li>Use <code>/clear</code> to restart with a fresh context when the conversation gets too tangled</li>
+      </ul>
+
+      <div class="callout">
+        <strong>Anti-pattern:</strong> &ldquo;The login page is broken.&rdquo; &mdash; Better: paste the screenshot, the console error, and the network tab response. Real data beats descriptions every time.
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 5: Slash Commands -->
+  <div class="section">
+    <div class="section-card">
+      <div class="section-label">Pattern 5</div>
+      <h2>Slash Commands as Workflow Atoms</h2>
+      <p class="section-intro">
+        Repeatable workflows become slash commands. Cherny uses <code>/commit-push-pr</code> &ldquo;dozens of times a day.&rdquo; Commands capture institutional knowledge &mdash; team conventions, PR templates, review checklists.
+      </p>
+
+      <div class="command-grid">
+        <div class="cmd-card">
+          <div class="cmd-name">/commit-push-pr</div>
+          <div class="cmd-desc">Stage, commit, push, and create a PR with pre-computed git status for context</div>
+        </div>
+        <div class="cmd-card">
+          <div class="cmd-name">/refactor-plan</div>
+          <div class="cmd-desc">Enter plan mode, analyze the target code, propose a refactoring strategy</div>
+        </div>
+        <div class="cmd-card">
+          <div class="cmd-name">/bug-report</div>
+          <div class="cmd-desc">Gather reproduction steps, system info, and logs into a structured report</div>
+        </div>
+        <div class="cmd-card">
+          <div class="cmd-name">/code-review</div>
+          <div class="cmd-desc">Review staged changes against team standards, flag issues, suggest improvements</div>
+        </div>
+      </div>
+
+      <p class="code-label">Command with inline bash for pre-computed context</p>
+      <div class="code-block"><span class="comment"># .claude/commands/commit-push-pr.md</span>
+
+<span class="keyword">Review and commit the current changes.</span>
+
+Current branch: <span class="argument">`git branch --show-current`</span>
+Changed files: <span class="argument">`git diff --stat`</span>
+Recent commits: <span class="argument">`git log --oneline -5`</span>
+
+<span class="string">Write a concise commit message following our conventions.</span>
+<span class="string">Push and create a PR with a clear description.</span></div>
+
+      <div class="progression">
+        <div class="progression-step">Ad-hoc prompt</div>
+        <span class="progression-arrow">&rarr;</span>
+        <div class="progression-step">Repeated prompt</div>
+        <span class="progression-arrow">&rarr;</span>
+        <div class="progression-step">Slash command</div>
+        <span class="progression-arrow">&rarr;</span>
+        <div class="progression-step">Full skill</div>
+      </div>
+
+      <ul class="workflow-list">
+        <li><strong>Inline bash</strong> in commands pre-computes context (git status, branch info) to avoid model round-trips</li>
+        <li><strong>PostToolUse hooks</strong> auto-format code after every edit (e.g., <code>bun run format</code>), catching formatting issues before CI</li>
+        <li>Commands evolve: ad-hoc prompt &rarr; repeated prompt &rarr; slash command &rarr; full skill with tools</li>
+      </ul>
+
+      <div class="callout">
+        <strong>Real impact:</strong> Cherny&rsquo;s team runs a PostToolUse hook (<code>bun run format || true</code>) after each file edit to auto-format code, avoiding the formatting-related CI failures that would otherwise slip through. Small automations compound into significant time savings.
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 6: The Outer Loop -->
+  <div class="section">
+    <div class="section-card">
+      <div class="section-label">Pattern 6</div>
+      <h2>The Outer Loop &mdash; Session Lifecycle Management</h2>
+      <p class="section-intro">
+        How to manage Claude Code across a full workday. The verification mindset: &ldquo;You don&rsquo;t trust; you instrument.&rdquo; CLAUDE.md is the persistent brain across all sessions.
+      </p>
+
+      <div class="kv-list">
+        <div class="kv-item">
+          <span class="kv-key">/clear</span>
+          <span class="kv-val">Start fresh between tasks. Context pollution from prior work causes drift. Clear between unrelated tasks.</span>
+        </div>
+        <div class="kv-item">
+          <span class="kv-key">/compact</span>
+          <span class="kv-val">Preserve insights while reducing tokens when continuing related work. Keeps the conversation thread alive without the full history.</span>
+        </div>
+        <div class="kv-item">
+          <span class="kv-key">CLAUDE.md</span>
+          <span class="kv-val">The persistent brain across all sessions. Architecture decisions, conventions, past mistakes. Cherny&rsquo;s team keeps theirs at ~2.5k tokens, updated multiple times weekly from code reviews.</span>
+        </div>
+        <div class="kv-item">
+          <span class="kv-key">/permissions</span>
+          <span class="kv-val">Whitelist common safe commands. Never use blanket <code>--dangerously-skip-permissions</code>. Scope permissions narrowly.</span>
+        </div>
+        <div class="kv-item">
+          <span class="kv-key">Model choice</span>
+          <span class="kv-val">Opus for complex reasoning, automatic Sonnet switching for routine tasks. Cherny uses Opus exclusively with thinking enabled &mdash; &ldquo;a wrong fast answer is slower than a right slow answer.&rdquo;</span>
+        </div>
+      </div>
+
+      <p class="code-label">CLAUDE.md as institutional memory</p>
+      <div class="code-block"><span class="comment"># CLAUDE.md &mdash; updated multiple times weekly</span>
+
+<span class="keyword">## Architecture</span>
+<span class="string">- API: Express + TypeScript, deployed on Railway</span>
+<span class="string">- Frontend: Next.js 14 with App Router</span>
+<span class="string">- Auth: JWT with refresh rotation, 24h access tokens</span>
+
+<span class="keyword">## Conventions</span>
+<span class="string">- All API responses use { data, error, meta } envelope</span>
+<span class="string">- Tests: colocated, *.test.ts, run with vitest</span>
+<span class="string">- Commits: conventional commits, no AI mentions</span>
+
+<span class="keyword">## Known Issues</span>
+<span class="string">- Query on line 142 of users.ts is O(n&sup2;) &mdash; fix pending</span>
+<span class="string">- Safari has a z-index bug on the modal component</span></div>
+
+      <div class="callout">
+        <strong>Verification mindset:</strong> Always check Claude&rsquo;s output. Run the tests, read the diff, build the project. Trust the toolchain output, not the model&rsquo;s claim that it worked.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Source attribution bottom-left -->
+<div class="source-attribution">
+  Multiple sources<br>
+  <a href="https://www.infoq.com/news/2026/01/claude-code-creator-workflow/" target="_blank" rel="noopener">Boris Cherny &mdash; Claude Code Creator Workflow</a><br>
+  <a href="https://alexop.dev/posts/custom-tdd-workflow-claude-code-vue/" target="_blank" rel="noopener">TDD with Claude Code</a>
+</div>
+
+</body>
+</html>
