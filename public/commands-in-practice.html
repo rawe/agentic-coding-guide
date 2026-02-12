@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Commands in Practice</title>
+  <link rel="stylesheet" href="css/theme.css">
+  <style>
+    /* ── Background image & overlay ── */
+    body {
+      background-image: url('assets/bg-dark-abstract.png');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(10, 14, 26, 0.92) 0%,
+        rgba(10, 14, 26, 0.80) 40%,
+        rgba(10, 14, 26, 0.88) 100%
+      );
+      z-index: 0;
+    }
+
+    .page-wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 60px 40px 80px;
+    }
+
+    /* ── Header ── */
+    header {
+      text-align: center;
+      margin-bottom: 72px;
+    }
+
+    .badge {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--commands-primary);
+      background: var(--commands-glow);
+      border: 1px solid rgba(62, 201, 122, 0.2);
+      padding: 6px 16px;
+      border-radius: 20px;
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      font-size: clamp(2.2rem, 5vw, 3.6rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, var(--commands-primary) 0%, #f59e0b 50%, var(--plan-primary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      font-size: 1.15rem;
+      color: var(--text-secondary);
+      max-width: 640px;
+      margin: 0 auto;
+      line-height: 1.6;
+      font-weight: 400;
+    }
+
+    /* ── Section shared ── */
+    .section {
+      margin-bottom: 72px;
+    }
+
+    .section-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 40px;
+    }
+
+    .section-card h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+
+    .section-card .section-intro {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 28px;
+      max-width: 700px;
+    }
+
+    /* ── Code blocks ── */
+    code {
+      font-family: var(--font-mono);
+      font-size: 0.85em;
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.06);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .code-block {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 20px 24px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      line-height: 1.7;
+      color: var(--text-secondary);
+      overflow-x: auto;
+      margin-top: 16px;
+      white-space: pre-wrap;
+    }
+
+    .code-block .comment {
+      color: var(--text-muted);
+    }
+
+    .code-block .file-name {
+      color: var(--commands-primary);
+    }
+
+    .code-block .folder-name {
+      color: #f59e0b;
+    }
+
+    .code-block .keyword {
+      color: var(--commands-primary);
+    }
+
+    .code-block .string {
+      color: var(--plan-primary);
+    }
+
+    .code-block .frontmatter {
+      color: var(--skills-primary);
+    }
+
+    .code-block .argument {
+      color: #f59e0b;
+    }
+
+    /* ── Section 1: Equation visual ── */
+    .equation {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
+
+    .equation-part {
+      padding: 16px 24px;
+      border-radius: 10px;
+      border: 1px solid var(--border-subtle);
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      text-align: center;
+    }
+
+    .equation-part.file {
+      background: linear-gradient(160deg, rgba(62, 201, 122, 0.08) 0%, rgba(15, 20, 35, 0.6) 100%);
+      border-color: rgba(62, 201, 122, 0.2);
+      color: var(--commands-primary);
+    }
+
+    .equation-part.resources {
+      background: linear-gradient(160deg, rgba(245, 158, 11, 0.08) 0%, rgba(15, 20, 35, 0.6) 100%);
+      border-color: rgba(245, 158, 11, 0.2);
+      color: #f59e0b;
+    }
+
+    .equation-part.result {
+      background: linear-gradient(160deg, rgba(52, 211, 153, 0.08) 0%, rgba(15, 20, 35, 0.6) 100%);
+      border-color: rgba(52, 211, 153, 0.2);
+      color: var(--plan-primary);
+    }
+
+    .equation-op {
+      font-size: 1.4rem;
+      color: var(--text-muted);
+      opacity: 0.5;
+    }
+
+    .location-note {
+      margin-top: 20px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    /* ── Section 3: Anatomy Grid ── */
+    .anatomy-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    @media (max-width: 700px) {
+      .anatomy-grid { grid-template-columns: 1fr; }
+    }
+
+    .anatomy-right {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .anatomy-trait {
+      padding: 16px 20px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .anatomy-trait h4 {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+    }
+
+    .anatomy-trait p {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* ── Section 4: Arguments ── */
+    .arg-example {
+      border-radius: 12px;
+      padding: 20px 24px;
+      border: 1px solid var(--border-subtle);
+      background: rgba(255, 255, 255, 0.02);
+      margin-bottom: 16px;
+    }
+
+    .arg-example:last-child {
+      margin-bottom: 0;
+    }
+
+    .arg-example h4 {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .arg-example p {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .arg-example .code-block {
+      margin-top: 10px;
+      font-size: 0.75rem;
+      padding: 14px 18px;
+    }
+
+    /* ── Section 5: Timeline ── */
+    .timeline {
+      position: relative;
+      padding-left: 40px;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 14px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .timeline-step {
+      position: relative;
+      margin-bottom: 32px;
+    }
+
+    .timeline-step:last-child {
+      margin-bottom: 0;
+    }
+
+    .timeline-number {
+      position: absolute;
+      left: -40px;
+      top: 0;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      z-index: 1;
+    }
+
+    .timeline-step:nth-child(1) .timeline-number {
+      background: var(--commands-glow);
+      color: var(--commands-primary);
+      border: 2px solid var(--commands-primary);
+    }
+
+    .timeline-step:nth-child(2) .timeline-number {
+      background: rgba(245, 158, 11, 0.15);
+      color: #f59e0b;
+      border: 2px solid #f59e0b;
+    }
+
+    .timeline-step:nth-child(3) .timeline-number {
+      background: var(--skills-glow);
+      color: var(--skills-primary);
+      border: 2px solid var(--skills-primary);
+    }
+
+    .timeline-step h4 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .timeline-step > p {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      margin-bottom: 8px;
+    }
+
+    .timeline-step .code-block {
+      margin-top: 8px;
+      font-size: 0.75rem;
+      padding: 14px 18px;
+    }
+
+    /* ── Section 6: Creation steps ── */
+    .creation-steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    @media (max-width: 700px) {
+      .creation-steps { grid-template-columns: 1fr; }
+    }
+
+    .creation-step {
+      padding: 24px 20px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-subtle);
+      text-align: center;
+      position: relative;
+    }
+
+    .step-number {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: var(--commands-primary);
+      background: var(--commands-glow);
+      padding: 3px 8px;
+      border-radius: 4px;
+      display: inline-block;
+      margin-bottom: 12px;
+    }
+
+    .creation-step h4 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--text-primary);
+    }
+
+    .creation-step p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .creation-step::after {
+      content: '\203A';
+      position: absolute;
+      right: -14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.4rem;
+      color: var(--text-muted);
+      opacity: 0.4;
+    }
+
+    .creation-step:last-child::after {
+      display: none;
+    }
+
+    @media (max-width: 700px) {
+      .creation-step::after { display: none; }
+    }
+
+    .template-block {
+      margin-top: 28px;
+    }
+
+    .template-block h4 {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .template-block p {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* ── IO grid ── */
+    .io-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-top: 28px;
+    }
+
+    @media (max-width: 700px) {
+      .io-grid { grid-template-columns: 1fr; }
+    }
+
+    .io-card {
+      border-radius: 12px;
+      padding: 24px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .io-card.input-card {
+      background: linear-gradient(160deg, rgba(62, 201, 122, 0.06) 0%, rgba(15, 20, 35, 0.6) 100%);
+      border-left: 3px solid var(--commands-primary);
+    }
+
+    .io-card.output-card {
+      background: linear-gradient(160deg, rgba(52, 211, 153, 0.06) 0%, rgba(15, 20, 35, 0.6) 100%);
+      border-left: 3px solid var(--plan-primary);
+    }
+
+    .io-card h4 {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .io-card.input-card h4 { color: var(--commands-primary); }
+    .io-card.output-card h4 { color: var(--plan-primary); }
+
+    .io-card .code-block {
+      margin-top: 0;
+      font-size: 0.75rem;
+      padding: 14px 18px;
+    }
+
+    .io-card ul {
+      list-style: none;
+    }
+
+    .io-card ul li {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      padding: 4px 0 4px 18px;
+      position: relative;
+      line-height: 1.5;
+    }
+
+    .io-card ul li::before {
+      content: '\2022';
+      position: absolute;
+      left: 0;
+      color: var(--text-muted);
+    }
+
+    /* ── Key insight callout ── */
+    .callout {
+      margin-top: 24px;
+      padding: 20px 24px;
+      border-radius: 10px;
+      background: linear-gradient(160deg, rgba(62, 201, 122, 0.06) 0%, rgba(15, 20, 35, 0.6) 100%);
+      border: 1px solid rgba(62, 201, 122, 0.15);
+      border-left: 3px solid var(--commands-primary);
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .callout strong {
+      color: var(--commands-primary);
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      .page-wrapper {
+        padding: 40px 20px 60px;
+      }
+
+      .section-card {
+        padding: 28px 20px;
+      }
+
+      .equation {
+        gap: 12px;
+      }
+
+      .equation-part {
+        padding: 12px 16px;
+        font-size: 0.78rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-wrapper">
+
+  <!-- Header -->
+  <header>
+    <div class="badge">Claude Code Commands</div>
+    <h1>Commands in Practice</h1>
+    <p class="subtitle">
+      One markdown file, one slash command. How custom commands parse arguments and orchestrate skills.
+    </p>
+  </header>
+
+  <!-- Section 1: What Is a Command? -->
+  <div class="section">
+    <div class="section-card">
+      <h2>What Is a Command?</h2>
+      <p class="section-intro">
+        A single markdown file that gives Claude Code a new slash command. No folder structure, no scripts, no build step &mdash; just frontmatter and instructions.
+      </p>
+
+      <div class="equation">
+        <div class="equation-part file">frontmatter</div>
+        <span class="equation-op">+</span>
+        <div class="equation-part resources">instructions</div>
+        <span class="equation-op">=</span>
+        <div class="equation-part result">/slash-command</div>
+      </div>
+
+      <p class="location-note">
+        Project commands live at <code>.claude/commands/</code> &mdash; personal commands at <code>~/.claude/commands/</code>
+      </p>
+    </div>
+  </div>
+
+  <!-- Section 2: Meet doc-extract -->
+  <div class="section">
+    <div class="section-card">
+      <h2>Meet doc-extract</h2>
+      <p class="section-intro">
+        <code>/doc-extract</code> takes a URL or local file path and delegates to the <code>doc-processing</code> skill. It downloads the document, converts it to markdown, writes structured metadata, and updates the project index. One command, full pipeline.
+      </p>
+      <p class="section-intro" style="margin-bottom: 0;">
+        The command itself is 6 lines. The skill it loads does the heavy lifting.
+      </p>
+    </div>
+  </div>
+
+  <!-- Section 3: Anatomy of a Command -->
+  <div class="section">
+    <div class="section-card">
+      <h2>Anatomy of a Command</h2>
+      <p class="section-intro">
+        A command is a single <code>.md</code> file with YAML frontmatter and a markdown body. Here's the real <code>doc-extract.md</code> &mdash; every field annotated.
+      </p>
+
+      <div class="anatomy-grid">
+        <div class="code-block">
+<span class="comment">---</span>
+<span class="frontmatter">description</span>: <span class="string">Download/copy a document and extract
+              its content as markdown into
+              sources/docs.</span>
+<span class="frontmatter">argument-hint</span>: <span class="argument">[url-or-filepath]</span>
+<span class="frontmatter">context</span>: <span class="argument">fork</span>
+<span class="comment">---</span>
+
+Load the <span class="keyword">`doc-processing`</span> skill, then process
+the document at <span class="keyword">`$ARGUMENTS`</span>.
+
+Determine if the argument is a URL (starts
+with <span class="keyword">`http`</span>) or a local file path.
+Follow all steps in the skill (obtain,
+convert, create meta.md, enrich metadata,
+update index).
+        </div>
+
+        <div class="anatomy-right">
+          <div class="anatomy-trait">
+            <h4>Frontmatter</h4>
+            <p>YAML between <code>---</code> markers. Three fields: <code>description</code> (shown in <code>/help</code>, used for slash command discovery), <code>argument-hint</code> (tells users what to type after the command), <code>context: fork</code> (runs in an isolated session so it doesn't pollute your main conversation).</p>
+          </div>
+          <div class="anatomy-trait">
+            <h4>Body</h4>
+            <p>Free-form markdown instructions Claude follows when the command runs. This body references a skill by name, uses <code>$ARGUMENTS</code> to receive user input, and defines the conditional workflow &mdash; URL vs. local file path.</p>
+          </div>
+          <div class="anatomy-trait">
+            <h4>File location</h4>
+            <p>The filename becomes the command name. <code>.claude/commands/doc-extract.md</code> registers as <code>/doc-extract</code>. No configuration beyond placing the file.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 4: How Arguments Work -->
+  <div class="section">
+    <div class="section-card">
+      <h2>How Arguments Work</h2>
+      <p class="section-intro">
+        <code>$ARGUMENTS</code> captures everything the user types after the command name. The command body is responsible for parsing it.
+      </p>
+
+      <div class="arg-example">
+        <h4>Single argument</h4>
+        <p>Most commands take one input. <code>$ARGUMENTS</code> is the entire string after the command name.</p>
+        <div class="code-block"><span class="keyword">/doc-extract</span> <span class="argument">https://example.com/paper.pdf</span>
+
+<span class="comment"># $ARGUMENTS = "https://example.com/paper.pdf"</span></div>
+      </div>
+
+      <div class="arg-example">
+        <h4>Multiple arguments</h4>
+        <p>For commands that accept more than one input, the body instructions tell Claude how to parse. The <code>argument-hint</code> signals the expected format.</p>
+        <div class="code-block"><span class="keyword">/yt-extract</span> <span class="argument">https://youtube.com/watch?v=abc</span> <span class="string">sources/youtube/channel</span>
+
+<span class="comment"># argument-hint: [youtube-url] [output-dir]</span>
+<span class="comment"># Body says: "Parse $ARGUMENTS: first argument is the YouTube URL,</span>
+<span class="comment">#             second argument is an optional output directory"</span></div>
+      </div>
+
+      <div class="arg-example">
+        <h4>The argument-hint field</h4>
+        <p>Displayed as placeholder text in the Claude Code UI when the user types <code>/</code>. Communicates expected input without enforcing a schema &mdash; parsing is always done by the body instructions.</p>
+        <div class="code-block"><span class="frontmatter">argument-hint</span>: <span class="argument">[url-or-filepath]</span>           <span class="comment"># doc-extract</span>
+<span class="frontmatter">argument-hint</span>: <span class="argument">[youtube-url] [output-dir]</span>   <span class="comment"># yt-extract</span>
+<span class="frontmatter">argument-hint</span>: <span class="argument">[channel-handle] [count]</span>    <span class="comment"># yt-channel</span>
+<span class="frontmatter">argument-hint</span>: <span class="argument">[source-folder-path]</span>        <span class="comment"># summarize</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 5: Walk-through: doc-extract -->
+  <div class="section">
+    <div class="section-card">
+      <h2>Walk-through: doc-extract</h2>
+      <p class="section-intro">
+        Three steps from slash command to structured output. Commands are thin orchestrators &mdash; they parse input and delegate to skills that do the real work.
+      </p>
+
+      <div class="timeline">
+        <div class="timeline-step">
+          <div class="timeline-number">1</div>
+          <h4>You type the command</h4>
+          <p>In Claude Code, you enter the command with a URL. The CLI matches the filename to the slash command and reads the file.</p>
+          <div class="code-block"><span class="keyword">/doc-extract</span> <span class="argument">https://arxiv.org/pdf/2401.12345</span></div>
+        </div>
+
+        <div class="timeline-step">
+          <div class="timeline-number">2</div>
+          <h4>Claude reads the command file</h4>
+          <p>Frontmatter and body enter context. <code>context: fork</code> spins up an isolated session. <code>$ARGUMENTS</code> binds to <code>https://arxiv.org/pdf/2401.12345</code>. Claude now has its instructions: load a skill, determine URL vs. file path, follow the workflow.</p>
+          <div class="code-block"><span class="comment"># $ARGUMENTS = "https://arxiv.org/pdf/2401.12345"</span>
+<span class="comment"># context: fork &rarr; isolated session</span>
+
+Load the <span class="keyword">`doc-processing`</span> skill, then process
+the document at <span class="keyword">`$ARGUMENTS`</span>.</div>
+        </div>
+
+        <div class="timeline-step">
+          <div class="timeline-number">3</div>
+          <h4>The skill takes over</h4>
+          <p>Claude loads <code>doc-processing</code> &mdash; its full SKILL.md body enters context. The skill's five-step workflow runs: download the PDF, convert to markdown, create <code>meta.md</code> from the template, enrich with tags and summary, update <code>sources/index.md</code>.</p>
+          <div class="code-block"><span class="comment"># doc-processing skill workflow:</span>
+1. Obtain document &mdash; download via <span class="string">doc-download.py</span>
+2. Convert to markdown via <span class="string">doc-convert.py</span>
+3. Create <span class="keyword">`meta.md`</span> from <span class="keyword">`references/structure.md`</span>
+4. Enrich metadata with tags and summary
+5. Update <span class="keyword">`sources/index.md`</span></div>
+        </div>
+      </div>
+
+      <div class="callout">
+        <strong>Key insight:</strong> the command is 6 lines. The skill is a full folder with scripts, references, and a multi-step workflow. Commands are the user-facing entry point; skills are the engine underneath.
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 6: Creating Your Own -->
+  <div class="section">
+    <div class="section-card">
+      <h2>Creating Your Own</h2>
+      <p class="section-intro">
+        Three steps to a working command. No tooling required.
+      </p>
+
+      <div class="creation-steps">
+        <div class="creation-step">
+          <span class="step-number">Step 1</span>
+          <h4>Create the File</h4>
+          <p>Add a <code>.md</code> file in <code>.claude/commands/</code>. The filename becomes the command name.</p>
+        </div>
+
+        <div class="creation-step">
+          <span class="step-number">Step 2</span>
+          <h4>Add Frontmatter</h4>
+          <p>Set <code>description</code> and <code>argument-hint</code>. Add <code>context: fork</code> if the command should run in isolation.</p>
+        </div>
+
+        <div class="creation-step">
+          <span class="step-number">Step 3</span>
+          <h4>Write Instructions</h4>
+          <p>Tell Claude what to do with <code>$ARGUMENTS</code>. Reference skills, define parsing logic, set the workflow.</p>
+        </div>
+      </div>
+
+      <div class="template-block">
+        <h4>Minimal template</h4>
+        <p>A command that loads a skill &mdash; the pattern used by every command in this project.</p>
+        <div class="code-block"><span class="comment">---</span>
+<span class="frontmatter">description</span>: <span class="string">Short description shown in /help.</span>
+<span class="frontmatter">argument-hint</span>: <span class="argument">[input]</span>
+<span class="frontmatter">context</span>: <span class="argument">fork</span>
+<span class="comment">---</span>
+
+Load the <span class="keyword">`your-skill-name`</span> skill.
+
+Parse <span class="keyword">`$ARGUMENTS`</span>: first argument is the input.
+Follow all steps in the skill.</div>
+      </div>
+
+      <!-- Input/Output example -->
+      <div class="io-grid">
+        <div class="io-card input-card">
+          <h4>You Type</h4>
+          <div class="code-block"><span class="keyword">/doc-extract</span> <span class="argument">https://arxiv.org/pdf/2401.12345</span></div>
+        </div>
+
+        <div class="io-card output-card">
+          <h4>You Get</h4>
+          <ul>
+            <li><code>sources/docs/2024-01-some-paper/meta.md</code> &mdash; structured metadata with tags, summary, source URL</li>
+            <li><code>sources/docs/2024-01-some-paper/content.md</code> &mdash; full document converted to clean markdown</li>
+            <li><code>sources/index.md</code> updated with the new entry</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

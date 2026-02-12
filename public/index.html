@@ -159,6 +159,18 @@
     }
     .index-card.teal .card-title { color: var(--journey-primary); }
 
+    .index-card.green {
+      --_accent: var(--commands-primary);
+      background: linear-gradient(160deg, color-mix(in srgb, var(--_accent) 6%, transparent) 0%, var(--bg-card) 100%);
+      box-shadow: 0 0 40px color-mix(in srgb, var(--_accent) 4%, transparent);
+      border-left: 3px solid color-mix(in srgb, var(--_accent) 30%, transparent);
+    }
+    .index-card.green:hover {
+      box-shadow: 0 8px 48px color-mix(in srgb, var(--_accent) 14%, transparent);
+      border-left-color: var(--_accent);
+    }
+    .index-card.green .card-title { color: var(--commands-primary); }
+
     .index-card .card-subtext {
       font-size: 0.95rem;
       color: var(--text-secondary);
@@ -240,6 +252,12 @@
     <a href="skills-in-practice.html" class="index-card amber">
       <div class="card-title">Skills in Practice</div>
       <p class="card-subtext">From installation to composition &mdash; the practical workflow for extending Claude Code with skills, based on Leon van Zyl's tutorial.</p>
+      <span class="card-arrow">&rsaquo;</span>
+    </a>
+
+    <a href="commands-in-practice.html" class="index-card green">
+      <div class="card-title">Commands in Practice</div>
+      <p class="card-subtext">One markdown file, one slash command &mdash; how custom commands parse arguments and orchestrate skills.</p>
       <span class="card-arrow">&rsaquo;</span>
     </a>
 
