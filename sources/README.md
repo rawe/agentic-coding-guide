@@ -63,10 +63,10 @@ Template:
 For YouTube videos, `meta.md` and `transcript.md` are auto-generated:
 
 ```
-uv run .claude/skills/yt-extract/scripts/yt-extract.py <youtube-url>
+uv run .claude/skills/yt-processing/scripts/yt-extract.py <youtube-url>
 ```
 
-Or via the skill: `/yt-extract <youtube-url>`
+Or via the command: `/yt-extract <youtube-url>`
 
 ### `transcript.md` — Full Transcript
 
