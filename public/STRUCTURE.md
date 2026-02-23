@@ -1,6 +1,6 @@
 # Document Structure & Reading Order
 
-14 guides organized into 4 groups following a **progressive depth** principle: understand what it is, learn the mental models, build your toolbox, master advanced patterns.
+17 guides organized into 4 groups following a **progressive depth** principle: understand what it is, learn the mental models, build your toolbox, master advanced patterns.
 
 ## 01 — Orientation
 
@@ -33,8 +33,9 @@
 | 9 | **Skills in Practice** | Hands-on skills. Installing, using, and composing skills with real examples (doc-processing → summarize chain). |
 | 10 | **Skills Reference** | Complete spec. Every frontmatter field, string substitution, installation path, and context budget number. Lookup table, not a tutorial. |
 | 11 | **Writing Better Skills** | Authoring best practices. Description triggers, body structure, named patterns (Thin Command → Rich Skill, Meta-Skill, Domain Router), and anti-patterns. |
+| 12 | **MCP Servers in Practice** | The tools layer in practice. How to connect Claude Code to external tools via `.mcp.json`, common servers (Sentry, GitHub, Playwright, databases), scoping, and security. Complements the conceptual overview in "Three Layers, Three Jobs". |
 
-**Why 6 pages on extensibility?** Commands and skills are where most teams spend their customization time. The journey page provides the conceptual frame, then each page goes one level deeper: commands hands-on → skills anatomy → skills hands-on → skills reference → skills authoring. This progression means you can stop at any depth and still have a complete mental model.
+**Why 7 pages on extensibility?** Commands and skills are where most teams spend their customization time. MCP servers complete the toolbox — they provide the external capabilities that skills teach Claude how to use. The journey page provides the conceptual frame, then each page goes one level deeper.
 
 ## 04 — Advanced Patterns
 
@@ -42,9 +43,11 @@
 
 | # | Document | Why here |
 |---|----------|----------|
-| 12 | **The Developer's Daily Loop** | Capstone page. References skills, commands, CLAUDE.md, context management, subagents, MCP, and debugging. Six workflow patterns from Boris Cherny (Claude Code creator). Ties all prior knowledge together. |
-| 13 | **Subagents vs Agent Teams** | Multi-agent architecture decision. Hub-and-spoke (subagents) vs mesh (teams) with a single decision axis: do workers need to communicate? |
-| 14 | **Debugging with Claude in Chrome** | Specialized tool integration. Chrome MCP extension for DOM inspection, console reading, and network monitoring — concrete debugging workflows for frontend developers. |
+| 13 | **The Developer's Daily Loop** | Capstone page. References skills, commands, CLAUDE.md, context management, subagents, MCP, and debugging. Six workflow patterns from Boris Cherny (Claude Code creator). Ties all prior knowledge together. |
+| 14 | **Subagents vs Agent Teams** | Multi-agent architecture decision. Hub-and-spoke (subagents) vs mesh (teams) with a single decision axis: do workers need to communicate? |
+| 15 | **Custom Subagents** | How to define specialized subagent personas in `.claude/agents/`. File format, tool restrictions, model selection, practical examples (code reviewer, debugger). Builds on subagent concepts from the previous page. |
+| 16 | **Hooks** | Event-driven automation. Shell commands and LLM prompts triggered by lifecycle events (PreToolUse, PostToolUse, Stop, etc.) to enforce guardrails, format code, and validate output. The only mechanism that can intercept and block Claude's actions. |
+| 17 | **Debugging with Claude in Chrome** | Specialized tool integration. Chrome MCP extension for DOM inspection, console reading, and network monitoring — concrete debugging workflows for frontend developers. |
 
 ## Design Decisions
 
@@ -52,8 +55,12 @@
 
 **Command & Skill Journey opens Group 3**: The maturity model gives readers a map before they dive into individual pages. Without it, the relationship between commands and skills pages is unclear.
 
+**MCP Servers in Group 3, not Group 4**: MCP is part of the extensibility toolbox — it provides capabilities that skills and commands orchestrate. The "Three Layers" page introduces MCP conceptually; the in-practice page goes hands-on. Placing it after skills authoring means readers already understand the knowledge layer before learning the tools layer.
+
 **Developer's Daily Loop in Advanced, not Foundations**: Despite being about "daily" workflows, it references nearly every other topic. A reader who hasn't seen skills, commands, subagents, and context management would miss most of the value.
 
-**Skills get 4 dedicated pages**: Anatomy (what it is), Practice (how to use), Reference (lookup), Best Practices (how to build). This mirrors how teams actually learn: understand → use → look things up → create their own.
+**Custom Subagents after Subagents vs Teams**: Custom subagents are the mechanism for creating the specialized roles discussed in the subagents page. Reading order: understand the architecture (subagents vs teams) → learn to define subagents.
+
+**Hooks near the end of Advanced**: Hooks are the most powerful but also most complex extensibility mechanism. They intercept Claude's actions — understanding what those actions are (tools, commands, skills, MCP calls) is prerequisite knowledge.
 
 **Debugging is last**: It's the most specialized page (Chrome MCP only) and the narrowest audience (frontend developers). It's valuable but optional for the general reader.

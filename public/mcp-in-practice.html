@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MCP Servers in Practice</title>
+  <link rel="stylesheet" href="css/theme.css">
+  <style>
+    /* ── Background image & overlay ── */
+    body {
+      background-image: url('assets/bg-dark-abstract.png');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(10, 14, 26, 0.92) 0%,
+        rgba(10, 14, 26, 0.80) 40%,
+        rgba(10, 14, 26, 0.88) 100%
+      );
+      z-index: 0;
+    }
+
+    .page-wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 60px 40px 100px;
+    }
+
+    /* ── Header ── */
+    header {
+      text-align: center;
+      margin-bottom: 72px;
+    }
+
+    .badge {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--mcp-primary);
+      background: var(--mcp-glow);
+      border: 1px solid rgba(196, 102, 245, 0.2);
+      padding: 6px 16px;
+      border-radius: 20px;
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      font-size: clamp(2.2rem, 5vw, 3.4rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, var(--mcp-primary) 0%, var(--skills-primary) 50%, var(--research-primary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      max-width: 620px;
+      margin: 0 auto;
+      line-height: 1.6;
+      font-weight: 400;
+    }
+
+    /* ── Section shared ── */
+    .section {
+      margin-bottom: 64px;
+    }
+
+    .section-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 40px;
+    }
+
+    .section-card h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+
+    .section-card .section-intro {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 28px;
+      max-width: 700px;
+    }
+
+    /* ── Inline code ── */
+    code {
+      font-family: var(--font-mono);
+      font-size: 0.85em;
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.06);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    /* ── Code blocks ── */
+    .code-block {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 20px 24px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      line-height: 1.7;
+      color: var(--text-secondary);
+      overflow-x: auto;
+      margin-top: 16px;
+      white-space: pre-wrap;
+    }
+
+    .code-block .comment   { color: var(--text-muted); }
+    .code-block .keyword   { color: var(--mcp-primary); }
+    .code-block .string    { color: var(--plan-primary); }
+    .code-block .argument  { color: #f59e0b; }
+    .code-block .file-name { color: var(--mcp-primary); }
+
+    /* ── Callout ── */
+    .callout {
+      margin-top: 24px;
+      padding: 20px 24px;
+      border-radius: 10px;
+      background: linear-gradient(160deg, rgba(196, 102, 245, 0.06) 0%, rgba(15, 20, 35, 0.6) 100%);
+      border: 1px solid rgba(196, 102, 245, 0.15);
+      border-left: 3px solid var(--mcp-primary);
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .callout strong {
+      color: var(--mcp-primary);
+    }
+
+    /* ── Architecture diagram ── */
+    .architecture {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
+
+    .arch-box {
+      padding: 16px 24px;
+      border-radius: 10px;
+      border: 1px solid var(--border-subtle);
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      text-align: center;
+    }
+
+    .arch-box.host {
+      background: linear-gradient(160deg, rgba(196, 102, 245, 0.08) 0%, rgba(15, 20, 35, 0.6) 100%);
+      border-color: rgba(196, 102, 245, 0.2);
+      color: var(--mcp-primary);
+    }
+
+    .arch-box.client {
+      background: linear-gradient(160deg, rgba(124, 110, 240, 0.08) 0%, rgba(15, 20, 35, 0.6) 100%);
+      border-color: rgba(124, 110, 240, 0.2);
+      color: var(--skills-primary);
+    }
+
+    .arch-box.server {
+      background: linear-gradient(160deg, rgba(56, 189, 248, 0.08) 0%, rgba(15, 20, 35, 0.6) 100%);
+      border-color: rgba(56, 189, 248, 0.2);
+      color: var(--research-primary);
+    }
+
+    .arch-arrow {
+      font-size: 1.4rem;
+      color: var(--text-muted);
+      opacity: 0.5;
+    }
+
+    /* ── Primitives grid ── */
+    .primitives-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .primitive-card {
+      padding: 20px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+
+    .primitive-card h4 {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--mcp-primary);
+    }
+
+    .primitive-card p {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* ── Scope table ── */
+    .scope-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      font-size: 0.85rem;
+    }
+
+    .scope-table th {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--mcp-primary);
+      text-align: left;
+      padding: 10px 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .scope-table td {
+      padding: 10px 14px;
+      color: var(--text-secondary);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      line-height: 1.5;
+    }
+
+    .scope-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* ── Popular servers grid ── */
+    .servers-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .server-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 24px;
+      transition: transform 0.3s ease;
+    }
+
+    .server-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .server-card .sv-label {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 6px;
+    }
+
+    .server-card.sv-sentry .sv-label {
+      color: var(--warn);
+      background: rgba(240, 110, 110, 0.12);
+    }
+    .server-card.sv-sentry { border-top: 3px solid var(--warn); }
+
+    .server-card.sv-github .sv-label {
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.06);
+    }
+    .server-card.sv-github { border-top: 3px solid var(--text-secondary); }
+
+    .server-card.sv-notion .sv-label {
+      color: var(--mcp-primary);
+      background: var(--mcp-glow);
+    }
+    .server-card.sv-notion { border-top: 3px solid var(--mcp-primary); }
+
+    .server-card.sv-postgres .sv-label {
+      color: var(--research-primary);
+      background: var(--research-glow);
+    }
+    .server-card.sv-postgres { border-top: 3px solid var(--research-primary); }
+
+    .server-card.sv-playwright .sv-label {
+      color: var(--plan-primary);
+      background: var(--plan-glow);
+    }
+    .server-card.sv-playwright { border-top: 3px solid var(--plan-primary); }
+
+    .server-card.sv-fetch .sv-label {
+      color: #f59e0b;
+      background: rgba(245, 158, 11, 0.12);
+    }
+    .server-card.sv-fetch { border-top: 3px solid #f59e0b; }
+
+    .server-card h3 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: var(--text-primary);
+    }
+
+    .server-card p {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 12px;
+    }
+
+    .server-card .code-block {
+      font-size: 0.72rem;
+      padding: 12px 16px;
+      margin-top: 0;
+    }
+
+    /* ── Setup walkthrough ── */
+    .setup-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 28px 36px;
+      border-left: 3px solid var(--mcp-primary);
+    }
+
+    .setup-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .setup-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .setup-num {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--mcp-primary);
+      background: var(--mcp-glow);
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .setup-step .step-content {
+      flex: 1;
+    }
+
+    .setup-step .step-content strong {
+      font-size: 0.9rem;
+      color: var(--text-primary);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .setup-step .step-content span {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .setup-step .step-content .code-block {
+      font-size: 0.75rem;
+      padding: 14px 18px;
+      margin-top: 8px;
+    }
+
+    /* ── Comparison grid ── */
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .cmp-card {
+      padding: 20px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .cmp-card h4 {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .cmp-card .cmp-role {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      font-family: var(--font-mono);
+    }
+
+    .cmp-card p {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .cmp-card.cmp-mcp h4     { color: var(--mcp-primary); }
+    .cmp-card.cmp-skills h4   { color: var(--skills-primary); }
+    .cmp-card.cmp-commands h4  { color: var(--commands-primary); }
+    .cmp-card.cmp-hooks h4    { color: #f59e0b; }
+
+    /* ── Security list ── */
+    .security-list {
+      list-style: none;
+      margin-top: 16px;
+    }
+
+    .security-list li {
+      padding: 8px 0;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      padding-left: 20px;
+      position: relative;
+    }
+
+    .security-list li::before {
+      content: '\25CF';
+      position: absolute;
+      left: 0;
+      color: var(--mcp-primary);
+      font-size: 0.5rem;
+      top: 14px;
+    }
+
+    /* ── Warning list ── */
+    .warn-list {
+      list-style: none;
+      margin-top: 16px;
+    }
+
+    .warn-list li {
+      padding: 8px 0;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      padding-left: 20px;
+      position: relative;
+    }
+
+    .warn-list li::before {
+      content: '!';
+      position: absolute;
+      left: 0;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: var(--warn);
+      font-size: 0.8rem;
+    }
+
+    /* ── Sources section ── */
+    .sources-list {
+      list-style: none;
+      margin-top: 16px;
+    }
+
+    .sources-list li {
+      padding: 6px 0;
+      font-size: 0.85rem;
+      line-height: 1.5;
+    }
+
+    .sources-list li a {
+      color: var(--mcp-primary);
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+
+    .sources-list li a:hover {
+      opacity: 0.8;
+      text-decoration: underline;
+    }
+
+    .sources-list li span {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+    }
+
+    /* ── Source attribution ── */
+    .source-attribution {
+      position: fixed;
+      bottom: 20px;
+      left: 24px;
+      z-index: 10;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      opacity: 0.6;
+      transition: opacity 0.3s ease;
+    }
+
+    .source-attribution:hover {
+      opacity: 1;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 700px) {
+      .primitives-grid { grid-template-columns: 1fr; }
+      .servers-grid { grid-template-columns: 1fr; }
+      .comparison-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 600px) {
+      .page-wrapper { padding: 48px 20px 80px; }
+      .section-card { padding: 28px 20px; }
+      .setup-card { padding: 22px 20px; }
+      .architecture { gap: 10px; }
+      .arch-box { padding: 12px 16px; font-size: 0.78rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-wrapper">
+
+  <!-- Header -->
+  <header>
+    <div class="badge">Extensibility</div>
+    <h1>MCP Servers in Practice</h1>
+    <p class="subtitle">
+      Connect Claude Code to external tools, APIs, and databases through the Model Context Protocol&hairsp;&mdash;&hairsp;the standard interface for AI-to-service communication.
+    </p>
+  </header>
+
+  <!-- Section 1: What MCP Is -->
+  <div class="section">
+    <div class="section-card">
+      <h2>What MCP Is</h2>
+      <p class="section-intro">
+        MCP (Model Context Protocol) is an open standard for connecting AI applications to external systems. Think of it as USB-C for AI&hairsp;&mdash;&hairsp;one standardized plug that works with any service.
+      </p>
+
+      <div class="architecture">
+        <div class="arch-box host">MCP Host<br><span style="font-size: 0.7rem; opacity: 0.7;">Claude Code</span></div>
+        <span class="arch-arrow">&rarr;</span>
+        <div class="arch-box client">MCP Client<br><span style="font-size: 0.7rem; opacity: 0.7;">1 per server</span></div>
+        <span class="arch-arrow">&rarr;</span>
+        <div class="arch-box server">MCP Server<br><span style="font-size: 0.7rem; opacity: 0.7;">Sentry, GitHub, &hellip;</span></div>
+      </div>
+
+      <div class="primitives-grid">
+        <div class="primitive-card">
+          <h4>Tools</h4>
+          <p>Executable functions Claude can invoke. File ops, API calls, database queries.</p>
+        </div>
+        <div class="primitive-card">
+          <h4>Resources</h4>
+          <p>Data sources that provide context. File contents, records, API responses.</p>
+        </div>
+        <div class="primitive-card">
+          <h4>Prompts</h4>
+          <p>Reusable interaction templates. System prompts, few-shot examples.</p>
+        </div>
+      </div>
+
+      <div class="callout">
+        <strong>Key concept:</strong> Discovery is dynamic. Clients call <code>tools/list</code>, <code>resources/list</code>, or <code>prompts/list</code> to discover what a server offers, then invoke capabilities as needed.
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 2: Configuration -->
+  <div class="section">
+    <div class="section-card">
+      <h2>Configuration</h2>
+      <p class="section-intro">
+        Add servers via CLI commands or declare them in a project <code>.mcp.json</code> file. Three transport options: HTTP (remote), stdio (local process), and SSE (deprecated).
+      </p>
+
+      <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 12px; color: var(--text-primary);">CLI Commands</h3>
+      <div class="code-block"><span class="comment"># Remote server (HTTP &mdash; recommended for SaaS services)</span>
+<span class="keyword">claude mcp add</span> <span class="argument">--transport http</span> <span class="string">sentry</span> https://mcp.sentry.dev/mcp
+
+<span class="comment"># Local process server (stdio)</span>
+<span class="keyword">claude mcp add</span> <span class="argument">--transport stdio</span> <span class="string">db</span> -- npx -y @bytebase/dbhub --dsn <span class="string">"postgres://..."</span>
+
+<span class="comment"># Import servers from Claude Desktop</span>
+<span class="keyword">claude mcp add-from-claude-desktop</span></div>
+
+      <h3 style="font-size: 1rem; font-weight: 600; margin: 28px 0 12px; color: var(--text-primary);">Project Config &mdash; <code>.mcp.json</code></h3>
+      <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 8px;">
+        Lives at the project root. Commit to version control so the whole team shares the same MCP setup.
+      </p>
+      <div class="code-block">{
+  <span class="string">"mcpServers"</span>: {
+    <span class="string">"sentry"</span>: {
+      <span class="keyword">"type"</span>: <span class="string">"http"</span>,
+      <span class="keyword">"url"</span>: <span class="string">"https://mcp.sentry.dev/mcp"</span>
+    },
+    <span class="string">"db"</span>: {
+      <span class="keyword">"command"</span>: <span class="string">"npx"</span>,
+      <span class="keyword">"args"</span>: [<span class="string">"-y"</span>, <span class="string">"@bytebase/dbhub"</span>, <span class="string">"--dsn"</span>, <span class="string">"${DB_URL}"</span>]
+    }
+  }
+}</div>
+
+      <h3 style="font-size: 1rem; font-weight: 600; margin: 28px 0 12px; color: var(--text-primary);">Scoping</h3>
+      <table class="scope-table">
+        <thead>
+          <tr>
+            <th>Scope</th>
+            <th>Storage</th>
+            <th>Visibility</th>
+            <th>Use Case</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>local</code></td>
+            <td><code>~/.claude.json</code> (project path)</td>
+            <td>Only you, this project</td>
+            <td>Personal servers, sensitive creds</td>
+          </tr>
+          <tr>
+            <td><code>project</code></td>
+            <td><code>.mcp.json</code> in repo root</td>
+            <td>Everyone via version control</td>
+            <td>Team-shared servers</td>
+          </tr>
+          <tr>
+            <td><code>user</code></td>
+            <td><code>~/.claude.json</code> (global)</td>
+            <td>You, across all projects</td>
+            <td>Personal utilities everywhere</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="callout">
+        <strong>Precedence:</strong> Local &gt; Project &gt; User. If the same server name exists at multiple scopes, the most specific scope wins.
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 3: Popular Servers -->
+  <div class="section">
+    <div class="section-card">
+      <h2>Popular Servers</h2>
+      <p class="section-intro">
+        Production-ready servers you can add in one command. HTTP servers handle auth automatically via OAuth; stdio servers run locally as subprocesses.
+      </p>
+
+      <div class="servers-grid">
+
+        <div class="server-card sv-sentry">
+          <span class="sv-label">Error Tracking</span>
+          <h3>Sentry</h3>
+          <p>Query errors, stack traces, and production issues. OAuth authentication.</p>
+          <div class="code-block"><span class="keyword">claude mcp add</span> <span class="argument">--transport http</span> <span class="string">sentry</span> \
+  https://mcp.sentry.dev/mcp</div>
+        </div>
+
+        <div class="server-card sv-github">
+          <span class="sv-label">Code &amp; PRs</span>
+          <h3>GitHub</h3>
+          <p>PR reviews, issue management, repo operations. OAuth authentication.</p>
+          <div class="code-block"><span class="keyword">claude mcp add</span> <span class="argument">--transport http</span> <span class="string">github</span> \
+  https://api.githubcopilot.com/mcp/</div>
+        </div>
+
+        <div class="server-card sv-notion">
+          <span class="sv-label">Knowledge Base</span>
+          <h3>Notion</h3>
+          <p>Read and write Notion pages and databases. OAuth authentication.</p>
+          <div class="code-block"><span class="keyword">claude mcp add</span> <span class="argument">--transport http</span> <span class="string">notion</span> \
+  https://mcp.notion.com/mcp</div>
+        </div>
+
+        <div class="server-card sv-postgres">
+          <span class="sv-label">Database</span>
+          <h3>PostgreSQL (DBHub)</h3>
+          <p>Query databases, view schemas, analyze data. Local stdio process.</p>
+          <div class="code-block"><span class="keyword">claude mcp add</span> <span class="argument">--transport stdio</span> <span class="string">db</span> \
+  -- npx -y @bytebase/dbhub \
+  --dsn <span class="string">"postgres://user:pass@host/db"</span></div>
+        </div>
+
+        <div class="server-card sv-playwright">
+          <span class="sv-label">Browser Automation</span>
+          <h3>Playwright</h3>
+          <p>Browser testing, screenshots, web automation. Local stdio process.</p>
+          <div class="code-block"><span class="keyword">claude mcp add</span> <span class="argument">--transport stdio</span> <span class="string">playwright</span> \
+  -- npx -y @playwright/mcp@latest</div>
+        </div>
+
+        <div class="server-card sv-fetch">
+          <span class="sv-label">Web Content</span>
+          <h3>Fetch</h3>
+          <p>Fetch web content and convert to markdown. Official reference server.</p>
+          <div class="code-block"><span class="keyword">claude mcp add</span> <span class="argument">--transport stdio</span> <span class="string">fetch</span> \
+  -- npx -y @anthropic/mcp-fetch</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 4: Setup Walkthrough -->
+  <div class="section">
+    <div class="section-card">
+      <h2>Setup Walkthrough</h2>
+      <p class="section-intro">
+        Adding your first MCP server, step by step. Using Sentry as the example&hairsp;&mdash;&hairsp;the flow is identical for any HTTP server.
+      </p>
+
+      <div class="setup-card">
+        <div class="setup-steps">
+          <div class="setup-step">
+            <span class="setup-num">1</span>
+            <div class="step-content">
+              <strong>Add the server</strong>
+              <div class="code-block"><span class="keyword">claude mcp add</span> <span class="argument">--transport http</span> <span class="string">sentry</span> https://mcp.sentry.dev/mcp</div>
+            </div>
+          </div>
+          <div class="setup-step">
+            <span class="setup-num">2</span>
+            <div class="step-content">
+              <strong>Start Claude Code and authenticate</strong>
+              <span>Run <code>claude</code>, then type <code>/mcp</code> and select &ldquo;Authenticate&rdquo; for Sentry. A browser window opens for OAuth login.</span>
+            </div>
+          </div>
+          <div class="setup-step">
+            <span class="setup-num">3</span>
+            <div class="step-content">
+              <strong>Verify it works</strong>
+              <span>Ask Claude a question that requires the server: <code>"What are the most common errors in the last 24 hours?"</code></span>
+            </div>
+          </div>
+          <div class="setup-step">
+            <span class="setup-num">4</span>
+            <div class="step-content">
+              <strong>Share with your team (optional)</strong>
+              <span>Re-add with <code>--scope project</code> to write to <code>.mcp.json</code>, then commit. Team members get prompted for approval on first use.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h3 style="font-size: 1rem; font-weight: 600; margin: 28px 0 12px; color: var(--text-primary);">Troubleshooting</h3>
+      <div class="code-block"><span class="comment"># Check configured servers</span>
+<span class="keyword">claude mcp list</span>
+<span class="keyword">claude mcp get</span> <span class="string">sentry</span>
+
+<span class="comment"># Inside Claude Code</span>
+<span class="keyword">/mcp</span>                          <span class="comment"># Status, authenticate, troubleshoot</span>
+
+<span class="comment"># Increase startup timeout (default 10s)</span>
+<span class="argument">MCP_TIMEOUT=10000</span> <span class="keyword">claude</span>
+
+<span class="comment"># Increase output limit (default 25,000 tokens)</span>
+<span class="argument">MAX_MCP_OUTPUT_TOKENS=50000</span> <span class="keyword">claude</span></div>
+    </div>
+  </div>
+
+  <!-- Section 5: MCP vs Other Extensibility -->
+  <div class="section">
+    <div class="section-card">
+      <h2>MCP vs Other Extensibility</h2>
+      <p class="section-intro">
+        Claude Code has four extension mechanisms. Each solves a different problem. MCP provides tools; Skills teach Claude how to use them.
+      </p>
+
+      <div class="comparison-grid">
+        <div class="cmp-card cmp-mcp">
+          <h4>MCP Servers</h4>
+          <div class="cmp-role">Provides tools</div>
+          <p>External connections to APIs, databases, and services. Available when the server is running. Claude calls tools, reads resources, and uses prompts exposed by the server.</p>
+        </div>
+        <div class="cmp-card cmp-skills">
+          <h4>Skills</h4>
+          <div class="cmp-role">Provides knowledge</div>
+          <p>On-demand markdown instructions and workflows. Loaded when relevant. Teaches Claude your conventions, review checklists, or deployment procedures.</p>
+        </div>
+        <div class="cmp-card cmp-commands">
+          <h4>Slash Commands</h4>
+          <div class="cmp-role">Provides shortcuts</div>
+          <p>User-triggered aliases that expand to full prompts. Think of them as saved macros&hairsp;&mdash;&hairsp;type <code>/deploy</code> instead of writing a full deployment instruction.</p>
+        </div>
+        <div class="cmp-card cmp-hooks">
+          <h4>Hooks</h4>
+          <div class="cmp-role">Provides guardrails</div>
+          <p>Automated shell triggers on specific events (pre-commit, post-save). Run formatting, linting, or validation without manual invocation.</p>
+        </div>
+      </div>
+
+      <div class="callout">
+        <strong>Powerful combo:</strong> An MCP server connects Claude to your database. A Skill (<code>.claude/skills/database-queries.md</code>) teaches Claude your schema, naming conventions, and which tables to avoid. The server provides the tools; the skill provides the knowledge.
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 6: Security -->
+  <div class="section">
+    <div class="section-card">
+      <h2>Security</h2>
+      <p class="section-intro">
+        MCP servers run code and access external services. Review before installing.
+      </p>
+
+      <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 12px; color: var(--text-primary);">Best Practices</h3>
+      <ul class="security-list">
+        <li><strong style="color: var(--text-primary);">Prefer OAuth over static API keys</strong> &mdash; short-lived, scoped tokens are safer than long-lived PATs</li>
+        <li><strong style="color: var(--text-primary);">Review before installing</strong> &mdash; check source code, maintenance status, known issues on GitHub</li>
+        <li><strong style="color: var(--text-primary);">Be cautious with content-fetching servers</strong> &mdash; servers that fetch web pages or emails increase prompt injection surface</li>
+        <li><strong style="color: var(--text-primary);">Use project-scoped servers</strong> &mdash; <code>.mcp.json</code> lets you audit exactly which servers a project uses</li>
+        <li><strong style="color: var(--text-primary);">Rotate credentials</strong> &mdash; use short-lived tokens and rotate frequently, especially for database connections</li>
+      </ul>
+
+      <h3 style="font-size: 1rem; font-weight: 600; margin: 24px 0 12px; color: var(--text-primary);">Risks to Watch For</h3>
+      <ul class="warn-list">
+        <li><strong style="color: var(--text-primary);">Supply-chain risk</strong> &mdash; third-party servers may contain vulnerabilities. A SQL injection flaw was found in an official reference server after thousands of forks.</li>
+        <li><strong style="color: var(--text-primary);">Tool poisoning</strong> &mdash; modified servers can alter tool outputs to change agent behavior. Only install servers from trusted sources.</li>
+        <li><strong style="color: var(--text-primary);">Static credentials</strong> &mdash; over half of servers requiring auth rely on static API keys rather than OAuth. Minimize use of long-lived secrets.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Section 7: Sources -->
+  <div class="section">
+    <div class="section-card">
+      <h2>Sources &amp; Further Reading</h2>
+      <p class="section-intro">
+        Official documentation and community resources for MCP.
+      </p>
+      <ul class="sources-list">
+        <li><a href="https://code.claude.com/docs/en/mcp" target="_blank" rel="noopener">Claude Code MCP Documentation</a> <span>&mdash; official setup, configuration, and auth reference</span></li>
+        <li><a href="https://modelcontextprotocol.io/" target="_blank" rel="noopener">modelcontextprotocol.io</a> <span>&mdash; MCP specification, architecture, and transport docs</span></li>
+        <li><a href="https://github.com/modelcontextprotocol/servers" target="_blank" rel="noopener">modelcontextprotocol/servers</a> <span>&mdash; official reference servers and community directory</span></li>
+        <li><a href="https://github.com/wong2/awesome-mcp-servers" target="_blank" rel="noopener">awesome-mcp-servers</a> <span>&mdash; curated community list of MCP servers</span></li>
+        <li><a href="https://modelcontextprotocol.io/specification/draft/basic/security_best_practices" target="_blank" rel="noopener">MCP Security Best Practices</a> <span>&mdash; official security guidance for the protocol</span></li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<!-- Source attribution bottom-left -->
+<div class="source-attribution">
+  Claude Code Docs &amp; MCP Spec<br>
+  <a href="https://code.claude.com/docs/en/mcp" target="_blank" rel="noopener">code.claude.com/docs/en/mcp</a>
+</div>
+
+</body>
+</html>

@@ -71,7 +71,12 @@
   --debugging-glow: rgba(251, 191, 36, 0.15);
 
   --hooks-primary: #f472b6;
+  --hooks-secondary: #ec4899;
   --hooks-glow: rgba(244, 114, 182, 0.15);
+
+  --agents-primary: #f43f5e;
+  --agents-secondary: #fb7185;
+  --agents-glow: rgba(244, 63, 94, 0.15);
 
   --warn: #f06e6e;
 

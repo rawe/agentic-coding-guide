@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hooks &mdash; Event-Driven Automation for Claude Code</title>
+  <link rel="stylesheet" href="css/theme.css">
+  <style>
+    /* ── Background image & overlay ── */
+    body {
+      background-image: url('assets/bg-dark-abstract.png');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(10, 14, 26, 0.92) 0%,
+        rgba(10, 14, 26, 0.80) 40%,
+        rgba(10, 14, 26, 0.88) 100%
+      );
+      z-index: 0;
+    }
+
+    .page-wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 60px 40px 80px;
+    }
+
+    /* ── Header ── */
+    header {
+      text-align: center;
+      margin-bottom: 72px;
+    }
+
+    .badge {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--hooks-primary);
+      background: var(--hooks-glow);
+      border: 1px solid rgba(244, 114, 182, 0.2);
+      padding: 6px 16px;
+      border-radius: 20px;
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      font-size: clamp(2.2rem, 5vw, 3.6rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, var(--hooks-primary) 0%, var(--hooks-secondary) 40%, var(--mcp-primary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      font-size: 1.15rem;
+      color: var(--text-secondary);
+      max-width: 640px;
+      margin: 0 auto;
+      line-height: 1.6;
+      font-weight: 400;
+    }
+
+    /* ── Section shared ── */
+    .section {
+      margin-bottom: 72px;
+    }
+
+    .section-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 40px;
+    }
+
+    .section-card h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+
+    .section-card .section-intro {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 28px;
+      max-width: 700px;
+    }
+
+    /* ── Inline code ── */
+    code {
+      font-family: var(--font-mono);
+      font-size: 0.85em;
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.06);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    /* ── Code blocks ── */
+    .code-block {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 20px 24px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      line-height: 1.7;
+      color: var(--text-secondary);
+      overflow-x: auto;
+      margin-top: 16px;
+      white-space: pre-wrap;
+    }
+
+    .code-block .comment    { color: var(--text-muted); }
+    .code-block .keyword    { color: var(--hooks-primary); }
+    .code-block .string     { color: var(--plan-primary); }
+    .code-block .prop       { color: var(--research-primary); }
+    .code-block .value      { color: #f59e0b; }
+
+    /* ── Callout ── */
+    .callout {
+      margin-top: 24px;
+      padding: 20px 24px;
+      border-radius: 10px;
+      background: linear-gradient(160deg, rgba(244, 114, 182, 0.06) 0%, rgba(15, 20, 35, 0.6) 100%);
+      border: 1px solid rgba(244, 114, 182, 0.15);
+      border-left: 3px solid var(--hooks-primary);
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .callout strong {
+      color: var(--hooks-primary);
+    }
+
+    /* ── Handler types grid ── */
+    .handler-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .handler-card {
+      padding: 24px 20px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .handler-card .handler-label {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 6px;
+    }
+
+    .handler-card.hc-command .handler-label {
+      color: var(--hooks-primary);
+      background: var(--hooks-glow);
+    }
+    .handler-card.hc-command { border-top: 3px solid var(--hooks-primary); }
+
+    .handler-card.hc-prompt .handler-label {
+      color: var(--research-primary);
+      background: var(--research-glow);
+    }
+    .handler-card.hc-prompt { border-top: 3px solid var(--research-primary); }
+
+    .handler-card.hc-agent .handler-label {
+      color: var(--mcp-primary);
+      background: rgba(196, 102, 245, 0.15);
+    }
+    .handler-card.hc-agent { border-top: 3px solid var(--mcp-primary); }
+
+    .handler-card h4 {
+      font-size: 0.92rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: var(--text-primary);
+    }
+
+    .handler-card p {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* ── Events grid ── */
+    .events-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin-top: 24px;
+    }
+
+    .event-card {
+      padding: 18px 20px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .event-card .event-name {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--hooks-primary);
+      margin-bottom: 4px;
+    }
+
+    .event-card .event-when {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      line-height: 1.45;
+      margin-bottom: 6px;
+    }
+
+    .event-card .event-tag {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 4px;
+      display: inline-block;
+    }
+
+    .event-tag.can-block {
+      color: var(--warn);
+      background: rgba(240, 110, 110, 0.12);
+    }
+
+    .event-tag.side-effect {
+      color: var(--text-muted);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    /* ── Config anatomy grid ── */
+    .config-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .config-right {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .config-item {
+      padding: 16px 20px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .config-item h4 {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .config-item p {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
+    /* ── Example cards ── */
+    .example-card {
+      margin-top: 28px;
+      padding: 28px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.015);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .example-card + .example-card {
+      margin-top: 20px;
+    }
+
+    .example-card .ex-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .example-card .ex-icon {
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+
+    .example-card .ex-header h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .example-card .ex-desc {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.55;
+      margin-bottom: 14px;
+    }
+
+    .example-card .ex-desc strong {
+      color: var(--text-primary);
+    }
+
+    /* ── Comparison table ── */
+    .compare-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-top: 24px;
+    }
+
+    .compare-card {
+      padding: 20px 18px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+
+    .compare-card .cmp-label {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 6px;
+      margin-bottom: 12px;
+    }
+
+    .compare-card.cmp-hooks .cmp-label {
+      color: var(--hooks-primary);
+      background: var(--hooks-glow);
+    }
+    .compare-card.cmp-hooks { border-top: 3px solid var(--hooks-primary); }
+
+    .compare-card.cmp-skills .cmp-label {
+      color: var(--skills-primary);
+      background: var(--skills-glow);
+    }
+    .compare-card.cmp-skills { border-top: 3px solid var(--skills-primary); }
+
+    .compare-card.cmp-mcp .cmp-label {
+      color: var(--mcp-primary);
+      background: rgba(196, 102, 245, 0.15);
+    }
+    .compare-card.cmp-mcp { border-top: 3px solid var(--mcp-primary); }
+
+    .compare-card.cmp-agents .cmp-label {
+      color: var(--subagent-primary);
+      background: var(--subagent-glow);
+    }
+    .compare-card.cmp-agents { border-top: 3px solid var(--subagent-primary); }
+
+    .compare-card h4 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: var(--text-primary);
+    }
+
+    .compare-card p {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
+    .compare-card .cmp-role {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    /* ── Sources section ── */
+    .sources-list {
+      list-style: none;
+      margin-top: 16px;
+    }
+
+    .sources-list li {
+      padding: 8px 0;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .sources-list li a {
+      color: var(--hooks-primary);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(244, 114, 182, 0.3);
+      transition: border-color 0.2s ease;
+    }
+
+    .sources-list li a:hover {
+      border-bottom-color: var(--hooks-primary);
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 700px) {
+      .handler-grid { grid-template-columns: 1fr; }
+      .events-grid { grid-template-columns: 1fr; }
+      .config-grid { grid-template-columns: 1fr; }
+      .compare-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 600px) {
+      .page-wrapper {
+        padding: 40px 20px 60px;
+      }
+
+      .section-card {
+        padding: 28px 20px;
+      }
+
+      .compare-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-wrapper">
+
+  <!-- Header -->
+  <header>
+    <div class="badge">Extensibility</div>
+    <h1>Hooks</h1>
+    <p class="subtitle">
+      Shell commands and LLM prompts that fire automatically at lifecycle events&hairsp;&mdash;&hairsp;deterministic guardrails you don&rsquo;t have to ask Claude to remember.
+    </p>
+  </header>
+
+  <!-- Section 1: What Hooks Are -->
+  <div class="section">
+    <div class="section-card">
+      <h2>What Hooks Are</h2>
+      <p class="section-intro">
+        Hooks are user-defined actions that execute at specific points in Claude Code&rsquo;s lifecycle. Unlike CLAUDE.md instructions (which the LLM may or may not follow), hooks provide <strong style="color: var(--text-primary);">deterministic control</strong>&hairsp;&mdash;&hairsp;they always run, every time.
+      </p>
+
+      <div class="handler-grid">
+        <div class="handler-card hc-command">
+          <span class="handler-label">Command</span>
+          <h4>Shell Script</h4>
+          <p>Runs a shell command. Receives JSON on stdin, returns results via exit codes and stdout. The workhorse.</p>
+        </div>
+        <div class="handler-card hc-prompt">
+          <span class="handler-label">Prompt</span>
+          <h4>LLM Evaluation</h4>
+          <p>Sends a prompt to a fast model (Haiku) for single-turn yes/no decisions. Returns <code>ok: true</code> or <code>ok: false</code>.</p>
+        </div>
+        <div class="handler-card hc-agent">
+          <span class="handler-label">Agent</span>
+          <h4>Multi-Turn Subagent</h4>
+          <p>Spawns a subagent with Read/Grep/Glob access for multi-turn verification before returning a decision.</p>
+        </div>
+      </div>
+
+      <div class="callout">
+        <strong>Key distinction:</strong> Hooks are the only extensibility mechanism that can intercept and block Claude&rsquo;s actions before they happen.
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 2: Lifecycle Events -->
+  <div class="section">
+    <div class="section-card">
+      <h2>Lifecycle Events</h2>
+      <p class="section-intro">
+        Claude Code exposes 17 hook events. These are the ones you&rsquo;ll use most often.
+      </p>
+
+      <div class="events-grid">
+        <div class="event-card">
+          <div class="event-name">PreToolUse</div>
+          <div class="event-when">Fires before a tool call executes. Can allow, deny, or modify tool input. The most powerful hook.</div>
+          <span class="event-tag can-block">Can Block</span>
+        </div>
+        <div class="event-card">
+          <div class="event-name">PostToolUse</div>
+          <div class="event-when">Fires after a tool call succeeds. Use for formatting, linting, logging. Cannot undo the action.</div>
+          <span class="event-tag side-effect">Side Effect Only</span>
+        </div>
+        <div class="event-card">
+          <div class="event-name">UserPromptSubmit</div>
+          <div class="event-when">Fires when the user submits a prompt, before Claude processes it. Can block or transform the prompt.</div>
+          <span class="event-tag can-block">Can Block</span>
+        </div>
+        <div class="event-card">
+          <div class="event-name">Stop</div>
+          <div class="event-when">Fires when Claude finishes responding. Can force Claude to continue if work remains incomplete.</div>
+          <span class="event-tag can-block">Can Block</span>
+        </div>
+        <div class="event-card">
+          <div class="event-name">Notification</div>
+          <div class="event-when">Fires when Claude sends a notification (permission prompt, idle, etc.). Useful for desktop alerts.</div>
+          <span class="event-tag side-effect">Side Effect Only</span>
+        </div>
+        <div class="event-card">
+          <div class="event-name">SessionStart</div>
+          <div class="event-when">Fires when a session begins, resumes, or restarts after compaction. Inject context or set env vars.</div>
+          <span class="event-tag side-effect">Side Effect Only</span>
+        </div>
+        <div class="event-card">
+          <div class="event-name">PreCompact</div>
+          <div class="event-when">Fires before context compaction. Capture or persist state before the context window shrinks.</div>
+          <span class="event-tag side-effect">Side Effect Only</span>
+        </div>
+        <div class="event-card">
+          <div class="event-name">SubagentStop</div>
+          <div class="event-when">Fires when a subagent finishes. Validate subagent output before the parent accepts it.</div>
+          <span class="event-tag can-block">Can Block</span>
+        </div>
+      </div>
+
+      <div class="callout">
+        <strong>Matchers filter when hooks fire.</strong> For tool events, the matcher is a regex on the tool name: <code>Bash</code>, <code>Edit|Write</code>, <code>mcp__.*</code>. For <code>SessionStart</code>, it filters by trigger: <code>startup</code>, <code>resume</code>, <code>compact</code>. Some events (like <code>Stop</code>) have no matcher and always fire.
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 3: Configuration -->
+  <div class="section">
+    <div class="section-card">
+      <h2>Configuration</h2>
+      <p class="section-intro">
+        Hooks live in settings files as JSON. Three levels of nesting: event &rarr; matcher group &rarr; handler array.
+      </p>
+
+      <div class="config-grid">
+        <div class="code-block">
+<span class="comment">// settings.json (project or user-level)</span>
+{
+  <span class="keyword">"hooks"</span>: {
+    <span class="prop">"PreToolUse"</span>: [
+      {
+        <span class="prop">"matcher"</span>: <span class="string">"Bash"</span>,
+        <span class="prop">"hooks"</span>: [
+          {
+            <span class="prop">"type"</span>: <span class="string">"command"</span>,
+            <span class="prop">"command"</span>: <span class="string">".claude/hooks/validate.sh"</span>,
+            <span class="prop">"timeout"</span>: <span class="value">600</span>
+          }
+        ]
+      }
+    ]
+  }
+}</div>
+        <div class="config-right">
+          <div class="config-item">
+            <h4>Where Hooks Live</h4>
+            <p><code>~/.claude/settings.json</code> &mdash; all projects<br>
+            <code>.claude/settings.json</code> &mdash; single project (committable)<br>
+            <code>.claude/settings.local.json</code> &mdash; project, gitignored<br>
+            Skill/agent YAML frontmatter &mdash; scoped to component</p>
+          </div>
+          <div class="config-item">
+            <h4>Exit Code Protocol</h4>
+            <p><strong style="color: var(--plan-primary);">0</strong> &mdash; success, action proceeds<br>
+            <strong style="color: var(--warn);">2</strong> &mdash; block the action, stderr fed to Claude<br>
+            <strong style="color: var(--text-muted);">Other</strong> &mdash; non-blocking error, logged only</p>
+          </div>
+          <div class="config-item">
+            <h4>Interactive Editor</h4>
+            <p>Run <code>/hooks</code> inside Claude Code to view, add, and delete hooks without editing JSON manually.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 4: Practical Examples -->
+  <div class="section">
+    <div class="section-card">
+      <h2>Practical Examples</h2>
+      <p class="section-intro">
+        Four patterns that cover the most common use cases.
+      </p>
+
+      <!-- Example 1: Block destructive commands -->
+      <div class="example-card">
+        <div class="ex-header">
+          <span class="ex-icon">&#x1F6E1;</span>
+          <h3>Block Destructive Commands</h3>
+        </div>
+        <p class="ex-desc"><strong>Event:</strong> PreToolUse &rarr; <strong>Matcher:</strong> Bash &rarr; <strong>Type:</strong> command</p>
+        <div class="code-block">
+<span class="comment">#!/bin/bash</span>
+<span class="comment"># .claude/hooks/block-rm.sh</span>
+COMMAND=$(<span class="keyword">jq</span> -r <span class="string">'.tool_input.command'</span>)
+
+<span class="keyword">if</span> echo "$COMMAND" | grep -q <span class="string">'rm -rf'</span>; <span class="keyword">then</span>
+  <span class="keyword">jq</span> -n <span class="string">'{
+    hookSpecificOutput: {
+      hookEventName: "PreToolUse",
+      permissionDecision: "deny",
+      permissionDecisionReason: "Destructive command blocked by hook"
+    }
+  }'</span>
+<span class="keyword">else</span>
+  exit 0
+<span class="keyword">fi</span></div>
+      </div>
+
+      <!-- Example 2: Auto-format on write -->
+      <div class="example-card">
+        <div class="ex-header">
+          <span class="ex-icon">&#x2728;</span>
+          <h3>Auto-Format on File Write</h3>
+        </div>
+        <p class="ex-desc"><strong>Event:</strong> PostToolUse &rarr; <strong>Matcher:</strong> Edit|Write &rarr; <strong>Type:</strong> command</p>
+        <div class="code-block">
+<span class="comment">// In settings.json &mdash; runs Prettier after every file edit</span>
+{
+  <span class="keyword">"hooks"</span>: {
+    <span class="prop">"PostToolUse"</span>: [{
+      <span class="prop">"matcher"</span>: <span class="string">"Edit|Write"</span>,
+      <span class="prop">"hooks"</span>: [{
+        <span class="prop">"type"</span>: <span class="string">"command"</span>,
+        <span class="prop">"command"</span>: <span class="string">"jq -r '.tool_input.file_path' | xargs npx prettier --write"</span>
+      }]
+    }]
+  }
+}</div>
+      </div>
+
+      <!-- Example 3: Protect sensitive files -->
+      <div class="example-card">
+        <div class="ex-header">
+          <span class="ex-icon">&#x1F512;</span>
+          <h3>Protect Sensitive Files</h3>
+        </div>
+        <p class="ex-desc"><strong>Event:</strong> PreToolUse &rarr; <strong>Matcher:</strong> Edit|Write &rarr; <strong>Type:</strong> command. Blocks edits to <code>.env</code>, <code>package-lock.json</code>, and <code>.git/</code>.</p>
+        <div class="code-block">
+<span class="comment">#!/bin/bash</span>
+<span class="comment"># .claude/hooks/protect-files.sh</span>
+INPUT=$(<span class="keyword">cat</span>)
+FILE_PATH=$(echo "$INPUT" | <span class="keyword">jq</span> -r <span class="string">'.tool_input.file_path // empty'</span>)
+PROTECTED_PATTERNS=(<span class="string">".env"</span> <span class="string">"package-lock.json"</span> <span class="string">".git/"</span>)
+
+<span class="keyword">for</span> pattern <span class="keyword">in</span> "${PROTECTED_PATTERNS[@]}"; <span class="keyword">do</span>
+  <span class="keyword">if</span> [[ "$FILE_PATH" == *"$pattern"* ]]; <span class="keyword">then</span>
+    echo <span class="string">"Blocked: $FILE_PATH matches '$pattern'"</span> &gt;&amp;2
+    exit 2
+  <span class="keyword">fi</span>
+<span class="keyword">done</span>
+exit 0</div>
+      </div>
+
+      <!-- Example 4: Re-inject context after compaction -->
+      <div class="example-card">
+        <div class="ex-header">
+          <span class="ex-icon">&#x1F501;</span>
+          <h3>Re-inject Context After Compaction</h3>
+        </div>
+        <p class="ex-desc"><strong>Event:</strong> SessionStart &rarr; <strong>Matcher:</strong> compact &rarr; <strong>Type:</strong> command. Ensures critical instructions survive context compaction.</p>
+        <div class="code-block">
+<span class="comment">// In settings.json</span>
+{
+  <span class="keyword">"hooks"</span>: {
+    <span class="prop">"SessionStart"</span>: [{
+      <span class="prop">"matcher"</span>: <span class="string">"compact"</span>,
+      <span class="prop">"hooks"</span>: [{
+        <span class="prop">"type"</span>: <span class="string">"command"</span>,
+        <span class="prop">"command"</span>: <span class="string">"echo 'Reminder: use Bun, not npm. Run bun test before committing. Current sprint: auth refactor.'"</span>
+      }]
+    }]
+  }
+}</div>
+        <div class="callout">
+          <strong>Why this matters:</strong> When Claude compacts context, it may lose track of project-specific rules from CLAUDE.md. A SessionStart hook with the <code>compact</code> matcher re-injects critical instructions deterministically.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Section 5: Hooks vs Other Extensibility -->
+  <div class="section">
+    <div class="section-card">
+      <h2>Hooks vs Other Extensibility</h2>
+      <p class="section-intro">
+        Four ways to extend Claude Code, each filling a different role.
+      </p>
+
+      <div class="compare-grid">
+        <div class="compare-card cmp-hooks">
+          <span class="cmp-label">Hooks</span>
+          <div class="cmp-role">Guardrails</div>
+          <p>Shell commands triggered by lifecycle events. Can block, allow, or modify actions. Deterministic enforcement.</p>
+        </div>
+        <div class="compare-card cmp-skills">
+          <span class="cmp-label">Skills</span>
+          <div class="cmp-role">Knowledge</div>
+          <p>Markdown instructions loaded on demand. Add context, define workflows. Cannot intercept or block.</p>
+        </div>
+        <div class="compare-card cmp-mcp">
+          <span class="cmp-label">MCP Servers</span>
+          <div class="cmp-role">Tools</div>
+          <p>External tool providers via JSON-RPC. Expose new capabilities (databases, APIs). Cannot block other tools.</p>
+        </div>
+        <div class="compare-card cmp-agents">
+          <span class="cmp-label">Agents</span>
+          <div class="cmp-role">Delegation</div>
+          <p>Subagent definitions in <code>.claude/agents/</code>. Handle specialized tasks autonomously. Scoped to their own work.</p>
+        </div>
+      </div>
+
+      <div class="callout">
+        <strong>The short version:</strong> Skills tell Claude what to know. MCP gives Claude new tools. Agents let Claude delegate. Hooks enforce what Claude must and must not do.
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 6: Sources -->
+  <div class="section">
+    <div class="section-card">
+      <h2>Sources &amp; Further Reading</h2>
+      <ul class="sources-list">
+        <li><a href="https://code.claude.com/docs/en/hooks" target="_blank" rel="noopener">Hooks Reference</a> &mdash; Official Anthropic documentation (comprehensive reference for all 17 events)</li>
+        <li><a href="https://code.claude.com/docs/en/hooks-guide" target="_blank" rel="noopener">Hooks Guide</a> &mdash; Official Anthropic documentation (practical guide with worked examples)</li>
+        <li><a href="https://github.com/anthropics/claude-code/blob/main/examples/hooks/bash_command_validator_example.py" target="_blank" rel="noopener">Bash Command Validator</a> &mdash; Reference implementation on GitHub</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<!-- Source attribution bottom-left -->
+<div class="source-attribution">
+  Anthropic<br>
+  <a href="https://code.claude.com/docs/en/hooks" target="_blank" rel="noopener">Hooks Reference &amp; Guide</a>
+</div>
+
+</body>
+</html>

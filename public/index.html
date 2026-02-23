@@ -283,6 +283,42 @@
     }
     .index-card.gold .card-title { color: var(--debugging-primary); }
 
+    .index-card.pink {
+      --_accent: var(--hooks-primary);
+      background: linear-gradient(160deg, color-mix(in srgb, var(--_accent) 6%, transparent) 0%, var(--bg-card) 100%);
+      box-shadow: 0 0 40px color-mix(in srgb, var(--_accent) 4%, transparent);
+      border-left: 3px solid color-mix(in srgb, var(--_accent) 30%, transparent);
+    }
+    .index-card.pink:hover {
+      box-shadow: 0 8px 48px color-mix(in srgb, var(--_accent) 14%, transparent);
+      border-left-color: var(--_accent);
+    }
+    .index-card.pink .card-title { color: var(--hooks-primary); }
+
+    .index-card.magenta {
+      --_accent: var(--mcp-primary);
+      background: linear-gradient(160deg, color-mix(in srgb, var(--_accent) 6%, transparent) 0%, var(--bg-card) 100%);
+      box-shadow: 0 0 40px color-mix(in srgb, var(--_accent) 4%, transparent);
+      border-left: 3px solid color-mix(in srgb, var(--_accent) 30%, transparent);
+    }
+    .index-card.magenta:hover {
+      box-shadow: 0 8px 48px color-mix(in srgb, var(--_accent) 14%, transparent);
+      border-left-color: var(--_accent);
+    }
+    .index-card.magenta .card-title { color: var(--mcp-primary); }
+
+    .index-card.rose {
+      --_accent: var(--agents-primary);
+      background: linear-gradient(160deg, color-mix(in srgb, var(--_accent) 6%, transparent) 0%, var(--bg-card) 100%);
+      box-shadow: 0 0 40px color-mix(in srgb, var(--_accent) 4%, transparent);
+      border-left: 3px solid color-mix(in srgb, var(--_accent) 30%, transparent);
+    }
+    .index-card.rose:hover {
+      box-shadow: 0 8px 48px color-mix(in srgb, var(--_accent) 14%, transparent);
+      border-left-color: var(--_accent);
+    }
+    .index-card.rose .card-title { color: var(--agents-primary); }
+
     .index-card .card-subtext {
       font-size: 0.95rem;
       color: var(--text-secondary);
@@ -432,6 +468,11 @@
         <p class="card-subtext">Description triggers, body structure, scripts vs instructions, key patterns and anti-patterns.</p>
         <span class="card-arrow">&rsaquo;</span>
       </a>
+      <a href="mcp-in-practice.html" class="index-card magenta">
+        <div class="card-title">MCP Servers in Practice</div>
+        <p class="card-subtext">Connect Claude Code to external tools &mdash; databases, GitHub, Sentry, browsers &mdash; via the Model Context Protocol.</p>
+        <span class="card-arrow">&rsaquo;</span>
+      </a>
     </div>
   </div>
 
@@ -451,6 +492,16 @@
       <a href="subagents-vs-teams.html" class="index-card coral">
         <div class="card-title">Subagents vs Agent Teams</div>
         <p class="card-subtext">Choose based on whether workers need to communicate &mdash; two architecture patterns for delegating work.</p>
+        <span class="card-arrow">&rsaquo;</span>
+      </a>
+      <a href="custom-subagents.html" class="index-card rose">
+        <div class="card-title">Custom Subagents</div>
+        <p class="card-subtext">Define specialized subagent personas with custom instructions, tool restrictions, and model choices in <code>.claude/agents/</code>.</p>
+        <span class="card-arrow">&rsaquo;</span>
+      </a>
+      <a href="hooks-guide.html" class="index-card pink">
+        <div class="card-title">Hooks</div>
+        <p class="card-subtext">Event-driven automation &mdash; shell commands triggered by lifecycle events to enforce guardrails, format code, and validate output.</p>
         <span class="card-arrow">&rsaquo;</span>
       </a>
       <a href="community-debugging-chrome.html" class="index-card gold">

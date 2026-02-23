@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Custom Subagents</title>
+  <link rel="stylesheet" href="css/theme.css">
+  <style>
+    /* ── Background image & overlay ── */
+    body {
+      background-image: url('assets/bg-dark-abstract.png');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(10, 14, 26, 0.92) 0%,
+        rgba(10, 14, 26, 0.80) 40%,
+        rgba(10, 14, 26, 0.88) 100%
+      );
+      z-index: 0;
+    }
+
+    .page-wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 60px 40px 100px;
+    }
+
+    /* ── Header ── */
+    header {
+      text-align: center;
+      margin-bottom: 72px;
+    }
+
+    .badge {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--agents-primary);
+      background: var(--agents-glow);
+      border: 1px solid rgba(244, 63, 94, 0.2);
+      padding: 6px 16px;
+      border-radius: 20px;
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      font-size: clamp(2.2rem, 5vw, 3.6rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, var(--agents-primary) 0%, var(--agents-secondary) 40%, var(--skills-primary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      font-size: 1.15rem;
+      color: var(--text-secondary);
+      max-width: 640px;
+      margin: 0 auto;
+      line-height: 1.6;
+      font-weight: 400;
+    }
+
+    /* ── Section shared ── */
+    .section {
+      margin-bottom: 72px;
+    }
+
+    .section-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 40px;
+    }
+
+    .section-card h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+
+    .section-card .section-intro {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 28px;
+      max-width: 700px;
+    }
+
+    /* ── Inline code ── */
+    code {
+      font-family: var(--font-mono);
+      font-size: 0.85em;
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.06);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    /* ── Code blocks ── */
+    .code-block {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 20px 24px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      line-height: 1.7;
+      color: var(--text-secondary);
+      overflow-x: auto;
+      margin-top: 16px;
+      white-space: pre-wrap;
+    }
+
+    .code-block .comment    { color: var(--text-muted); }
+    .code-block .keyword    { color: var(--agents-primary); }
+    .code-block .string     { color: var(--plan-primary); }
+    .code-block .frontmatter { color: var(--skills-primary); }
+    .code-block .argument   { color: #f59e0b; }
+    .code-block .file-name  { color: var(--agents-primary); }
+    .code-block .folder-name { color: #f59e0b; }
+
+    /* ── Callout ── */
+    .callout {
+      margin-top: 24px;
+      padding: 20px 24px;
+      border-radius: 10px;
+      background: linear-gradient(160deg, rgba(244, 63, 94, 0.06) 0%, rgba(15, 20, 35, 0.6) 100%);
+      border: 1px solid rgba(244, 63, 94, 0.15);
+      border-left: 3px solid var(--agents-primary);
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .callout strong {
+      color: var(--agents-primary);
+    }
+
+    /* ── Anatomy grid ── */
+    .anatomy-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .anatomy-right {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .anatomy-trait {
+      padding: 16px 20px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .anatomy-trait h4 {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+    }
+
+    .anatomy-trait p {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* ── Fields table ── */
+    .fields-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+    }
+
+    .fields-table th {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--agents-primary);
+      text-align: left;
+      padding: 10px 16px;
+      border-bottom: 1px solid rgba(244, 63, 94, 0.15);
+    }
+
+    .fields-table td {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-subtle);
+      line-height: 1.5;
+      vertical-align: top;
+    }
+
+    .fields-table td:first-child {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      color: var(--agents-secondary);
+      white-space: nowrap;
+    }
+
+    .fields-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* ── Example cards ── */
+    .example-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    .example-card {
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-subtle);
+      overflow: hidden;
+    }
+
+    .example-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 24px;
+      background: rgba(244, 63, 94, 0.04);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .example-icon {
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+
+    .example-header h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .example-header .example-tag {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin-left: auto;
+    }
+
+    .tag-readonly {
+      color: var(--plan-primary);
+      background: var(--plan-glow);
+    }
+
+    .tag-write {
+      color: var(--agents-primary);
+      background: var(--agents-glow);
+    }
+
+    .tag-domain {
+      color: var(--skills-primary);
+      background: var(--skills-glow);
+    }
+
+    .example-card .code-block {
+      margin: 0;
+      border: none;
+      border-radius: 0;
+      padding: 20px 24px;
+    }
+
+    .example-notes {
+      padding: 14px 24px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .example-notes strong {
+      color: var(--text-secondary);
+    }
+
+    /* ── Comparison grid ── */
+    .compare-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .compare-card {
+      border-radius: 12px;
+      padding: 24px 20px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .compare-card h3 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .compare-card .compare-location {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+    }
+
+    .compare-card .compare-what {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      margin-bottom: 14px;
+    }
+
+    .compare-card .compare-label {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .compare-card ul {
+      list-style: none;
+    }
+
+    .compare-card ul li {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      padding: 3px 0 3px 16px;
+      position: relative;
+      line-height: 1.5;
+    }
+
+    .compare-card ul li::before {
+      content: '\2022';
+      position: absolute;
+      left: 0;
+      color: var(--text-muted);
+    }
+
+    .compare-agents { border-top: 3px solid var(--agents-primary); }
+    .compare-agents h3 { color: var(--agents-primary); }
+
+    .compare-skills { border-top: 3px solid var(--skills-primary); }
+    .compare-skills h3 { color: var(--skills-primary); }
+
+    .compare-teams { border-top: 3px solid var(--agentteam-primary); }
+    .compare-teams h3 { color: var(--agentteam-primary); }
+
+    /* ── Sources list ── */
+    .sources-list {
+      list-style: none;
+    }
+
+    .sources-list li {
+      padding: 8px 0;
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+
+    .sources-list li a {
+      color: var(--agents-secondary);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(251, 113, 133, 0.3);
+      transition: border-color 0.2s ease;
+    }
+
+    .sources-list li a:hover {
+      border-color: var(--agents-secondary);
+    }
+
+    .sources-list li span {
+      color: var(--text-muted);
+      font-size: 0.82rem;
+    }
+
+    /* ── Source attribution ── */
+    .source-attribution {
+      position: fixed;
+      bottom: 20px;
+      left: 24px;
+      z-index: 10;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      opacity: 0.6;
+      transition: opacity 0.3s ease;
+    }
+
+    .source-attribution:hover {
+      opacity: 1;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 700px) {
+      .anatomy-grid { grid-template-columns: 1fr; }
+      .compare-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 600px) {
+      .page-wrapper { padding: 40px 20px 60px; }
+      .section-card { padding: 28px 20px; }
+      .example-card .code-block { padding: 16px; }
+      .example-header { padding: 14px 16px; }
+      .example-notes { padding: 12px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-wrapper">
+
+  <!-- Header -->
+  <header>
+    <div class="badge">Advanced Patterns</div>
+    <h1>Custom Subagents</h1>
+    <p class="subtitle">
+      Specialized AI personas with their own context window, tool restrictions, and system prompt&hairsp;&mdash;&hairsp;defined as markdown files in your project.
+    </p>
+  </header>
+
+  <!-- Section 1: What Custom Subagents Are -->
+  <div class="section">
+    <div class="section-card">
+      <h2>What Custom Subagents Are</h2>
+      <p class="section-intro">
+        Custom subagents are markdown files that define specialized AI assistants. Each runs in its own context window with an independent system prompt, configurable tool access, and isolated permissions.
+      </p>
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+        <div style="padding: 16px; border-radius: 10px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-subtle);">
+          <div style="font-size: 0.82rem; font-weight: 600; color: var(--agents-primary); margin-bottom: 6px;">Isolated context</div>
+          <div style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.5;">Own context window, separate from the main conversation</div>
+        </div>
+        <div style="padding: 16px; border-radius: 10px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-subtle);">
+          <div style="font-size: 0.82rem; font-weight: 600; color: var(--agents-primary); margin-bottom: 6px;">Tool restrictions</div>
+          <div style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.5;">Allowlist or denylist specific tools per agent</div>
+        </div>
+        <div style="padding: 16px; border-radius: 10px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-subtle);">
+          <div style="font-size: 0.82rem; font-weight: 600; color: var(--agents-primary); margin-bottom: 6px;">Model selection</div>
+          <div style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.5;">Use Haiku for cheap tasks, Opus for complex ones</div>
+        </div>
+      </div>
+      <div class="callout" style="margin-top: 24px;">
+        <strong>How delegation works:</strong> Claude reads the <code>description</code> field and automatically delegates matching tasks. You can also explicitly request an agent: <code>Use the code-reviewer agent to check my changes</code>.
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 2: File Format (Anatomy Grid) -->
+  <div class="section">
+    <div class="section-card">
+      <h2>File Format</h2>
+      <p class="section-intro">
+        Agent files live in <code>.claude/agents/</code> (project) or <code>~/.claude/agents/</code> (global). YAML frontmatter defines configuration; the markdown body becomes the system prompt.
+      </p>
+      <div class="anatomy-grid">
+        <div class="code-block" style="margin-top: 0;">
+<span class="comment"># .claude/agents/code-reviewer.md</span>
+<span class="frontmatter">---</span>
+<span class="frontmatter">name:</span> <span class="string">code-reviewer</span>
+<span class="frontmatter">description:</span> <span class="string">Reviews code for quality
+  and best practices</span>
+<span class="frontmatter">tools:</span> <span class="string">Read, Glob, Grep, Bash</span>
+<span class="frontmatter">model:</span> <span class="string">sonnet</span>
+<span class="frontmatter">---</span>
+
+You are a code reviewer. When invoked,
+analyze the code and provide specific,
+actionable feedback on quality, security,
+and best practices.</div>
+        <div class="anatomy-right">
+          <div class="anatomy-trait">
+            <h4>YAML Frontmatter</h4>
+            <p>Configuration block between <code>---</code> fences. Defines the agent&rsquo;s name, description, tool access, model, and other settings.</p>
+          </div>
+          <div class="anatomy-trait">
+            <h4>Markdown Body</h4>
+            <p>Everything below the frontmatter becomes the system prompt. The agent receives only this&hairsp;&mdash;&hairsp;not the full Claude Code system prompt.</p>
+          </div>
+          <div class="anatomy-trait">
+            <h4>File Location</h4>
+            <p><code>.claude/agents/</code> for project-scoped (check into VCS). <code>~/.claude/agents/</code> for personal agents across all projects.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 3: Key Frontmatter Fields -->
+  <div class="section">
+    <div class="section-card">
+      <h2>Key Frontmatter Fields</h2>
+      <p class="section-intro">
+        The fields developers use most. Only <code>name</code> and <code>description</code> are required.
+      </p>
+      <table class="fields-table">
+        <thead>
+          <tr>
+            <th>Field</th>
+            <th>Purpose</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>name</td>
+            <td>Unique identifier. Lowercase letters and hyphens.</td>
+          </tr>
+          <tr>
+            <td>description</td>
+            <td>When Claude should delegate to this agent. Include <code>use proactively</code> to encourage automatic delegation.</td>
+          </tr>
+          <tr>
+            <td>tools</td>
+            <td>Allowlist of available tools: <code>Read, Edit, Write, Bash, Grep, Glob, WebFetch, WebSearch, Task</code>. Inherits all if omitted.</td>
+          </tr>
+          <tr>
+            <td>disallowedTools</td>
+            <td>Denylist&hairsp;&mdash;&hairsp;remove specific tools from the inherited set. Combine with <code>tools</code> for fine-grained control.</td>
+          </tr>
+          <tr>
+            <td>model</td>
+            <td><code>sonnet</code>, <code>opus</code>, <code>haiku</code>, or <code>inherit</code> (default). Match cost to task complexity.</td>
+          </tr>
+          <tr>
+            <td>permissionMode</td>
+            <td><code>default</code>, <code>acceptEdits</code>, <code>dontAsk</code>, <code>bypassPermissions</code>, or <code>plan</code>.</td>
+          </tr>
+          <tr>
+            <td>memory</td>
+            <td>Persistent memory scope: <code>user</code>, <code>project</code>, or <code>local</code>. Agent remembers across sessions.</td>
+          </tr>
+          <tr>
+            <td>hooks</td>
+            <td>Lifecycle hooks scoped to this agent: <code>PreToolUse</code>, <code>PostToolUse</code>, <code>Stop</code>.</td>
+          </tr>
+          <tr>
+            <td>skills</td>
+            <td>Skills to inject at startup. Full content loaded into context&hairsp;&mdash;&hairsp;agents don&rsquo;t inherit parent skills.</td>
+          </tr>
+          <tr>
+            <td>isolation</td>
+            <td>Set to <code>worktree</code> for a temporary git worktree (isolated repo copy).</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="callout" style="margin-top: 24px;">
+        <strong>Tool restriction patterns:</strong> Use <code>tools</code> for strict allowlists (read-only agents), <code>disallowedTools</code> for blocking specific tools while keeping the rest. You can also restrict subagent spawning: <code>tools: Task(worker, researcher), Read, Bash</code>.
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 4: Practical Examples -->
+  <div class="section">
+    <div class="section-card">
+      <h2>Practical Examples</h2>
+      <p class="section-intro">
+        Three agents showing different patterns: read-only review, editing with debugging, and domain-specific work with hooks.
+      </p>
+      <div class="example-cards">
+
+        <!-- Code Reviewer -->
+        <div class="example-card">
+          <div class="example-header">
+            <span class="example-icon">&#x1F50D;</span>
+            <h3>Code Reviewer</h3>
+            <span class="example-tag tag-readonly">Read-only</span>
+          </div>
+          <div class="code-block">
+<span class="frontmatter">---</span>
+<span class="frontmatter">name:</span> <span class="string">code-reviewer</span>
+<span class="frontmatter">description:</span> <span class="string">Expert code review specialist. Proactively
+  reviews code for quality, security, and maintainability.
+  Use immediately after writing or modifying code.</span>
+<span class="frontmatter">tools:</span> <span class="string">Read, Grep, Glob, Bash</span>
+<span class="frontmatter">model:</span> <span class="string">inherit</span>
+<span class="frontmatter">---</span>
+
+You are a senior code reviewer ensuring high standards
+of code quality and security.
+
+When invoked:
+1. Run git diff to see recent changes
+2. Focus on modified files
+3. Begin review immediately
+
+Review checklist:
+- Code is clear and readable
+- Functions and variables are well-named
+- No duplicated code
+- Proper error handling
+- No exposed secrets or API keys
+- Input validation implemented</div>
+          <div class="example-notes">
+            <strong>No Write or Edit tools</strong> &mdash; can read code, search, and run commands but cannot modify files. Safe to delegate without supervision.
+          </div>
+        </div>
+
+        <!-- Debugger -->
+        <div class="example-card">
+          <div class="example-header">
+            <span class="example-icon">&#x1F41E;</span>
+            <h3>Debugger</h3>
+            <span class="example-tag tag-write">Can edit</span>
+          </div>
+          <div class="code-block">
+<span class="frontmatter">---</span>
+<span class="frontmatter">name:</span> <span class="string">debugger</span>
+<span class="frontmatter">description:</span> <span class="string">Debugging specialist for errors, test
+  failures, and unexpected behavior. Use proactively
+  when encountering any issues.</span>
+<span class="frontmatter">tools:</span> <span class="string">Read, Edit, Bash, Grep, Glob</span>
+<span class="frontmatter">---</span>
+
+You are an expert debugger specializing in root
+cause analysis.
+
+When invoked:
+1. Capture error message and stack trace
+2. Identify reproduction steps
+3. Isolate the failure location
+4. Implement minimal fix
+5. Verify solution works</div>
+          <div class="example-notes">
+            <strong>Has Edit access</strong> &mdash; can both diagnose and fix. The <code>use proactively</code> phrase in the description means Claude auto-delegates when it encounters errors.
+          </div>
+        </div>
+
+        <!-- DB Query Validator -->
+        <div class="example-card">
+          <div class="example-header">
+            <span class="example-icon">&#x1F5C3;</span>
+            <h3>Database Query Validator</h3>
+            <span class="example-tag tag-domain">Hooks</span>
+          </div>
+          <div class="code-block">
+<span class="frontmatter">---</span>
+<span class="frontmatter">name:</span> <span class="string">db-reader</span>
+<span class="frontmatter">description:</span> <span class="string">Execute read-only database queries.
+  Use when analyzing data or generating reports.</span>
+<span class="frontmatter">tools:</span> <span class="string">Bash</span>
+<span class="frontmatter">hooks:</span>
+  <span class="frontmatter">PreToolUse:</span>
+    - <span class="frontmatter">matcher:</span> <span class="string">"Bash"</span>
+      <span class="frontmatter">hooks:</span>
+        - <span class="frontmatter">type:</span> <span class="string">command</span>
+          <span class="frontmatter">command:</span> <span class="string">"./scripts/validate-readonly-query.sh"</span>
+<span class="frontmatter">---</span>
+
+You are a database analyst with read-only access.</div>
+          <div class="example-notes">
+            <strong>Hook-enforced safety</strong> &mdash; the <code>PreToolUse</code> hook validates every Bash command through a script before execution. Prevents accidental writes to the database.
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 5: Agents vs Skills vs Teams -->
+  <div class="section">
+    <div class="section-card">
+      <h2>When to Use What</h2>
+      <p class="section-intro">
+        Three different mechanisms for extending Claude&rsquo;s capabilities. They solve different problems.
+      </p>
+      <div class="compare-grid">
+        <div class="compare-card compare-agents">
+          <h3>Custom Subagents</h3>
+          <div class="compare-location">.claude/agents/*.md</div>
+          <p class="compare-what">Independent workers with isolated context and tool permissions.</p>
+          <div class="compare-label">Use when</div>
+          <ul>
+            <li>Task needs tool restrictions (read-only reviewer)</li>
+            <li>Work produces verbose output that would flood main context</li>
+            <li>You want a different model (Haiku for cheap, Opus for hard)</li>
+            <li>Agent needs its own persistent memory</li>
+          </ul>
+        </div>
+        <div class="compare-card compare-skills">
+          <h3>Skills</h3>
+          <div class="compare-location">.claude/skills/*.md</div>
+          <p class="compare-what">Reusable prompts and instructions loaded into the current context.</p>
+          <div class="compare-label">Use when</div>
+          <ul>
+            <li>You need reusable expertise any agent can load</li>
+            <li>The task runs fine in the main conversation</li>
+            <li>No tool restrictions needed</li>
+            <li>Content is about <em>how</em> to do something, not <em>who</em> does it</li>
+          </ul>
+        </div>
+        <div class="compare-card compare-teams">
+          <h3>Agent Teams</h3>
+          <div class="compare-location">Created at runtime via TeamCreate</div>
+          <p class="compare-what">Multiple Claude instances coordinating tasks in parallel.</p>
+          <div class="compare-label">Use when</div>
+          <ul>
+            <li>Work can be parallelized across independent tasks</li>
+            <li>Total work exceeds a single context window</li>
+            <li>You need sustained coordination (not just one delegation)</li>
+            <li>Different team members need different tool sets</li>
+          </ul>
+        </div>
+      </div>
+      <div class="callout" style="margin-top: 24px;">
+        <strong>Key distinction:</strong> Skills teach expertise that any agent can apply. Agents are independent workers with their own permissions. Teams enable sustained parallel work across independent contexts.
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 6: Sources -->
+  <div class="section">
+    <div class="section-card">
+      <h2>Sources &amp; Further Reading</h2>
+      <ul class="sources-list">
+        <li>
+          <a href="https://code.claude.com/docs/en/sub-agents" target="_blank" rel="noopener">Create custom subagents</a>
+          <span>&mdash; Official Claude Code docs. Full reference for all frontmatter fields and configuration.</span>
+        </li>
+        <li>
+          <a href="https://code.claude.com/docs/en/sub-agents#example-subagents" target="_blank" rel="noopener">Example subagents</a>
+          <span>&mdash; Official examples including code reviewer, debugger, and data scientist agents.</span>
+        </li>
+        <li>
+          <a href="https://code.claude.com/docs/en/cli-reference" target="_blank" rel="noopener">CLI reference</a>
+          <span>&mdash; The <code>--agent</code> and <code>--agents</code> flags for running agents from the command line.</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<!-- Source attribution bottom-left -->
+<div class="source-attribution">
+  Claude Code Docs<br>
+  <a href="https://code.claude.com/docs/en/sub-agents" target="_blank" rel="noopener">Custom Subagents Reference</a>
+</div>
+
+</body>
+</html>
