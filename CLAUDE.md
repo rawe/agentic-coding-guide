@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Knowledge base for agentic coding best practices. Currently in material collection phase.
+Guides and references for effective agentic coding with Claude Code. Sources are collected from talks, docs, and real usage, then distilled into presentation-ready HTML pages (`public/`) that can be shared in meetings, team onboarding, and workshops. The knowledge covers everything from context engineering fundamentals to skill authoring and multi-agent patterns.
 
 ## Writing Rules
 
@@ -15,6 +15,15 @@ Knowledge base for agentic coding best practices. Currently in material collecti
 - `sources/` — collected references. See [sources/README.md](sources/README.md) for structure, templates, and workflow.
 - `guides/` — distilled best practices (phase 2).
 - `.claude/skills/` — processing skills (e.g. `/yt-extract <url>`).
+
+## Index Page (public/index.html)
+
+The index groups all HTML guide pages into numbered sections ordered by progressive depth — from orientation to advanced patterns. Pages are presentation-ready references for meetings and team onboarding.
+
+When adding a new page:
+- Decide which group it belongs to (or whether a new group is needed).
+- Place it where it makes sense in the reading order: what prior knowledge does it assume?
+- The structure and rationale are documented in `public/STRUCTURE.md` — update it when the index changes.
 
 ## Commit Rules
 

@@ -63,6 +63,46 @@
       font-weight: 400;
     }
 
+    /* ── Section groups ── */
+    .section-group {
+      margin-bottom: 56px;
+    }
+
+    .section-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .section-number {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+      opacity: 0.6;
+    }
+
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      letter-spacing: -0.01em;
+    }
+
+    .section-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border-subtle);
+      opacity: 0.5;
+    }
+
     /* ── Card list ── */
     .card-list {
       display: flex;
@@ -307,92 +347,118 @@
     <p class="subtitle">Best practices for building with AI coding agents.</p>
   </header>
 
-  <div class="card-list">
+  <!-- ═══ Group 1: Orientation ═══ -->
+  <div class="section-group">
+    <div class="section-header">
+      <span class="section-number">01</span>
+      <span class="section-title">Orientation</span>
+      <span class="section-line"></span>
+    </div>
+    <div class="card-list">
+      <a href="community-claude-difference.html" class="index-card sky">
+        <div class="card-title">What Makes Claude Code Different</div>
+        <p class="card-subtext">Terminal-native agent with four composable extension pillars &mdash; not another autocomplete.</p>
+        <span class="card-arrow">&rsaquo;</span>
+      </a>
+      <a href="skills-mcp-commands.html" class="index-card purple">
+        <div class="card-title">Three Layers, Three Jobs</div>
+        <p class="card-subtext">Skills, MCP Servers, and Custom Commands &mdash; three extensibility layers, each with a distinct job.</p>
+        <span class="card-arrow">&rsaquo;</span>
+      </a>
+    </div>
+  </div>
 
-    <a href="research-plan-implement.html" class="index-card cyan">
-      <div class="card-title">Research &rarr; Plan &rarr; Implement</div>
-      <p class="card-subtext">Three phases of intentional context compaction for solving hard problems in complex codebases with AI coding agents.</p>
-      <span class="card-arrow">&rsaquo;</span>
-    </a>
+  <!-- ═══ Group 2: Foundations ═══ -->
+  <div class="section-group">
+    <div class="section-header">
+      <span class="section-number">02</span>
+      <span class="section-title">Foundations</span>
+      <span class="section-line"></span>
+    </div>
+    <div class="card-list">
+      <a href="context-engineering.html" class="index-card indigo">
+        <div class="card-title">Master Your Context Window</div>
+        <p class="card-subtext">What goes in, what stays out, and why it decides everything.</p>
+        <span class="card-arrow">&rsaquo;</span>
+      </a>
+      <a href="mastering-claude-md.html" class="index-card fuchsia">
+        <div class="card-title">Mastering CLAUDE.md</div>
+        <p class="card-subtext">Write project instructions that Claude actually follows &mdash; from first file to full configuration stack.</p>
+        <span class="card-arrow">&rsaquo;</span>
+      </a>
+      <a href="research-plan-implement.html" class="index-card cyan">
+        <div class="card-title">Research &rarr; Plan &rarr; Implement</div>
+        <p class="card-subtext">Three phases of intentional context compaction for solving hard problems in complex codebases.</p>
+        <span class="card-arrow">&rsaquo;</span>
+      </a>
+    </div>
+  </div>
 
-    <a href="skills-mcp-commands.html" class="index-card purple">
-      <div class="card-title">Three Layers, Three Jobs</div>
-      <p class="card-subtext">Distinguishing Skills, MCP Servers, and Custom Commands &mdash; the three extensibility layers of Claude Code.</p>
-      <span class="card-arrow">&rsaquo;</span>
-    </a>
+  <!-- ═══ Group 3: Extensibility ═══ -->
+  <div class="section-group">
+    <div class="section-header">
+      <span class="section-number">03</span>
+      <span class="section-title">Extensibility</span>
+      <span class="section-line"></span>
+    </div>
+    <div class="card-list">
+      <a href="command-skill-journey.html" class="index-card teal">
+        <div class="card-title">The Command &amp; Skill Journey</div>
+        <p class="card-subtext">From ad-hoc prompts to modular architecture &mdash; how Claude Code workflows evolve in four steps.</p>
+        <span class="card-arrow">&rsaquo;</span>
+      </a>
+      <a href="commands-in-practice.html" class="index-card green">
+        <div class="card-title">Commands in Practice</div>
+        <p class="card-subtext">One markdown file, one slash command &mdash; how custom commands parse arguments and orchestrate skills.</p>
+        <span class="card-arrow">&rsaquo;</span>
+      </a>
+      <a href="community-skills-anatomy.html" class="index-card violet">
+        <div class="card-title">Skills &mdash; The Knowledge Layer</div>
+        <p class="card-subtext">Self-contained knowledge packages that make Claude smarter about your domain. Anatomy, loading, and real examples.</p>
+        <span class="card-arrow">&rsaquo;</span>
+      </a>
+      <a href="skills-in-practice.html" class="index-card amber">
+        <div class="card-title">Skills in Practice</div>
+        <p class="card-subtext">From installation to composition &mdash; the practical workflow for extending Claude Code with skills.</p>
+        <span class="card-arrow">&rsaquo;</span>
+      </a>
+      <a href="community-skills-reference.html" class="index-card violet">
+        <div class="card-title">Skills Reference</div>
+        <p class="card-subtext">Every frontmatter field, string substitution, installation method, and context budget number &mdash; in one place.</p>
+        <span class="card-arrow">&rsaquo;</span>
+      </a>
+      <a href="community-skills-bestpractices.html" class="index-card purple">
+        <div class="card-title">Writing Better Skills</div>
+        <p class="card-subtext">Description triggers, body structure, scripts vs instructions, key patterns and anti-patterns.</p>
+        <span class="card-arrow">&rsaquo;</span>
+      </a>
+    </div>
+  </div>
 
-    <a href="skills-in-practice.html" class="index-card amber">
-      <div class="card-title">Skills in Practice</div>
-      <p class="card-subtext">From installation to composition &mdash; the practical workflow for extending Claude Code with skills, based on Leon van Zyl's tutorial.</p>
-      <span class="card-arrow">&rsaquo;</span>
-    </a>
-
-    <a href="commands-in-practice.html" class="index-card green">
-      <div class="card-title">Commands in Practice</div>
-      <p class="card-subtext">One markdown file, one slash command &mdash; how custom commands parse arguments and orchestrate skills.</p>
-      <span class="card-arrow">&rsaquo;</span>
-    </a>
-
-    <a href="command-skill-journey.html" class="index-card teal">
-      <div class="card-title">The Command &amp; Skill Journey</div>
-      <p class="card-subtext">From ad-hoc prompts to modular architecture &mdash; how Claude Code workflows evolve in four steps.</p>
-      <span class="card-arrow">&rsaquo;</span>
-    </a>
-
-    <a href="subagents-vs-teams.html" class="index-card coral">
-      <div class="card-title">Subagents vs Agent Teams</div>
-      <p class="card-subtext">Choose based on whether workers need to communicate &mdash; two architecture patterns for delegating work in Claude Code.</p>
-      <span class="card-arrow">&rsaquo;</span>
-    </a>
-
-    <a href="mastering-claude-md.html" class="index-card fuchsia">
-      <div class="card-title">Mastering CLAUDE.md</div>
-      <p class="card-subtext">Write project instructions that Claude actually follows &mdash; from first file to full configuration stack.</p>
-      <span class="card-arrow">&rsaquo;</span>
-    </a>
-
-    <a href="context-engineering.html" class="index-card indigo">
-      <div class="card-title">Master Your Context Window</div>
-      <p class="card-subtext">What goes in, what stays out, and why it decides everything.</p>
-      <span class="card-arrow">&rsaquo;</span>
-    </a>
-
-    <a href="developer-workflows.html" class="index-card orange">
-      <div class="card-title">The Developer's Daily Loop</div>
-      <p class="card-subtext">Six workflow patterns that define how experienced developers actually use Claude Code.</p>
-      <span class="card-arrow">&rsaquo;</span>
-    </a>
-
-    <a href="community-claude-difference.html" class="index-card sky">
-      <div class="card-title">What Makes Claude Code Different</div>
-      <p class="card-subtext">Terminal-native agent with four composable extension pillars &mdash; not another autocomplete.</p>
-      <span class="card-arrow">&rsaquo;</span>
-    </a>
-
-    <a href="community-skills-anatomy.html" class="index-card violet">
-      <div class="card-title">Skills &mdash; The Knowledge Layer</div>
-      <p class="card-subtext">Self-contained knowledge packages that make Claude smarter about your domain. Anatomy, loading, and real examples.</p>
-      <span class="card-arrow">&rsaquo;</span>
-    </a>
-
-    <a href="community-debugging-chrome.html" class="index-card gold">
-      <div class="card-title">Debugging with Claude in Chrome</div>
-      <p class="card-subtext">Connect Claude Code to your browser. Inspect DOM, read console, monitor network &mdash; fix without leaving the terminal.</p>
-      <span class="card-arrow">&rsaquo;</span>
-    </a>
-
-    <a href="community-skills-reference.html" class="index-card violet">
-      <div class="card-title">Skills Reference</div>
-      <p class="card-subtext">Every frontmatter field, string substitution, installation method, and context budget number &mdash; in one place.</p>
-      <span class="card-arrow">&rsaquo;</span>
-    </a>
-
-    <a href="community-skills-bestpractices.html" class="index-card purple">
-      <div class="card-title">Writing Better Skills</div>
-      <p class="card-subtext">Description triggers, body structure, scripts vs instructions, key patterns and anti-patterns.</p>
-      <span class="card-arrow">&rsaquo;</span>
-    </a>
-
+  <!-- ═══ Group 4: Advanced Patterns ═══ -->
+  <div class="section-group">
+    <div class="section-header">
+      <span class="section-number">04</span>
+      <span class="section-title">Advanced Patterns</span>
+      <span class="section-line"></span>
+    </div>
+    <div class="card-list">
+      <a href="developer-workflows.html" class="index-card orange">
+        <div class="card-title">The Developer's Daily Loop</div>
+        <p class="card-subtext">Six workflow patterns that define how experienced developers actually use Claude Code.</p>
+        <span class="card-arrow">&rsaquo;</span>
+      </a>
+      <a href="subagents-vs-teams.html" class="index-card coral">
+        <div class="card-title">Subagents vs Agent Teams</div>
+        <p class="card-subtext">Choose based on whether workers need to communicate &mdash; two architecture patterns for delegating work.</p>
+        <span class="card-arrow">&rsaquo;</span>
+      </a>
+      <a href="community-debugging-chrome.html" class="index-card gold">
+        <div class="card-title">Debugging with Claude in Chrome</div>
+        <p class="card-subtext">Connect Claude Code to your browser. Inspect DOM, read console, monitor network &mdash; fix without leaving the terminal.</p>
+        <span class="card-arrow">&rsaquo;</span>
+      </a>
+    </div>
   </div>
 
 </div>
