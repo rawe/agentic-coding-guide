@@ -505,6 +505,28 @@
         You have a PDF. You want it as markdown. You ask Claude Code: <em>"Convert report.pdf to markdown."</em>
         Claude writes a script, runs it, hands you the result. Done.
       </p>
+
+      <!-- image placeholder -->
+      <div style="display: flex; align-items: center; justify-content: center; gap: 0; margin: 28px auto 32px; max-width: 480px;">
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 16px 24px; border: 2px solid rgba(251, 146, 60, 0.4); border-radius: 10px; background: rgba(251, 146, 60, 0.06); min-width: 80px;">
+          <span style="font-size: 1.6rem;">&#128196;</span>
+          <span style="font-family: var(--font-mono); font-size: 0.85rem; font-weight: 600; color: #fb923c;">PDF</span>
+        </div>
+        <div style="display: flex; align-items: center; padding: 0 12px;">
+          <span style="color: var(--text-muted); font-size: 1.2rem;">&#8594;</span>
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 16px 24px; border: 2px dashed var(--text-muted); border-radius: 10px; background: rgba(100, 116, 139, 0.06); min-width: 80px;">
+          <span style="font-family: var(--font-mono); font-size: 1.6rem; color: var(--text-muted); font-weight: 700;">?</span>
+        </div>
+        <div style="display: flex; align-items: center; padding: 0 12px;">
+          <span style="color: var(--text-muted); font-size: 1.2rem;">&#8594;</span>
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 16px 24px; border: 2px solid rgba(52, 211, 153, 0.4); border-radius: 10px; background: rgba(52, 211, 153, 0.06); min-width: 80px;">
+          <span style="font-size: 1.6rem;">&#128221;</span>
+          <span style="font-family: var(--font-mono); font-size: 0.85rem; font-weight: 600; color: var(--plan-primary);">.md</span>
+        </div>
+      </div>
+
       <p class="section-intro" style="max-width: 800px; margin-bottom: 16px;">
         Next week you do the same thing. Claude writes the script again &mdash; differently this time.
         The week after that, your colleague needs it too, in another project. They start from zero.
@@ -633,100 +655,127 @@ Given a file path via <span class="keyword">`$ARGUMENTS`</span>:
           <strong>Gain:</strong> Copy the folder to any project. Script, process, and trigger travel together.
         </div>
         <div class="callout callout-limit">
-          <strong>Limitation:</strong> One skill = one trigger. As workflows grow, you need multiple entry points sharing the same knowledge.
+          <strong>Limitation:</strong> Works perfectly for conversion. But next week you need downloading from URLs too. Then folder structure for a knowledge base. The skill grows &mdash; and a single trigger can't express all the ways you want to use it.
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Section 4: Step 4 — Separated / Modular -->
+  <!-- Section 4: Step 4 — Separated / Skill Grows, Commands Multiply -->
   <div class="section">
     <div class="section-card">
       <span class="step-label step-4">Step 4</span>
-      <h2>Separated: Modular Architecture</h2>
+      <h2>Separated: Skill Grows, Commands Multiply</h2>
       <p class="section-intro">
-        The conversion script works. But you realize you need it in two different contexts:
+        Your doc-convert skill works. But requirements grow:
       </p>
 
       <ul class="step-bullets">
-        <li><strong style="color: var(--text-primary);">/doc-convert</strong> &mdash; Convert a file to markdown. One file in, one file out. That's it.</li>
-        <li><strong style="color: var(--text-primary);">/doc-ingest</strong> &mdash; Ingest a document into your knowledge base. Creates a dated folder (<code>2026-02-some-paper/</code>), copies the original into it, converts it, writes metadata with tags and summary, updates the project index.</li>
+        <li>You need to <strong style="color: var(--text-primary);">download</strong> documents from URLs, not just convert local files</li>
+        <li>You need to <strong style="color: var(--text-primary);">structure</strong> results into a knowledge base with metadata and folder conventions</li>
       </ul>
 
       <p class="section-intro" style="margin-top: 16px; margin-bottom: 12px;">
-        Both use the same conversion script. But <code>/doc-ingest</code> also needs to know <em>where to put things</em>:
-        How should the folder be named? What files go inside? What does <code>meta.md</code> look like?
-        That structural knowledge lives in <code>references/structure.md</code> inside the skill &mdash; loaded only when the ingestion workflow needs it.
+        You add a download script. You add structural knowledge. The skill is no longer "just conversion" &mdash;
+        it's <strong style="color: var(--text-primary);">document processing</strong>: downloading, converting, and structuring.
       </p>
 
       <p class="section-intro" style="margin-bottom: 12px;">
-        The skill stops being a trigger. It becomes a <strong style="color: var(--text-primary);">knowledge container</strong> &mdash;
-        renamed from verb (<code>doc-convert</code>) to noun (<code>doc-processing</code>).
-        It holds the scripts, the process description, and the reference material.
-        Commands become thin triggers that load the skill and decide how much of it to use.
+        Now one trigger can't express everything. <code>/doc-convert report.pdf</code> should just convert.
+        <code>/doc-extract https://...</code> should do the full pipeline: download, convert, create folder, write metadata, update index.
       </p>
 
       <p class="section-intro" style="margin-bottom: 28px;">
-        Here is what each command produces:
+        <strong style="color: var(--text-primary);">The shift:</strong> Pull the trigger OUT of the skill.
+        The skill becomes a noun (<code>doc-processing</code>) &mdash; a capability bundle.
+        Commands become verbs (<code>/doc-convert</code>, <code>/doc-extract</code>) &mdash; thin triggers that decide scope.
       </p>
 
-      <div class="callouts" style="margin-top: 0; margin-bottom: 28px;">
-        <div class="callout" style="background: rgba(245, 158, 11, 0.06); border: 1px solid rgba(245, 158, 11, 0.15);">
-          <strong style="color: #f59e0b;">/doc-convert report.pdf</strong> &rarr;
-          <div class="code-block" style="margin-top: 10px; padding: 12px 16px; font-size: 0.75rem;">
-<span class="file-name" style="color: #f59e0b;">report.md</span>              <span class="comment"># markdown file, same directory</span></div>
+      <!-- image placeholder -->
+      <div style="display: flex; flex-direction: column; align-items: center; gap: 0; margin: 0 auto 32px; max-width: 600px;">
+        <!-- Skill box -->
+        <div style="border: 2px solid rgba(34, 211, 238, 0.4); border-radius: 12px; padding: 20px; background: rgba(34, 211, 238, 0.04); width: 100%; text-align: center;">
+          <div style="font-family: var(--font-mono); font-size: 0.85rem; font-weight: 600; color: var(--journey-primary); margin-bottom: 16px;">doc-processing (skill)</div>
+          <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+            <div style="padding: 8px 14px; border: 1px solid rgba(124, 110, 240, 0.3); border-radius: 8px; background: rgba(124, 110, 240, 0.06); font-family: var(--font-mono); font-size: 0.75rem; color: var(--skills-primary);">doc-download.py</div>
+            <div style="padding: 8px 14px; border: 1px solid rgba(124, 110, 240, 0.3); border-radius: 8px; background: rgba(124, 110, 240, 0.06); font-family: var(--font-mono); font-size: 0.75rem; color: var(--skills-primary);">doc-convert.py</div>
+            <div style="padding: 8px 14px; border: 1px solid rgba(100, 116, 139, 0.3); border-radius: 8px; background: rgba(100, 116, 139, 0.06); font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted);">references/structure.md</div>
+          </div>
         </div>
-        <div class="callout" style="background: rgba(34, 211, 238, 0.06); border: 1px solid rgba(34, 211, 238, 0.15);">
-          <strong style="color: var(--journey-primary);">/doc-ingest report.pdf</strong> &rarr;
-          <div class="code-block" style="margin-top: 10px; padding: 12px 16px; font-size: 0.75rem;">
-<span class="folder-name">sources/docs/2026-02-quarterly-report/</span>
-<span class="comment">  |--</span> <span class="file-name" style="color: var(--journey-primary);">content.md</span>       <span class="comment"># converted markdown</span>
-<span class="comment">  |--</span> <span class="file-name" style="color: var(--journey-primary);">meta.md</span>          <span class="comment"># tags, summary, attribution</span>
-<span class="comment">  +--</span> <span class="folder-name">_raw-source/</span>
-<span class="comment">       +--</span> <span class="file-name" style="color: var(--journey-primary);">report.pdf</span>   <span class="comment"># original copy</span></div>
+        <!-- Connector line down -->
+        <div style="width: 2px; height: 24px; background: var(--text-muted); opacity: 0.4;"></div>
+        <!-- Branch point -->
+        <div style="display: flex; align-items: flex-start; width: 100%; justify-content: center; gap: 0;">
+          <!-- Left branch -->
+          <div style="display: flex; flex-direction: column; align-items: center; flex: 1;">
+            <div style="width: 2px; height: 20px; background: var(--text-muted); opacity: 0.4;"></div>
+            <div style="padding: 10px 16px; border: 2px solid rgba(245, 158, 11, 0.4); border-radius: 10px; background: rgba(245, 158, 11, 0.06); text-align: center;">
+              <div style="font-family: var(--font-mono); font-size: 0.8rem; font-weight: 600; color: #f59e0b;">/doc-convert</div>
+              <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 4px;">convert only</div>
+            </div>
+            <div style="width: 2px; height: 16px; background: var(--text-muted); opacity: 0.4;"></div>
+            <div style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-secondary); text-align: center;">report.md</div>
+          </div>
+          <!-- Horizontal connector -->
+          <div style="height: 2px; background: var(--text-muted); opacity: 0.4; align-self: flex-start; margin-top: 9px; flex: 0 0 40%;"></div>
+          <!-- Right branch -->
+          <div style="display: flex; flex-direction: column; align-items: center; flex: 1;">
+            <div style="width: 2px; height: 20px; background: var(--text-muted); opacity: 0.4;"></div>
+            <div style="padding: 10px 16px; border: 2px solid rgba(245, 158, 11, 0.4); border-radius: 10px; background: rgba(245, 158, 11, 0.06); text-align: center;">
+              <div style="font-family: var(--font-mono); font-size: 0.8rem; font-weight: 600; color: #f59e0b;">/doc-extract</div>
+              <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 4px;">full pipeline</div>
+            </div>
+            <div style="width: 2px; height: 16px; background: var(--text-muted); opacity: 0.4;"></div>
+            <div style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-secondary); text-align: center; line-height: 1.5;">sources/docs/2026-02-.../
+content.md + meta.md</div>
+          </div>
         </div>
       </div>
-
-      <p class="section-intro" style="margin-bottom: 28px;">
-        Same conversion script underneath. Completely different scope. The skill holds all the knowledge &mdash;
-        each command picks how much to use.
-      </p>
 
       <div class="code-block step-4-block">
 <span class="folder-name">project/</span>
 <span class="comment">  |</span>
 <span class="comment">  +--</span> <span class="folder-name">.claude/</span>
 <span class="comment">       |--</span> <span class="folder-name">commands/</span>
-<span class="comment">       |    |--</span> <span class="file-name">doc-convert.md</span>           <span class="comment"># convert only</span>
-<span class="comment">       |    +--</span> <span class="file-name">doc-ingest.md</span>            <span class="comment"># full workflow</span>
+<span class="comment">       |    |--</span> <span class="file-name">doc-convert.md</span>          <span class="comment"># convert only (verb)</span>
+<span class="comment">       |    +--</span> <span class="file-name">doc-extract.md</span>          <span class="comment"># full pipeline (verb)</span>
 <span class="comment">       |</span>
 <span class="comment">       +--</span> <span class="folder-name">skills/</span>
-<span class="comment">            +--</span> <span class="folder-name">doc-processing/</span>          <span class="comment"># noun &mdash; knowledge container</span>
-<span class="comment">                 |--</span> <span class="file-name">SKILL.md</span>             <span class="comment"># process description</span>
+<span class="comment">            +--</span> <span class="folder-name">doc-processing/</span>         <span class="comment"># capability bundle (noun)</span>
+<span class="comment">                 |--</span> <span class="file-name">SKILL.md</span>            <span class="comment"># process description</span>
 <span class="comment">                 |--</span> <span class="folder-name">scripts/</span>
-<span class="comment">                 |    +--</span> <span class="file-name">doc-convert.py</span>   <span class="comment"># conversion script</span>
+<span class="comment">                 |    |--</span> <span class="file-name">doc-download.py</span> <span class="comment"># download from URL</span>
+<span class="comment">                 |    +--</span> <span class="file-name">doc-convert.py</span>  <span class="comment"># binary &rarr; markdown</span>
 <span class="comment">                 +--</span> <span class="folder-name">references/</span>
-<span class="comment">                      +--</span> <span class="file-name">structure.md</span>     <span class="comment"># folder naming, meta.md template</span></div>
+<span class="comment">                      +--</span> <span class="file-name">structure.md</span>    <span class="comment"># folder naming, meta.md template</span></div>
 
-      <div class="code-label">The skill &mdash; all the knowledge, not a trigger</div>
+      <div class="code-label">The skill &mdash; capabilities, not a trigger</div>
       <div class="code-block">
 <span class="comment"># .claude/skills/doc-processing/SKILL.md</span>
 <span class="comment">---</span>
 <span class="keyword">name</span>: <span class="string">doc-processing</span>
-<span class="keyword">description</span>: <span class="string">Convert and organize documents into the knowledge base.</span>
-<span class="keyword">user-invocable</span>: <span class="string">false</span>
+<span class="keyword">description</span>: <span class="string">Download, convert, and organize documents into the knowledge base.</span>
+<span class="keyword">user-invocable</span>: <span class="string">false</span>          <span class="comment"># not a trigger anymore</span>
 <span class="comment">---</span>
+
+<span class="comment">## Capabilities</span>
+
+Scripts:
+- <span class="keyword">`scripts/doc-download.py`</span> &mdash; download a document from a URL
+- <span class="keyword">`scripts/doc-convert.py`</span> &mdash; convert PDF/DOCX to markdown
 
 For folder layout and meta.md template see <span class="keyword">`references/structure.md`</span>
 
-<span class="comment">## Process</span>
+<span class="comment">## Full Pipeline</span>
+
 1. Determine slug, create folder per <span class="keyword">`references/structure.md`</span>
-2. Copy original file into <span class="keyword">`_raw-source/`</span>
+2. Download or copy source into <span class="keyword">`_raw-source/`</span>
 3. Run <span class="keyword">`scripts/doc-convert.py &lt;input&gt; &lt;output&gt;`</span>
 4. Write <span class="keyword">`meta.md`</span> using template from references
-5. Enrich metadata from converted content</div>
+5. Enrich metadata (tags, summary) from converted content
+6. Update <span class="keyword">`sources/index.md`</span></div>
 
-      <div class="code-label">/doc-convert &mdash; uses only step 3 from the skill</div>
+      <div class="code-label">/doc-convert &mdash; uses only the convert script</div>
       <div class="code-block">
 <span class="comment"># .claude/commands/doc-convert.md</span>
 <span class="comment">---</span>
@@ -734,24 +783,43 @@ For folder layout and meta.md template see <span class="keyword">`references/str
 <span class="keyword">argument-hint</span>: <span class="string">[filepath]</span>
 <span class="comment">---</span>
 
-Load the <span class="keyword">`doc-processing`</span> skill.
-Run only the conversion script on <span class="keyword">`$ARGUMENTS`</span>. No folder structure, no metadata.</div>
+Load skill <span class="keyword">`doc-processing`</span>.
+Run only <span class="keyword">`scripts/doc-convert.py`</span> on <span class="keyword">`$ARGUMENTS`</span>. Output markdown next to the source file.
+No folder structure, no metadata.</div>
 
-      <div class="code-label">/doc-ingest &mdash; runs the full process from the skill</div>
+      <div class="code-label">/doc-extract &mdash; runs the full pipeline</div>
       <div class="code-block">
-<span class="comment"># .claude/commands/doc-ingest.md</span>
+<span class="comment"># .claude/commands/doc-extract.md</span>
 <span class="comment">---</span>
-<span class="keyword">description</span>: <span class="string">Ingest a document into the knowledge base.</span>
-<span class="keyword">argument-hint</span>: <span class="string">[filepath]</span>
+<span class="keyword">description</span>: <span class="string">Extract a document into the knowledge base.</span>
+<span class="keyword">argument-hint</span>: <span class="string">[URL or filepath]</span>
 <span class="comment">---</span>
 
-Load the <span class="keyword">`doc-processing`</span> skill, then process <span class="keyword">`$ARGUMENTS`</span>.
-Follow all steps in the skill.</div>
+Load skill <span class="keyword">`doc-processing`</span>.
+Follow all steps in the full pipeline for <span class="keyword">`$ARGUMENTS`</span>.</div>
 
-      <div class="callouts">
+      <div class="callouts" style="margin-top: 24px; margin-bottom: 0;">
+        <div class="callout" style="background: rgba(245, 158, 11, 0.06); border: 1px solid rgba(245, 158, 11, 0.15);">
+          <strong style="color: #f59e0b;">/doc-convert report.pdf</strong> &rarr;
+          <div class="code-block" style="margin-top: 10px; padding: 12px 16px; font-size: 0.75rem;">
+<span class="file-name" style="color: #f59e0b;">report.md</span>              <span class="comment"># just the markdown, same directory</span></div>
+        </div>
+        <div class="callout" style="background: rgba(34, 211, 238, 0.06); border: 1px solid rgba(34, 211, 238, 0.15);">
+          <strong style="color: var(--journey-primary);">/doc-extract https://example.com/report.pdf</strong> &rarr;
+          <div class="code-block" style="margin-top: 10px; padding: 12px 16px; font-size: 0.75rem;">
+<span class="folder-name">sources/docs/2026-02-quarterly-report/</span>
+<span class="comment">  |--</span> <span class="file-name" style="color: var(--journey-primary);">content.md</span>       <span class="comment"># converted markdown</span>
+<span class="comment">  |--</span> <span class="file-name" style="color: var(--journey-primary);">meta.md</span>          <span class="comment"># tags, summary, attribution</span>
+<span class="comment">  +--</span> <span class="folder-name">_raw-source/</span>
+<span class="comment">       +--</span> <span class="file-name" style="color: var(--journey-primary);">report.pdf</span>   <span class="comment"># downloaded original</span></div>
+        </div>
+      </div>
+
+      <div class="callouts" style="margin-top: 16px;">
         <div class="callout callout-gain">
-          <strong>Gain:</strong> Two commands, one skill. <code>/doc-convert</code> picks step 3. <code>/doc-ingest</code> runs everything.
-          The conversion script is shared. The folder structure knowledge is shared. Each command decides its own scope.
+          <strong>Gain:</strong> The skill grew from one script to a full capability bundle &mdash; download, convert, structure.
+          Commands stayed thin. <code>/doc-convert</code> grabs one capability. <code>/doc-extract</code> orchestrates all of them.
+          Same skill, different scope.
         </div>
         <div></div>
       </div>
@@ -781,12 +849,12 @@ Follow all steps in the skill.</div>
         <div class="definition-card">
           <h3><span class="def-dot purple"></span> Skill</h3>
           <ul class="def-list">
-            <li><strong>Purpose:</strong> Encapsulate knowledge, process, and scripts</li>
+            <li><strong>Purpose:</strong> Bundle capabilities &mdash; scripts, process knowledge, and reference material</li>
             <li><strong>Location:</strong> <code>.claude/skills/&lt;noun&gt;/SKILL.md</code></li>
             <li><strong>Naming:</strong> Noun &mdash; what it covers</li>
             <li><strong>Contains:</strong> Process description, bundled scripts, reference docs</li>
           </ul>
-          <p class="def-metaphor">Think of it as: the manual the button activates</p>
+          <p class="def-metaphor">Think of it as: the toolbox &mdash; commands grab different tools from it</p>
         </div>
 
         <div class="definition-card">
@@ -823,7 +891,7 @@ Follow all steps in the skill.</div>
         </div>
         <div class="recap-item">
           <span class="step-label step-4">Step 4</span>
-          <p class="recap-text">Separate <strong style="color: var(--journey-primary);">what you know</strong> from <strong style="color: var(--journey-primary);">how you start it</strong>. The skill holds all the knowledge. Commands are thin triggers that decide which parts to use. One skill, many entry points.</p>
+          <p class="recap-text">The skill grows beyond one trick &mdash; downloading, converting, structuring. Pull triggers out into <strong style="color: var(--journey-primary);">commands</strong>. Each command decides its own scope. The skill is the toolbox, commands grab what they need.</p>
         </div>
       </div>
     </div>
