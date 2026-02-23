@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Writing Better Skills</title>
+  <link rel="stylesheet" href="css/theme.css">
+  <style>
+    /* ── Background image & overlay ── */
+    body {
+      background-image: url('assets/bg-dark-abstract.png');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(10, 14, 26, 0.92) 0%,
+        rgba(10, 14, 26, 0.80) 40%,
+        rgba(10, 14, 26, 0.88) 100%
+      );
+      z-index: 0;
+    }
+
+    .page-wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 60px 40px 100px;
+    }
+
+    /* ── Header ── */
+    header {
+      text-align: center;
+      margin-bottom: 64px;
+    }
+
+    .badge {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--skills-primary);
+      background: var(--skills-glow);
+      border: 1px solid rgba(124, 110, 240, 0.2);
+      padding: 6px 16px;
+      border-radius: 20px;
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      font-size: clamp(2.2rem, 5vw, 3.2rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, var(--skills-primary) 0%, var(--commands-primary) 50%, var(--skillanat-primary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      max-width: 620px;
+      margin: 0 auto;
+      line-height: 1.6;
+      font-weight: 400;
+    }
+
+    /* ── Section titles ── */
+    .section-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 24px;
+      color: var(--text-primary);
+    }
+
+    code {
+      font-family: var(--font-mono);
+      font-size: 0.82em;
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.06);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    /* ── Generic section & card ── */
+    .bp-section {
+      margin-bottom: 48px;
+    }
+
+    .bp-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 32px 36px;
+    }
+
+    .bp-card strong {
+      color: var(--text-primary);
+    }
+
+    /* ── Placement grid ── */
+    .placement-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    @media (max-width: 700px) {
+      .placement-grid { grid-template-columns: 1fr; }
+    }
+
+    .placement-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 20px 22px;
+      border-top: 3px solid var(--skills-primary);
+      transition: transform 0.3s ease;
+    }
+
+    .placement-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .placement-where {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--skills-primary);
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .placement-card p {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* ── Description card ── */
+    .desc-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 32px 36px;
+    }
+
+    .desc-template {
+      padding: 16px 20px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-left: 3px solid var(--skills-primary);
+      margin-bottom: 28px;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    .template-label {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--skills-primary);
+      background: var(--skills-glow);
+      padding: 3px 10px;
+      border-radius: 6px;
+      display: inline-block;
+      margin-bottom: 10px;
+    }
+
+    .desc-rules {
+      margin-bottom: 24px;
+    }
+
+    .desc-rules h3 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      letter-spacing: -0.01em;
+    }
+
+    .desc-rules ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .desc-rules li {
+      padding: 5px 0;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      padding-left: 16px;
+      position: relative;
+    }
+
+    .desc-rules li::before {
+      content: '›';
+      position: absolute;
+      left: 0;
+      color: var(--skills-primary);
+      font-weight: 700;
+    }
+
+    .desc-examples {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    @media (max-width: 600px) {
+      .desc-examples { grid-template-columns: 1fr; }
+    }
+
+    .desc-example {
+      padding: 12px 16px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .desc-example.good {
+      border-left: 3px solid var(--commands-primary);
+    }
+
+    .desc-example.bad {
+      border-left: 3px solid var(--warn);
+    }
+
+    .example-label {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .desc-example.good .example-label { color: var(--commands-primary); }
+    .desc-example.bad .example-label { color: var(--warn); }
+
+    .desc-example p {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      font-family: var(--font-mono);
+    }
+
+    /* ── Body structure ── */
+    .body-template {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      padding: 20px 24px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      margin-bottom: 20px;
+      white-space: pre-line;
+    }
+
+    .body-template .heading { color: var(--skills-primary); font-weight: 600; }
+    .body-template .comment { color: var(--text-muted); font-style: italic; }
+
+    .body-rules {
+      list-style: none;
+      padding: 0;
+    }
+
+    .body-rules li {
+      padding: 5px 0;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      padding-left: 16px;
+      position: relative;
+    }
+
+    .body-rules li::before {
+      content: '›';
+      position: absolute;
+      left: 0;
+      color: var(--skills-primary);
+      font-weight: 700;
+    }
+
+    /* ── Scripts vs Instructions ── */
+    .decision-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 700px) {
+      .decision-grid { grid-template-columns: 1fr; }
+    }
+
+    .decision-col {
+      padding: 20px 22px;
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .decision-col.scripts {
+      border-top: 3px solid var(--commands-primary);
+    }
+
+    .decision-col.instructions {
+      border-top: 3px solid var(--skills-primary);
+    }
+
+    .decision-label {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .decision-col.scripts .decision-label { color: var(--commands-primary); }
+    .decision-col.instructions .decision-label { color: var(--skills-primary); }
+
+    .decision-col ul {
+      list-style: none;
+      padding: 0;
+      margin-bottom: 12px;
+    }
+
+    .decision-col li {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      padding: 3px 0;
+    }
+
+    .decision-benefit {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* ── Pattern grid ── */
+    .pattern-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    @media (max-width: 700px) {
+      .pattern-grid { grid-template-columns: 1fr; }
+    }
+
+    .pattern-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 20px 22px;
+      border-left: 3px solid rgba(124, 110, 240, 0.3);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .pattern-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px var(--skills-glow);
+      border-left-color: var(--skills-primary);
+    }
+
+    .pattern-label {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--skills-primary);
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .pattern-card h3 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      letter-spacing: -0.01em;
+    }
+
+    .pattern-card p {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* ── Anti-patterns ── */
+    .anti-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 28px 36px;
+      border-left: 3px solid rgba(240, 110, 110, 0.3);
+    }
+
+    .anti-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .anti-list li {
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .anti-list li:last-child { border-bottom: none; }
+
+    .anti-name {
+      font-weight: 700;
+      color: var(--warn);
+      font-size: 0.85rem;
+    }
+
+    /* ── Sources ── */
+    .sources-section {
+      margin-bottom: 48px;
+    }
+
+    .sources-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 28px 36px;
+    }
+
+    .source-list {
+      list-style: none;
+    }
+
+    .source-list li {
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .source-list li:last-child { border-bottom: none; }
+
+    .source-list a {
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--skills-primary);
+      border-bottom-color: rgba(124, 110, 240, 0.3);
+    }
+
+    .source-list a:hover {
+      color: var(--text-primary);
+      border-color: var(--text-primary);
+    }
+
+    .source-note {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* ── Source attribution ── */
+    .source-attribution {
+      position: fixed;
+      bottom: 20px;
+      left: 24px;
+      z-index: 10;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      opacity: 0.6;
+      transition: opacity 0.3s ease;
+    }
+
+    .source-attribution:hover {
+      opacity: 1;
+    }
+
+    @media (max-width: 600px) {
+      .page-wrapper { padding: 48px 20px 80px; }
+      .bp-card, .desc-card, .anti-card, .sources-card { padding: 24px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-wrapper">
+
+  <!-- Header -->
+  <header>
+    <div class="badge">Frontend Community Day</div>
+    <h1>Writing Better Skills</h1>
+    <p class="subtitle">
+      The description triggers activation. The body teaches the workflow. Get both right.
+    </p>
+  </header>
+
+  <!-- Where Content Goes -->
+  <div class="bp-section">
+    <h2 class="section-title">Where Content Goes</h2>
+    <div class="placement-grid">
+
+      <div class="placement-card">
+        <span class="placement-where">description (frontmatter)</span>
+        <p>Trigger keywords, capability statements, "Use when&hellip;" conditions, file extensions. The <strong>only layer</strong> Claude uses to decide activation.</p>
+      </div>
+
+      <div class="placement-card">
+        <span class="placement-where">SKILL.md body</span>
+        <p>Core workflow steps, decision trees, quick-start examples, navigation links to reference files.</p>
+      </div>
+
+      <div class="placement-card">
+        <span class="placement-where">references/</span>
+        <p>Detailed API docs, schemas, domain-specific data. Loaded only when Claude determines relevance.</p>
+      </div>
+
+      <div class="placement-card">
+        <span class="placement-where">scripts/</span>
+        <p>Deterministic operations, validations, data transforms. Zero context cost&hairsp;&mdash;&hairsp;only script output consumes tokens.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Writing the Description -->
+  <div class="bp-section">
+    <h2 class="section-title">Writing the Description</h2>
+    <div class="desc-card">
+
+      <div class="desc-template">
+        <span class="template-label">Template</span><br>
+        [Verb] [object] with [capabilities]. Use when [trigger conditions], [additional triggers], or [file-type mentions].
+      </div>
+
+      <div class="desc-rules">
+        <h3>Key Rules</h3>
+        <ul>
+          <li><strong>Third person</strong> &mdash; "Processes files&hellip;" not "I can help you&hellip;" or "You can use this to&hellip;"</li>
+          <li><strong>What + when</strong> &mdash; capability statement followed by "Use when&hellip;" trigger conditions</li>
+          <li><strong>Natural keywords</strong> &mdash; include terms users would actually say in conversation</li>
+          <li><strong>File types and domains</strong> &mdash; mention extensions (.xlsx, .pdf) and domain terms (BigQuery, React)</li>
+          <li><strong>Specific over generic</strong> &mdash; must distinguish your skill from 100+ others in the same context</li>
+        </ul>
+      </div>
+
+      <div class="desc-examples">
+        <div class="desc-example good">
+          <span class="example-label">Good</span>
+          <p>Extract text and tables from PDF files, fill forms, merge documents. Use when working with PDF files or when the user mentions PDFs, forms, or document extraction.</p>
+        </div>
+        <div class="desc-example bad">
+          <span class="example-label">Bad</span>
+          <p>Helps with documents</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SKILL.md Body Structure -->
+  <div class="bp-section">
+    <h2 class="section-title">SKILL.md Body Structure</h2>
+    <div class="bp-card">
+
+      <div class="body-template"><span class="heading"># Skill Title</span>
+<span class="comment">[1-2 sentence overview of what this skill does]</span>
+
+<span class="heading">## Quick Start</span>
+<span class="comment">[Minimal working example &mdash; 3-step process or code block]</span>
+
+<span class="heading">## Workflow</span>
+<span class="comment">[Sequential steps, numbered, with clear decision points]</span>
+
+<span class="heading">## Additional Resources</span>
+<span class="comment">- [Topic]: See references/file.md for details</span>
+<span class="comment">- [Topic]: See references/other.md for guide</span></div>
+
+      <ul class="body-rules">
+        <li><strong>Under 500 lines</strong> &mdash; hard recommendation; split excess into reference files</li>
+        <li><strong>No "When to Use" in body</strong> &mdash; body loads after triggering; move all triggers to description</li>
+        <li><strong>Examples over explanations</strong> &mdash; Claude is smart; 50 tokens of code beats 150 tokens of prose</li>
+        <li><strong>Reference files clearly</strong> &mdash; SKILL.md acts as a navigation hub to bundled resources</li>
+        <li><strong>One level deep</strong> &mdash; all reference files link directly from SKILL.md, never nested chains</li>
+      </ul>
+
+    </div>
+  </div>
+
+  <!-- Scripts vs Instructions -->
+  <div class="bp-section">
+    <h2 class="section-title">Scripts vs Instructions</h2>
+    <div class="bp-card">
+      <div class="decision-grid">
+
+        <div class="decision-col scripts">
+          <span class="decision-label">Use Scripts When</span>
+          <ul>
+            <li>Operation is deterministic and fragile</li>
+            <li>Same code would be rewritten every invocation</li>
+            <li>Consistency is critical (file formats, validations)</li>
+            <li>Error-prone if Claude improvises</li>
+          </ul>
+          <span class="decision-benefit">Zero context cost &bull; more reliable &bull; self-documenting</span>
+        </div>
+
+        <div class="decision-col instructions">
+          <span class="decision-label">Use Instructions When</span>
+          <ul>
+            <li>Multiple valid approaches exist</li>
+            <li>Context determines the right approach</li>
+            <li>Heuristics and judgment guide the work</li>
+            <li>Creative or analytical reasoning needed</li>
+          </ul>
+          <span class="decision-benefit">Flexible &bull; adaptive &bull; context-aware</span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Key Patterns -->
+  <div class="bp-section">
+    <h2 class="section-title">Key Patterns</h2>
+    <div class="pattern-grid">
+
+      <div class="pattern-card">
+        <span class="pattern-label">Pattern</span>
+        <h3>Thin Command &rarr; Rich Skill</h3>
+        <p>User types <code>/deploy</code>. Skill loads SKILL.md, determines the cloud provider, reads only the relevant reference file, executes the right script.</p>
+      </div>
+
+      <div class="pattern-card">
+        <span class="pattern-label">Pattern</span>
+        <h3>Meta-Skill</h3>
+        <p>A skill for creating other skills. Encodes the meta-knowledge of how to write effective SKILL.md files, descriptions, and folder structures.</p>
+      </div>
+
+      <div class="pattern-card">
+        <span class="pattern-label">Pattern</span>
+        <h3>Domain Router</h3>
+        <p>One skill, multiple reference files. SKILL.md acts as a routing table: "Finance? Read <code>references/finance.md</code>." Claude loads only what's needed.</p>
+      </div>
+
+      <div class="pattern-card">
+        <span class="pattern-label">Pattern</span>
+        <h3>Dynamic Context Injection</h3>
+        <p><code>!`gh pr diff`</code> runs before Claude sees content. Live data injected into the prompt&hairsp;&mdash;&hairsp;Claude receives actual output, not the command.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Anti-Patterns -->
+  <div class="bp-section">
+    <h2 class="section-title">Anti-Patterns</h2>
+    <div class="anti-card">
+      <ul class="anti-list">
+        <li><span class="anti-name">"When to Use" in the body</span> &mdash; Body loads after triggering. Claude never sees it for selection. Move all trigger info to the description.</li>
+        <li><span class="anti-name">Vague descriptions</span> &mdash; "Helps with documents" matches nothing specific. Include capability verbs, domain terms, file extensions, and "Use when" conditions.</li>
+        <li><span class="anti-name">SKILL.md over 500 lines</span> &mdash; Bloats context, dilutes conversation history. Split into a concise SKILL.md plus focused reference files.</li>
+        <li><span class="anti-name">Nested reference chains</span> &mdash; SKILL.md &rarr; advanced.md &rarr; details.md creates unreliable navigation. Keep all references one level deep.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Sources -->
+  <div class="sources-section">
+    <h2 class="section-title">Sources &amp; Further Reading</h2>
+    <div class="sources-card">
+      <ul class="source-list">
+        <li>
+          <a href="https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices" target="_blank" rel="noopener">Skill Authoring Best Practices</a>
+          <span class="source-note">Official Anthropic guide &mdash; writing effective skills, patterns, evaluation</span>
+        </li>
+        <li>
+          <a href="https://claude.com/blog/equipping-agents-for-the-real-world-with-agent-skills" target="_blank" rel="noopener">Equipping Agents for the Real World</a>
+          <span class="source-note">Anthropic engineering blog &mdash; design philosophy, progressive disclosure rationale</span>
+        </li>
+        <li>
+          <a href="https://alexop.dev/posts/stop-bloating-your-claude-md-progressive-disclosure-ai-coding-tools/" target="_blank" rel="noopener">Stop Bloating Your CLAUDE.md: Progressive Disclosure</a>
+          <span class="source-note">alexop.dev &mdash; practical context management strategies</span>
+        </li>
+        <li>
+          <a href="https://github.com/anthropics/skills/blob/main/skills/skill-creator/SKILL.md" target="_blank" rel="noopener">skill-creator/SKILL.md</a>
+          <span class="source-note">Anthropic's meta-skill &mdash; the reference implementation for skill creation</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<!-- Source attribution bottom-left -->
+<div class="source-attribution">
+  Frontend Community Day<br>
+  Writing Better Skills
+</div>
+
+</body>
+</html>

@@ -58,6 +58,21 @@
   --workflow-secondary: #fbbf24;
   --workflow-glow: rgba(251, 146, 60, 0.15);
 
+  --difference-primary: #60a5fa;
+  --difference-secondary: #38bdf8;
+  --difference-glow: rgba(96, 165, 250, 0.15);
+
+  --skillanat-primary: #a78bfa;
+  --skillanat-secondary: #7c6ef0;
+  --skillanat-glow: rgba(167, 139, 250, 0.15);
+
+  --debugging-primary: #fbbf24;
+  --debugging-secondary: #f59e0b;
+  --debugging-glow: rgba(251, 191, 36, 0.15);
+
+  --hooks-primary: #f472b6;
+  --hooks-glow: rgba(244, 114, 182, 0.15);
+
   --warn: #f06e6e;
 
   --text-primary: #f1f5f9;

@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What Makes Claude Code Different</title>
+  <link rel="stylesheet" href="css/theme.css">
+  <style>
+    /* ── Background image & overlay ── */
+    body {
+      background-image: url('assets/bg-dark-abstract.png');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(10, 14, 26, 0.92) 0%,
+        rgba(10, 14, 26, 0.80) 40%,
+        rgba(10, 14, 26, 0.88) 100%
+      );
+      z-index: 0;
+    }
+
+    .page-wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 60px 40px 100px;
+    }
+
+    /* ── Header ── */
+    header {
+      text-align: center;
+      margin-bottom: 64px;
+    }
+
+    .badge {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--difference-primary);
+      background: var(--difference-glow);
+      border: 1px solid rgba(96, 165, 250, 0.2);
+      padding: 6px 16px;
+      border-radius: 20px;
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      font-size: clamp(2.2rem, 5vw, 3.2rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, var(--difference-primary) 0%, var(--skills-primary) 50%, var(--commands-primary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.6;
+      font-weight: 400;
+    }
+
+    /* ── Section titles ── */
+    .section-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 24px;
+      color: var(--text-primary);
+    }
+
+    /* ── Shift Section ── */
+    .shift-section {
+      margin-bottom: 56px;
+    }
+
+    .shift-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 700px) {
+      .shift-grid { grid-template-columns: 1fr; }
+    }
+
+    .shift-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 24px 28px;
+      border-left: 3px solid rgba(96, 165, 250, 0.3);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .shift-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(96, 165, 250, 0.08);
+      border-left-color: var(--difference-primary);
+    }
+
+    .shift-card .shift-label {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--difference-primary);
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .shift-card h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      letter-spacing: -0.01em;
+    }
+
+    .shift-card p {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+
+    /* ── Pillars Section ── */
+    .pillars-section {
+      margin-bottom: 56px;
+    }
+
+    .pillars-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    @media (max-width: 900px) {
+      .pillars-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 500px) {
+      .pillars-grid { grid-template-columns: 1fr; }
+    }
+
+    .pillar-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 24px 22px;
+      text-align: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .pillar-card:hover {
+      transform: translateY(-3px);
+    }
+
+    .pillar-card .pillar-icon {
+      font-size: 1.6rem;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .pillar-card .pillar-trigger {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+
+    .pillar-card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      letter-spacing: -0.01em;
+    }
+
+    .pillar-card p {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .pillar-card code {
+      font-family: var(--font-mono);
+      font-size: 0.78em;
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.06);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    /* Pillar colors */
+    .pillar-card.commands {
+      border-top: 3px solid var(--commands-primary);
+    }
+    .pillar-card.commands:hover { box-shadow: 0 8px 32px var(--commands-glow); }
+    .pillar-card.commands .pillar-trigger {
+      color: var(--commands-primary);
+      background: var(--commands-glow);
+    }
+    .pillar-card.commands h3 { color: var(--commands-primary); }
+
+    .pillar-card.skills {
+      border-top: 3px solid var(--skills-primary);
+    }
+    .pillar-card.skills:hover { box-shadow: 0 8px 32px var(--skills-glow); }
+    .pillar-card.skills .pillar-trigger {
+      color: var(--skills-primary);
+      background: var(--skills-glow);
+    }
+    .pillar-card.skills h3 { color: var(--skills-primary); }
+
+    .pillar-card.hooks {
+      border-top: 3px solid var(--hooks-primary);
+    }
+    .pillar-card.hooks:hover { box-shadow: 0 8px 32px var(--hooks-glow); }
+    .pillar-card.hooks .pillar-trigger {
+      color: var(--hooks-primary);
+      background: var(--hooks-glow);
+    }
+    .pillar-card.hooks h3 { color: var(--hooks-primary); }
+
+    .pillar-card.mcp {
+      border-top: 3px solid var(--mcp-primary);
+    }
+    .pillar-card.mcp:hover { box-shadow: 0 8px 32px var(--mcp-glow); }
+    .pillar-card.mcp .pillar-trigger {
+      color: var(--mcp-primary);
+      background: var(--mcp-glow);
+    }
+    .pillar-card.mcp h3 { color: var(--mcp-primary); }
+
+    /* ── Composition Section ── */
+    .compose-section {
+      margin-bottom: 56px;
+    }
+
+    .compose-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 36px 40px;
+    }
+
+    .compose-flow {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 28px;
+    }
+
+    .compose-step {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: 1px solid;
+    }
+
+    .compose-step.mcp-step {
+      color: var(--mcp-primary);
+      background: var(--mcp-glow);
+      border-color: rgba(196, 102, 245, 0.25);
+    }
+    .compose-step.skills-step {
+      color: var(--skills-primary);
+      background: var(--skills-glow);
+      border-color: rgba(124, 110, 240, 0.25);
+    }
+    .compose-step.hooks-step {
+      color: var(--hooks-primary);
+      background: var(--hooks-glow);
+      border-color: rgba(244, 114, 182, 0.25);
+    }
+    .compose-step.commands-step {
+      color: var(--commands-primary);
+      background: var(--commands-glow);
+      border-color: rgba(62, 201, 122, 0.25);
+    }
+
+    .compose-arrow {
+      color: var(--text-muted);
+      font-size: 1.2rem;
+    }
+
+    .compose-example {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      line-height: 1.65;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .compose-example strong {
+      color: var(--text-primary);
+    }
+
+    .compose-summary {
+      font-size: 1.05rem;
+      color: var(--text-secondary);
+      text-align: center;
+      margin-top: 28px;
+      font-weight: 400;
+      line-height: 1.6;
+    }
+
+    .compose-summary span.mcp-text { color: var(--mcp-primary); font-weight: 600; }
+    .compose-summary span.skills-text { color: var(--skills-primary); font-weight: 600; }
+    .compose-summary span.hooks-text { color: var(--hooks-primary); font-weight: 600; }
+    .compose-summary span.commands-text { color: var(--commands-primary); font-weight: 600; }
+
+    /* ── Takeaway ── */
+    .takeaway {
+      text-align: center;
+      padding: 32px;
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+    }
+
+    .takeaway p {
+      font-size: 1.05rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .takeaway p strong {
+      color: var(--text-primary);
+    }
+
+    /* ── Source attribution ── */
+    .source-attribution {
+      position: fixed;
+      bottom: 20px;
+      left: 24px;
+      z-index: 10;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      opacity: 0.6;
+      transition: opacity 0.3s ease;
+    }
+
+    .source-attribution:hover {
+      opacity: 1;
+    }
+
+    @media (max-width: 600px) {
+      .page-wrapper { padding: 48px 20px 80px; }
+      .compose-card { padding: 28px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-wrapper">
+
+  <!-- Header -->
+  <header>
+    <div class="badge">Frontend Community Day</div>
+    <h1>What Makes Claude Code Different</h1>
+    <p class="subtitle">
+      Not another autocomplete. A terminal-native agent with a composable extension system.
+    </p>
+  </header>
+
+  <!-- The Core Shift -->
+  <div class="shift-section">
+    <h2 class="section-title">The Core Shift</h2>
+    <div class="shift-grid">
+      <div class="shift-card">
+        <span class="shift-label">Architecture</span>
+        <h3>Terminal-native, not IDE-embedded</h3>
+        <p>Lives in your terminal. Unrestricted filesystem access, process spawning, native Unix composability. Editors integrate it&hairsp;&mdash;&hairsp;VS Code, JetBrains, desktop app&hairsp;&mdash;&hairsp;but it's not embedded in them.</p>
+      </div>
+      <div class="shift-card">
+        <span class="shift-label">Interaction</span>
+        <h3>Agentic loop, not tab-completion</h3>
+        <p>Reasons, invokes tools, observes results, continues. Multi-step problem solving by default. Reads files, runs tests, fixes errors&hairsp;&mdash;&hairsp;autonomously.</p>
+      </div>
+      <div class="shift-card">
+        <span class="shift-label">Extensibility</span>
+        <h3>Text files, not a plugin SDK</h3>
+        <p>Four extension primitives compose via markdown and JSON. No proprietary API, no binary plugins. Everything lives in <code>.claude/</code> and commits to git.</p>
+      </div>
+      <div class="shift-card">
+        <span class="shift-label">Context</span>
+        <h3>200K tokens, full codebase</h3>
+        <p>Operates on your entire project directory. No artificial file limits, no copying code into a chat window. 200K context window with efficient tool use.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- The Four Extensibility Pillars -->
+  <div class="pillars-section">
+    <h2 class="section-title">Four Extensibility Pillars</h2>
+    <div class="pillars-grid">
+
+      <div class="pillar-card commands">
+        <span class="pillar-icon">/</span>
+        <span class="pillar-trigger">Manual trigger</span>
+        <h3>Commands</h3>
+        <p>Prompt templates as markdown files. Type <code>/deploy</code>, get a repeatable instruction set. Saves typing.</p>
+      </div>
+
+      <div class="pillar-card skills">
+        <span class="pillar-icon">&#x1F9E0;</span>
+        <span class="pillar-trigger">Auto-trigger</span>
+        <h3>Skills</h3>
+        <p>Knowledge modules that auto-activate when context matches. Teach Claude your domain workflows and conventions.</p>
+      </div>
+
+      <div class="pillar-card hooks">
+        <span class="pillar-icon">&#x26A1;</span>
+        <span class="pillar-trigger">Event-trigger</span>
+        <h3>Hooks</h3>
+        <p>Shell commands that fire on lifecycle events (PreToolUse, PostToolUse, Stop). Enforce guardrails, auto-format, gate completions.</p>
+      </div>
+
+      <div class="pillar-card mcp">
+        <span class="pillar-icon">&#x1F50C;</span>
+        <span class="pillar-trigger">Always-on</span>
+        <h3>MCP Servers</h3>
+        <p>External servers that add entirely new capabilities. Browser automation, databases, APIs. JSON config, always available.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- How They Compose -->
+  <div class="compose-section">
+    <h2 class="section-title">How They Compose</h2>
+    <div class="compose-card">
+      <div class="compose-flow">
+        <span class="compose-step mcp-step">MCP adds tools</span>
+        <span class="compose-arrow">&rarr;</span>
+        <span class="compose-step skills-step">Skills teach judgment</span>
+        <span class="compose-arrow">&rarr;</span>
+        <span class="compose-step hooks-step">Hooks enforce rules</span>
+        <span class="compose-arrow">&rarr;</span>
+        <span class="compose-step commands-step">Commands remove friction</span>
+      </div>
+
+      <p class="compose-example">
+        <strong>Example:</strong> A Playwright MCP connects Claude to browsers (capability). A testing skill teaches your test patterns (knowledge). A PostToolUse hook runs the linter after every file write (enforcement). <code>/test</code> packages the whole workflow (shortcut).
+      </p>
+
+      <p class="compose-summary">
+        <span class="mcp-text">MCP</span> expands reach.
+        <span class="skills-text">Skills</span> sharpen judgment.
+        <span class="hooks-text">Hooks</span> enforce standards.
+        <span class="commands-text">Commands</span> remove friction.
+      </p>
+    </div>
+  </div>
+
+  <!-- Takeaway -->
+  <div class="takeaway">
+    <p>
+      <strong>The whole system is text files you can commit to git.</strong>
+      No proprietary lock-in. Your customizations travel with the project, not the editor. Any teammate who clones the repo gets the same agent behavior.
+    </p>
+  </div>
+
+</div>
+
+<!-- Source attribution bottom-left -->
+<div class="source-attribution">
+  Frontend Community Day<br>
+  Claude Code Extensibility
+</div>
+
+</body>
+</html>

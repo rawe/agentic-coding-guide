@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Debugging with Claude in Chrome</title>
+  <link rel="stylesheet" href="css/theme.css">
+  <style>
+    /* ── Background image & overlay ── */
+    body {
+      background-image: url('assets/bg-dark-abstract.png');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(10, 14, 26, 0.92) 0%,
+        rgba(10, 14, 26, 0.80) 40%,
+        rgba(10, 14, 26, 0.88) 100%
+      );
+      z-index: 0;
+    }
+
+    .page-wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 60px 40px 100px;
+    }
+
+    /* ── Header ── */
+    header {
+      text-align: center;
+      margin-bottom: 64px;
+    }
+
+    .badge {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--debugging-primary);
+      background: var(--debugging-glow);
+      border: 1px solid rgba(251, 191, 36, 0.2);
+      padding: 6px 16px;
+      border-radius: 20px;
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      font-size: clamp(2.2rem, 5vw, 3.2rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, var(--debugging-primary) 0%, var(--debugging-secondary) 50%, var(--implement-primary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.6;
+      font-weight: 400;
+    }
+
+    /* ── Section titles ── */
+    .section-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 24px;
+      color: var(--text-primary);
+    }
+
+    code {
+      font-family: var(--font-mono);
+      font-size: 0.82em;
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.06);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    /* ── Setup Section ── */
+    .setup-section {
+      margin-bottom: 48px;
+    }
+
+    .setup-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 28px 36px;
+      border-left: 3px solid var(--debugging-primary);
+    }
+
+    .setup-steps {
+      display: flex;
+      gap: 32px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .setup-step {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .setup-num {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--debugging-primary);
+      background: var(--debugging-glow);
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .setup-step span {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    /* ── Toolkit Section ── */
+    .toolkit-section {
+      margin-bottom: 48px;
+    }
+
+    .toolkit-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    @media (max-width: 700px) {
+      .toolkit-grid { grid-template-columns: 1fr; }
+    }
+
+    .toolkit-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 24px;
+      transition: transform 0.3s ease;
+    }
+
+    .toolkit-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .toolkit-card .tk-label {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 6px;
+    }
+
+    .toolkit-card.tk-dom .tk-label {
+      color: var(--research-primary);
+      background: var(--research-glow);
+    }
+    .toolkit-card.tk-dom { border-top: 3px solid var(--research-primary); }
+
+    .toolkit-card.tk-console .tk-label {
+      color: var(--warn);
+      background: rgba(240, 110, 110, 0.12);
+    }
+    .toolkit-card.tk-console { border-top: 3px solid var(--warn); }
+
+    .toolkit-card.tk-network .tk-label {
+      color: var(--plan-primary);
+      background: var(--plan-glow);
+    }
+    .toolkit-card.tk-network { border-top: 3px solid var(--plan-primary); }
+
+    .toolkit-card.tk-interact .tk-label {
+      color: var(--debugging-primary);
+      background: var(--debugging-glow);
+    }
+    .toolkit-card.tk-interact { border-top: 3px solid var(--debugging-primary); }
+
+    .tk-tools {
+      list-style: none;
+    }
+
+    .tk-tools li {
+      padding: 6px 0;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.45;
+      display: flex;
+      gap: 8px;
+      align-items: baseline;
+    }
+
+    .tk-tools li code {
+      flex-shrink: 0;
+    }
+
+    .tk-tools li .tk-desc {
+      color: var(--text-muted);
+    }
+
+    /* ── Workflows Section ── */
+    .workflows-section {
+      margin-bottom: 48px;
+    }
+
+    .workflow-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .workflow-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 28px 32px;
+      transition: transform 0.3s ease;
+    }
+
+    .workflow-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .wf-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .wf-icon {
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+
+    .wf-header h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .wf-scenario {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      font-style: italic;
+      margin-bottom: 14px;
+    }
+
+    .wf-steps {
+      list-style: none;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .wf-steps li {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      padding: 5px 12px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      color: var(--text-secondary);
+    }
+
+    .wf-steps li .step-arrow {
+      color: var(--debugging-primary);
+      margin-left: 4px;
+    }
+
+    .wf-outcome {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-top: 14px;
+      line-height: 1.55;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .wf-outcome strong {
+      color: var(--text-primary);
+    }
+
+    /* ── Why Section ── */
+    .why-section {
+      margin-bottom: 48px;
+    }
+
+    .why-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    @media (max-width: 700px) {
+      .why-grid { grid-template-columns: 1fr; }
+    }
+
+    .why-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 22px 24px;
+    }
+
+    .why-card h3 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: var(--debugging-primary);
+    }
+
+    .why-card p {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+
+    /* ── Gotchas ── */
+    .gotchas-section {
+      margin-bottom: 48px;
+    }
+
+    .gotchas-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 28px 32px;
+      border-left: 3px solid var(--warn);
+    }
+
+    .gotcha-list {
+      list-style: none;
+    }
+
+    .gotcha-list li {
+      padding: 8px 0;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      padding-left: 20px;
+      position: relative;
+    }
+
+    .gotcha-list li::before {
+      content: '!';
+      position: absolute;
+      left: 0;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: var(--warn);
+      font-size: 0.8rem;
+    }
+
+    /* ── Source attribution ── */
+    .source-attribution {
+      position: fixed;
+      bottom: 20px;
+      left: 24px;
+      z-index: 10;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      opacity: 0.6;
+      transition: opacity 0.3s ease;
+    }
+
+    .source-attribution:hover {
+      opacity: 1;
+    }
+
+    @media (max-width: 600px) {
+      .page-wrapper { padding: 48px 20px 80px; }
+      .setup-steps { flex-direction: column; gap: 12px; }
+      .workflow-card { padding: 22px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-wrapper">
+
+  <!-- Header -->
+  <header>
+    <div class="badge">Frontend Community Day</div>
+    <h1>Debugging with Claude in Chrome</h1>
+    <p class="subtitle">
+      Connect Claude Code to your browser. Inspect, diagnose, and fix&hairsp;&mdash;&hairsp;without leaving the terminal.
+    </p>
+  </header>
+
+  <!-- Setup -->
+  <div class="setup-section">
+    <h2 class="section-title">Setup (One-Time)</h2>
+    <div class="setup-card">
+      <div class="setup-steps">
+        <div class="setup-step">
+          <span class="setup-num">1</span>
+          <span>Install <strong>Claude in Chrome</strong> extension</span>
+        </div>
+        <div class="setup-step">
+          <span class="setup-num">2</span>
+          <span>Run <code>claude --chrome</code> or type <code>/chrome</code></span>
+        </div>
+        <div class="setup-step">
+          <span class="setup-num">3</span>
+          <span>Done. No ports, no extra config.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- The Toolkit -->
+  <div class="toolkit-section">
+    <h2 class="section-title">The Debugging Toolkit</h2>
+    <div class="toolkit-grid">
+
+      <div class="toolkit-card tk-dom">
+        <span class="tk-label">DOM &amp; Visual</span>
+        <ul class="tk-tools">
+          <li><code>read_page</code> <span class="tk-desc">Accessibility tree of all elements</span></li>
+          <li><code>find</code> <span class="tk-desc">Natural language element search</span></li>
+          <li><code>computer: screenshot</code> <span class="tk-desc">Capture current page state</span></li>
+          <li><code>computer: zoom</code> <span class="tk-desc">Inspect a specific region close-up</span></li>
+        </ul>
+      </div>
+
+      <div class="toolkit-card tk-console">
+        <span class="tk-label">Console &amp; Errors</span>
+        <ul class="tk-tools">
+          <li><code>read_console_messages</code> <span class="tk-desc">Read console.log, .error, .warn</span></li>
+          <li><code>javascript_tool</code> <span class="tk-desc">Execute JS in page context</span></li>
+        </ul>
+      </div>
+
+      <div class="toolkit-card tk-network">
+        <span class="tk-label">Network &amp; API</span>
+        <ul class="tk-tools">
+          <li><code>read_network_requests</code> <span class="tk-desc">Monitor XHR, Fetch, resources</span></li>
+          <li><code>navigate</code> <span class="tk-desc">Go to URLs, forward/back</span></li>
+        </ul>
+      </div>
+
+      <div class="toolkit-card tk-interact">
+        <span class="tk-label">Interaction</span>
+        <ul class="tk-tools">
+          <li><code>computer</code> <span class="tk-desc">Click, type, scroll, keyboard</span></li>
+          <li><code>form_input</code> <span class="tk-desc">Fill form values by element ref</span></li>
+          <li><code>gif_creator</code> <span class="tk-desc">Record steps as animated GIF</span></li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Workflows -->
+  <div class="workflows-section">
+    <h2 class="section-title">Debugging Workflows</h2>
+    <div class="workflow-cards">
+
+      <div class="workflow-card">
+        <div class="wf-header">
+          <span class="wf-icon">&#x1F441;</span>
+          <h3>Broken Layout</h3>
+        </div>
+        <p class="wf-scenario">"The sidebar is overlapping the content area"</p>
+        <ul class="wf-steps">
+          <li>screenshot<span class="step-arrow">&rarr;</span></li>
+          <li>read_page<span class="step-arrow">&rarr;</span></li>
+          <li>find "sidebar"<span class="step-arrow">&rarr;</span></li>
+          <li>javascript_tool: getComputedStyle<span class="step-arrow">&rarr;</span></li>
+          <li>fix CSS in source</li>
+        </ul>
+        <p class="wf-outcome"><strong>Key:</strong> Claude sees the visual state AND reads the DOM. Correlates what's visible with what's in the code, then fixes it directly.</p>
+      </div>
+
+      <div class="workflow-card">
+        <div class="wf-header">
+          <span class="wf-icon">&#x1F4E1;</span>
+          <h3>Failing API Call</h3>
+        </div>
+        <p class="wf-scenario">"The save button does nothing when I click it"</p>
+        <ul class="wf-steps">
+          <li>navigate to page<span class="step-arrow">&rarr;</span></li>
+          <li>computer: click save<span class="step-arrow">&rarr;</span></li>
+          <li>read_network_requests: /api/<span class="step-arrow">&rarr;</span></li>
+          <li>read_console_messages: error|reject<span class="step-arrow">&rarr;</span></li>
+          <li>fix request in source</li>
+        </ul>
+        <p class="wf-outcome"><strong>Key:</strong> Sees the 422 response, reads the payload mismatch, identifies the bug. No manual Network tab inspection.</p>
+      </div>
+
+      <div class="workflow-card">
+        <div class="wf-header">
+          <span class="wf-icon">&#x1F4A5;</span>
+          <h3>Page Crash / JS Error</h3>
+        </div>
+        <p class="wf-scenario">"The dashboard just shows a blank white page"</p>
+        <ul class="wf-steps">
+          <li>navigate<span class="step-arrow">&rarr;</span></li>
+          <li>read_console_messages: onlyErrors<span class="step-arrow">&rarr;</span></li>
+          <li>screenshot<span class="step-arrow">&rarr;</span></li>
+          <li>read_network_requests: check 404s<span class="step-arrow">&rarr;</span></li>
+          <li>trace stack &rarr; fix</li>
+        </ul>
+        <p class="wf-outcome"><strong>Key:</strong> Gets the stack trace, sees the visual state, checks if resources failed to load. Traces back to source and proposes a fix.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Why This Matters -->
+  <div class="why-section">
+    <h2 class="section-title">Why This Beats DevTools Alone</h2>
+    <div class="why-grid">
+
+      <div class="why-card">
+        <h3>No Context Switching</h3>
+        <p>Claude reads the browser, finds the bug, and fixes the code in one continuous flow. No DevTools &rarr; editor &rarr; refresh loop.</p>
+      </div>
+
+      <div class="why-card">
+        <h3>Visual + Code in One Step</h3>
+        <p>Screenshots a broken layout AND reads the source. Correlates what you see with what's in the codebase. DevTools can't edit your files.</p>
+      </div>
+
+      <div class="why-card">
+        <h3>Everything at Once</h3>
+        <p>Console errors + network requests + DOM state + screenshots in a single investigation. No clicking between DevTools tabs.</p>
+      </div>
+
+      <div class="why-card">
+        <h3>Reproduces User Flows</h3>
+        <p>Clicks through a 5-step flow, monitors for errors at each step, records it as a GIF. Shares your browser's login state.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Gotchas -->
+  <div class="gotchas-section">
+    <h2 class="section-title">Watch Out For</h2>
+    <div class="gotchas-card">
+      <ul class="gotcha-list">
+        <li><code>alert()</code> and <code>confirm()</code> dialogs block the browser event loop and prevent Claude from receiving commands. Avoid triggering them.</li>
+        <li>Large DOM trees can exceed token limits. Use <code>ref_id</code> to focus on specific subtrees.</li>
+        <li>Always use the <code>pattern</code> parameter when reading console messages. Unfiltered SPA logs will flood the context.</li>
+        <li>Screenshots are viewport-only. Scroll first for below-the-fold content.</li>
+        <li>Chrome and Edge only. No Brave, Arc, or WSL support yet.</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<!-- Source attribution bottom-left -->
+<div class="source-attribution">
+  Frontend Community Day<br>
+  Claude in Chrome Debugging
+</div>
+
+</body>
+</html>

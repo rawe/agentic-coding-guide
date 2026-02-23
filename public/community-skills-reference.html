@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Skills Reference</title>
+  <link rel="stylesheet" href="css/theme.css">
+  <style>
+    /* ── Background image & overlay ── */
+    body {
+      background-image: url('assets/bg-dark-abstract.png');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(10, 14, 26, 0.92) 0%,
+        rgba(10, 14, 26, 0.80) 40%,
+        rgba(10, 14, 26, 0.88) 100%
+      );
+      z-index: 0;
+    }
+
+    .page-wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 60px 40px 100px;
+    }
+
+    /* ── Header ── */
+    header {
+      text-align: center;
+      margin-bottom: 64px;
+    }
+
+    .badge {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--skillanat-primary);
+      background: var(--skillanat-glow);
+      border: 1px solid rgba(167, 139, 250, 0.2);
+      padding: 6px 16px;
+      border-radius: 20px;
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      font-size: clamp(2.2rem, 5vw, 3.2rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, var(--skillanat-primary) 0%, var(--difference-primary) 50%, var(--skills-primary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.6;
+      font-weight: 400;
+    }
+
+    /* ── Section titles ── */
+    .section-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 24px;
+      color: var(--text-primary);
+    }
+
+    code {
+      font-family: var(--font-mono);
+      font-size: 0.82em;
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.06);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    /* ── Generic section & card ── */
+    .ref-section {
+      margin-bottom: 48px;
+    }
+
+    .ref-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 32px 36px;
+    }
+
+    /* ── Properties table ── */
+    .prop-grid {
+      display: grid;
+      grid-template-columns: 180px 120px 1fr;
+      gap: 0;
+    }
+
+    @media (max-width: 800px) {
+      .prop-grid { grid-template-columns: 1fr; }
+    }
+
+    .prop-header {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .prop-divider {
+      grid-column: 1 / -1;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--skillanat-primary);
+      background: var(--skillanat-glow);
+      padding: 8px 14px;
+      margin-top: 4px;
+    }
+
+    .prop-cell {
+      padding: 10px 14px;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+      line-height: 1.5;
+    }
+
+    .prop-cell.field {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: var(--skillanat-primary);
+      font-size: 0.82rem;
+    }
+
+    .prop-cell.type {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .prop-cell strong {
+      color: var(--text-primary);
+    }
+
+    /* ── Substitutions table ── */
+    .subst-grid {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 0;
+    }
+
+    @media (max-width: 600px) {
+      .subst-grid { grid-template-columns: 1fr; }
+    }
+
+    .subst-cell {
+      padding: 10px 14px;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+      line-height: 1.5;
+    }
+
+    .subst-cell.var {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: var(--skillanat-primary);
+      font-size: 0.82rem;
+    }
+
+    .subst-note {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-top: 16px;
+      padding: 0 14px;
+    }
+
+    /* ── Install list ── */
+    .install-list {
+      list-style: none;
+    }
+
+    .install-list li {
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .install-list li:last-child {
+      border-bottom: none;
+    }
+
+    .install-label {
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .install-path {
+      font-family: var(--font-mono);
+      font-size: 0.82em;
+      color: var(--skillanat-primary);
+    }
+
+    .install-note {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-top: 12px;
+    }
+
+    .install-note strong {
+      color: var(--text-primary);
+    }
+
+    /* ── Budget grid ── */
+    .budget-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    @media (max-width: 700px) {
+      .budget-grid { grid-template-columns: 1fr; }
+    }
+
+    .budget-item {
+      text-align: center;
+      padding: 16px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .budget-num {
+      font-family: var(--font-mono);
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--skillanat-primary);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .budget-label {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    .budget-note {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    /* ── Sources ── */
+    .sources-section {
+      margin-bottom: 48px;
+    }
+
+    .sources-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 28px 36px;
+    }
+
+    .source-list {
+      list-style: none;
+    }
+
+    .source-list li {
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .source-list li:last-child { border-bottom: none; }
+
+    .source-list a {
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--skillanat-primary);
+      border-bottom-color: rgba(167, 139, 250, 0.3);
+    }
+
+    .source-list a:hover {
+      color: var(--text-primary);
+      border-color: var(--text-primary);
+    }
+
+    .source-note {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* ── Source attribution ── */
+    .source-attribution {
+      position: fixed;
+      bottom: 20px;
+      left: 24px;
+      z-index: 10;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      opacity: 0.6;
+      transition: opacity 0.3s ease;
+    }
+
+    .source-attribution:hover {
+      opacity: 1;
+    }
+
+    @media (max-width: 600px) {
+      .page-wrapper { padding: 48px 20px 80px; }
+      .ref-card, .sources-card { padding: 24px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-wrapper">
+
+  <!-- Header -->
+  <header>
+    <div class="badge">Frontend Community Day</div>
+    <h1>Skills Reference</h1>
+    <p class="subtitle">
+      Every frontmatter field, string substitution, and installation path&hairsp;&mdash;&hairsp;in one place.
+    </p>
+  </header>
+
+  <!-- Frontmatter Properties -->
+  <div class="ref-section">
+    <h2 class="section-title">Frontmatter Properties</h2>
+    <div class="ref-card">
+      <div class="prop-grid">
+        <div class="prop-header">Field</div>
+        <div class="prop-header">Type / Default</div>
+        <div class="prop-header">Description</div>
+
+        <div class="prop-divider">Open Standard (agentskills.io)</div>
+
+        <div class="prop-cell field">name</div>
+        <div class="prop-cell type">string &bull; req</div>
+        <div class="prop-cell">Display name and <code>/slash-command</code>. Max 64 chars, lowercase + hyphens only.</div>
+
+        <div class="prop-cell field">description</div>
+        <div class="prop-cell type">string &bull; req</div>
+        <div class="prop-cell"><strong>Primary trigger.</strong> Claude reads this to decide relevance. Must state what it does AND when to use it. Max 1024 chars.</div>
+
+        <div class="prop-cell field">license</div>
+        <div class="prop-cell type">string</div>
+        <div class="prop-cell">License identifier or reference to bundled file. E.g. <code>Apache-2.0</code></div>
+
+        <div class="prop-cell field">compatibility</div>
+        <div class="prop-cell type">string</div>
+        <div class="prop-cell">Environment requirements (OS, packages, network). Max 500 chars.</div>
+
+        <div class="prop-cell field">metadata</div>
+        <div class="prop-cell type">map</div>
+        <div class="prop-cell">Arbitrary key-value pairs. E.g. <code>author: my-org</code>, <code>version: "1.0"</code></div>
+
+        <div class="prop-cell field">allowed-tools</div>
+        <div class="prop-cell type">string</div>
+        <div class="prop-cell">Space-delimited list of tools Claude can use. E.g. <code>Read Grep Glob</code> or <code>Bash(git:*)</code></div>
+
+        <div class="prop-divider">Claude Code Extensions</div>
+
+        <div class="prop-cell field">argument-hint</div>
+        <div class="prop-cell type">string</div>
+        <div class="prop-cell">Autocomplete hint shown in <code>/</code> menu. E.g. <code>[issue-number]</code></div>
+
+        <div class="prop-cell field">user-invocable</div>
+        <div class="prop-cell type">bool &bull; true</div>
+        <div class="prop-cell"><code>false</code> hides from <code>/</code> menu. Only Claude can invoke it.</div>
+
+        <div class="prop-cell field">disable-model-invocation</div>
+        <div class="prop-cell type">bool &bull; false</div>
+        <div class="prop-cell"><code>true</code> = user-only via <code>/name</code>. Description removed from Claude's context entirely.</div>
+
+        <div class="prop-cell field">context</div>
+        <div class="prop-cell type">string</div>
+        <div class="prop-cell"><code>fork</code> runs the skill in an isolated subagent with no conversation history.</div>
+
+        <div class="prop-cell field">agent</div>
+        <div class="prop-cell type">string &bull; general-purpose</div>
+        <div class="prop-cell">Subagent type when <code>context: fork</code>. Options: <code>Explore</code>, <code>Plan</code>, or custom agents.</div>
+
+        <div class="prop-cell field">model</div>
+        <div class="prop-cell type">string</div>
+        <div class="prop-cell">Override the session model for this skill.</div>
+
+        <div class="prop-cell field">hooks</div>
+        <div class="prop-cell type">object</div>
+        <div class="prop-cell">Lifecycle hooks scoped to skill execution. Same format as settings hooks, cleaned up when skill finishes.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- String Substitutions -->
+  <div class="ref-section">
+    <h2 class="section-title">String Substitutions</h2>
+    <div class="ref-card">
+      <div class="subst-grid">
+        <div class="prop-header">Variable</div>
+        <div class="prop-header">What It Does</div>
+
+        <div class="subst-cell var">$ARGUMENTS</div>
+        <div class="subst-cell">All arguments passed when invoking. <code>/fix-issue 123</code> &rarr; <code>$ARGUMENTS</code> becomes <code>123</code></div>
+
+        <div class="subst-cell var">$N</div>
+        <div class="subst-cell">Specific argument by 0-based index. <code>$0</code> = first, <code>$1</code> = second.</div>
+
+        <div class="subst-cell var">!`command`</div>
+        <div class="subst-cell">Shell preprocessing. Runs before Claude sees content; output replaces placeholder. E.g. <code>!`gh pr diff`</code></div>
+
+        <div class="subst-cell var">${CLAUDE_SESSION_ID}</div>
+        <div class="subst-cell">Current session identifier. Useful for session-specific files or logging.</div>
+      </div>
+
+      <p class="subst-note">
+        If <code>$ARGUMENTS</code> is absent from skill content, arguments are appended automatically as <code>ARGUMENTS: &lt;value&gt;</code>.
+      </p>
+    </div>
+  </div>
+
+  <!-- Installation Methods -->
+  <div class="ref-section">
+    <h2 class="section-title">Installation Methods</h2>
+    <div class="ref-card">
+      <ul class="install-list">
+        <li><span class="install-label">Project</span> &mdash; <span class="install-path">.claude/skills/&lt;name&gt;/SKILL.md</span> &mdash; committed to git, shared with team</li>
+        <li><span class="install-label">Personal</span> &mdash; <span class="install-path">~/.claude/skills/&lt;name&gt;/SKILL.md</span> &mdash; applies to all your projects</li>
+        <li><span class="install-label">Enterprise</span> &mdash; deployed via managed settings, highest priority</li>
+        <li><span class="install-label">Plugin</span> &mdash; <span class="install-path">&lt;plugin&gt;/skills/&lt;name&gt;/</span> &mdash; namespaced, via Claude Code plugins</li>
+        <li><span class="install-label">--add-dir</span> &mdash; skills in directories added at launch, supports live reload during session</li>
+        <li><span class="install-label">npx skills</span> &mdash; <code>npx skills add &lt;owner/repo&gt;</code> from the <a href="https://skills.sh" target="_blank" rel="noopener">skills.sh</a> ecosystem</li>
+      </ul>
+      <p class="install-note">
+        <strong>Priority:</strong> Enterprise &gt; Personal &gt; Project. Plugin skills use namespaces and cannot conflict. Monorepo subdirectories with <code>.claude/skills/</code> are auto-discovered.
+      </p>
+    </div>
+  </div>
+
+  <!-- Context Budget -->
+  <div class="ref-section">
+    <h2 class="section-title">Context Budget</h2>
+    <div class="ref-card">
+      <div class="budget-grid">
+        <div class="budget-item">
+          <span class="budget-num">~16K</span>
+          <span class="budget-label">chars for all skill descriptions combined (2% of context window)</span>
+        </div>
+        <div class="budget-item">
+          <span class="budget-num">1024</span>
+          <span class="budget-label">max chars per individual description</span>
+        </div>
+        <div class="budget-item">
+          <span class="budget-num">500</span>
+          <span class="budget-label">max lines recommended for SKILL.md body</span>
+        </div>
+      </div>
+      <p class="budget-note">
+        Override with <code>SLASH_COMMAND_TOOL_CHAR_BUDGET=&lt;number&gt;</code>. Run <code>/context</code> to check if skills are being excluded.
+      </p>
+    </div>
+  </div>
+
+  <!-- Sources -->
+  <div class="sources-section">
+    <h2 class="section-title">Sources &amp; Further Reading</h2>
+    <div class="sources-card">
+      <ul class="source-list">
+        <li>
+          <a href="https://code.claude.com/docs/en/skills" target="_blank" rel="noopener">Extend Claude with Skills</a>
+          <span class="source-note">Official Claude Code documentation &mdash; frontmatter, structure, patterns</span>
+        </li>
+        <li>
+          <a href="https://agentskills.io/specification" target="_blank" rel="noopener">Agent Skills Specification</a>
+          <span class="source-note">The open standard spec &mdash; field constraints, validation rules</span>
+        </li>
+        <li>
+          <a href="https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview" target="_blank" rel="noopener">Agent Skills Overview</a>
+          <span class="source-note">Cross-platform architecture, progressive disclosure</span>
+        </li>
+        <li>
+          <a href="https://mikhail.io/2025/10/claude-code-skills/" target="_blank" rel="noopener">Claude Code Skills: Structure, Prompts, Invocation</a>
+          <span class="source-note">Mikhail Shilkov &mdash; deep dive into runtime tool injection and invocation</span>
+        </li>
+        <li>
+          <a href="https://github.com/anthropics/skills" target="_blank" rel="noopener">Anthropic Skills Repository</a>
+          <span class="source-note">Official example skills including the skill-creator meta-skill</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<!-- Source attribution bottom-left -->
+<div class="source-attribution">
+  Frontend Community Day<br>
+  Skills Reference
+</div>
+
+</body>
+</html>

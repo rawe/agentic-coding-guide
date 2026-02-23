@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Skills &mdash; The Knowledge Layer</title>
+  <link rel="stylesheet" href="css/theme.css">
+  <style>
+    /* ── Background image & overlay ── */
+    body {
+      background-image: url('assets/bg-dark-abstract.png');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(10, 14, 26, 0.92) 0%,
+        rgba(10, 14, 26, 0.80) 40%,
+        rgba(10, 14, 26, 0.88) 100%
+      );
+      z-index: 0;
+    }
+
+    .page-wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 60px 40px 100px;
+    }
+
+    /* ── Header ── */
+    header {
+      text-align: center;
+      margin-bottom: 64px;
+    }
+
+    .badge {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--skillanat-primary);
+      background: var(--skillanat-glow);
+      border: 1px solid rgba(167, 139, 250, 0.2);
+      padding: 6px 16px;
+      border-radius: 20px;
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      font-size: clamp(2.2rem, 5vw, 3.2rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, var(--skillanat-primary) 0%, var(--skills-primary) 50%, var(--mcp-primary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      max-width: 560px;
+      margin: 0 auto;
+      line-height: 1.6;
+      font-weight: 400;
+    }
+
+    /* ── Section titles ── */
+    .section-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 24px;
+      color: var(--text-primary);
+    }
+
+    code {
+      font-family: var(--font-mono);
+      font-size: 0.82em;
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.06);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    /* ── Definition Card ── */
+    .definition-section {
+      margin-bottom: 48px;
+    }
+
+    .definition-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 32px 36px;
+      border-left: 3px solid var(--skillanat-primary);
+    }
+
+    .definition-card p {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    .definition-card p strong {
+      color: var(--text-primary);
+    }
+
+    /* ── Anatomy Section ── */
+    .anatomy-section {
+      margin-bottom: 48px;
+    }
+
+    .anatomy-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 32px 36px;
+    }
+
+    .file-tree {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      margin-bottom: 24px;
+      padding: 20px 24px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .file-tree .dir { color: var(--skillanat-primary); font-weight: 600; }
+    .file-tree .file { color: var(--text-secondary); }
+    .file-tree .required { color: var(--commands-primary); }
+    .file-tree .comment { color: var(--text-muted); font-style: italic; }
+
+    .frontmatter-grid {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 0;
+    }
+
+    @media (max-width: 600px) {
+      .frontmatter-grid { grid-template-columns: 1fr; }
+    }
+
+    .fm-cell {
+      padding: 10px 14px;
+      font-size: 0.85rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .fm-cell.fm-key {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: var(--skillanat-primary);
+      font-size: 0.82rem;
+    }
+
+    .fm-cell.fm-val {
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* ── Loading Section ── */
+    .loading-section {
+      margin-bottom: 48px;
+    }
+
+    .loading-steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    @media (max-width: 800px) {
+      .loading-steps { grid-template-columns: 1fr; }
+    }
+
+    .load-step {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 24px 22px;
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+
+    .load-step:hover {
+      transform: translateY(-2px);
+    }
+
+    .load-step .step-num {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--skillanat-primary);
+      background: var(--skillanat-glow);
+      padding: 3px 10px;
+      border-radius: 6px;
+      margin-bottom: 12px;
+      display: inline-block;
+    }
+
+    .load-step h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      letter-spacing: -0.01em;
+    }
+
+    .load-step p {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .load-step .token-cost {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 10px;
+      display: block;
+    }
+
+    /* ── Comparison Section ── */
+    .comparison-section {
+      margin-bottom: 48px;
+    }
+
+    .comparison-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 32px 36px;
+    }
+
+    .comp-grid {
+      display: grid;
+      grid-template-columns: 140px 1fr 1fr;
+      gap: 0;
+    }
+
+    @media (max-width: 700px) {
+      .comp-grid { grid-template-columns: 1fr; }
+    }
+
+    .comp-header {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .comp-header.col-cmd { color: var(--commands-primary); }
+    .comp-header.col-skill { color: var(--skillanat-primary); }
+
+    .comp-cell {
+      padding: 12px 14px;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+      line-height: 1.5;
+    }
+
+    .comp-cell.aspect {
+      font-weight: 600;
+      color: var(--text-primary);
+      font-size: 0.82rem;
+    }
+
+    .comp-cell.col-cmd {
+      border-left: 2px solid rgba(62, 201, 122, 0.2);
+    }
+
+    .comp-cell.col-skill {
+      border-left: 2px solid rgba(167, 139, 250, 0.2);
+    }
+
+    /* ── Triggers Section ── */
+    .triggers-section {
+      margin-bottom: 48px;
+    }
+
+    .triggers-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    @media (max-width: 800px) {
+      .triggers-grid { grid-template-columns: 1fr; }
+    }
+
+    .trigger-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 22px;
+      transition: transform 0.3s ease;
+    }
+
+    .trigger-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .trigger-card .trigger-who {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .trigger-card.user-trigger .trigger-who { color: var(--commands-primary); }
+    .trigger-card.auto-trigger .trigger-who { color: var(--skillanat-primary); }
+    .trigger-card.chain-trigger .trigger-who { color: var(--mcp-primary); }
+
+    .trigger-card h3 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .trigger-card p {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* ── Examples Section ── */
+    .examples-section {
+      margin-bottom: 48px;
+    }
+
+    .examples-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 32px 36px;
+    }
+
+    .example-list {
+      list-style: none;
+    }
+
+    .example-list li {
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+      display: flex;
+      gap: 16px;
+      align-items: baseline;
+    }
+
+    .example-list li:last-child { border-bottom: none; }
+
+    .example-name {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--skillanat-primary);
+      white-space: nowrap;
+      min-width: 160px;
+    }
+
+    .example-desc {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .example-has {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* ── Source attribution ── */
+    .source-attribution {
+      position: fixed;
+      bottom: 20px;
+      left: 24px;
+      z-index: 10;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      opacity: 0.6;
+      transition: opacity 0.3s ease;
+    }
+
+    .source-attribution:hover {
+      opacity: 1;
+    }
+
+    @media (max-width: 600px) {
+      .page-wrapper { padding: 48px 20px 80px; }
+      .anatomy-card, .comparison-card, .examples-card { padding: 24px 20px; }
+      .example-list li { flex-direction: column; gap: 4px; }
+      .example-name { min-width: auto; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-wrapper">
+
+  <!-- Header -->
+  <header>
+    <div class="badge">Frontend Community Day</div>
+    <h1>Skills &mdash; The Knowledge Layer</h1>
+    <p class="subtitle">
+      Self-contained knowledge packages that make Claude smarter about your domain. No new tools&hairsp;&mdash;&hairsp;better judgment.
+    </p>
+  </header>
+
+  <!-- What is a Skill -->
+  <div class="definition-section">
+    <h2 class="section-title">What is a Skill?</h2>
+    <div class="definition-card">
+      <p>
+        A skill is a <strong>folder with a SKILL.md file</strong> and optional resources (scripts, references, assets) that teaches Claude how to perform a specific task. Skills don't add new capabilities&hairsp;&mdash;&hairsp;they teach Claude <strong>when and how to use existing tools well</strong>. Only the description is loaded upfront (~25 tokens). The full instructions load on demand.
+      </p>
+    </div>
+  </div>
+
+  <!-- Anatomy -->
+  <div class="anatomy-section">
+    <h2 class="section-title">Anatomy of a Skill</h2>
+    <div class="anatomy-card">
+
+      <div class="file-tree">
+        <span class="dir">.claude/skills/my-skill/</span><br>
+        &nbsp;&nbsp;<span class="required">SKILL.md</span> <span class="comment">&larr; required, everything else optional</span><br>
+        &nbsp;&nbsp;<span class="file">scripts/</span> <span class="comment">&larr; deterministic operations, zero context cost</span><br>
+        &nbsp;&nbsp;<span class="file">references/</span> <span class="comment">&larr; detailed docs, loaded selectively</span><br>
+        &nbsp;&nbsp;<span class="file">assets/</span> <span class="comment">&larr; templates, images, config files</span>
+      </div>
+
+      <div class="frontmatter-grid">
+        <div class="fm-cell fm-key">name</div>
+        <div class="fm-cell fm-val">Display name. Folder name becomes the <code>/slash-command</code>.</div>
+        <div class="fm-cell fm-key">description</div>
+        <div class="fm-cell fm-val">Primary trigger&hairsp;&mdash;&hairsp;Claude reads this to decide relevance. Must say WHAT it does AND WHEN to use it.</div>
+        <div class="fm-cell fm-key">allowed-tools</div>
+        <div class="fm-cell fm-val">Restrict which tools Claude can use when skill is active</div>
+        <div class="fm-cell fm-key">context</div>
+        <div class="fm-cell fm-val">Set to <code>fork</code> to run in isolated subagent</div>
+        <div class="fm-cell fm-key">user-invocable</div>
+        <div class="fm-cell fm-val"><code>false</code> = hidden from <code>/</code> menu, only Claude invokes</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Progressive Disclosure -->
+  <div class="loading-section">
+    <h2 class="section-title">Progressive Disclosure&hairsp;&mdash;&hairsp;Three Loading Layers</h2>
+    <div class="loading-steps">
+
+      <div class="load-step">
+        <span class="step-num">Layer 1</span>
+        <h3>Metadata</h3>
+        <p>Only <code>name</code> + <code>description</code> sit in context. Claude knows the skill exists.</p>
+        <span class="token-cost">~25 tokens &bull; always loaded</span>
+      </div>
+
+      <div class="load-step">
+        <span class="step-num">Layer 2</span>
+        <h3>Full SKILL.md Body</h3>
+        <p>Markdown instructions enter context when the skill activates. The actual workflow.</p>
+        <span class="token-cost">~200&ndash;500 tokens &bull; on activation</span>
+      </div>
+
+      <div class="load-step">
+        <span class="step-num">Layer 3</span>
+        <h3>Bundled Resources</h3>
+        <p>Scripts execute as subprocesses (zero context). References load selectively when needed.</p>
+        <span class="token-cost">0 tokens (scripts) &bull; on demand</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Skills vs Commands -->
+  <div class="comparison-section">
+    <h2 class="section-title">Skills vs Commands</h2>
+    <div class="comparison-card">
+      <div class="comp-grid">
+        <div class="comp-header">Aspect</div>
+        <div class="comp-header col-cmd">Command</div>
+        <div class="comp-header col-skill">Skill</div>
+
+        <div class="comp-cell aspect">Location</div>
+        <div class="comp-cell col-cmd"><code>.claude/commands/verb.md</code></div>
+        <div class="comp-cell col-skill"><code>.claude/skills/noun/SKILL.md</code></div>
+
+        <div class="comp-cell aspect">Structure</div>
+        <div class="comp-cell col-cmd">Single markdown file</div>
+        <div class="comp-cell col-skill">Folder + scripts + references</div>
+
+        <div class="comp-cell aspect">Trigger</div>
+        <div class="comp-cell col-cmd">User types <code>/name</code></div>
+        <div class="comp-cell col-skill">Claude auto-detects or user types <code>/name</code></div>
+
+        <div class="comp-cell aspect">Resources</div>
+        <div class="comp-cell col-cmd">None bundled</div>
+        <div class="comp-cell col-skill">Scripts, references, assets</div>
+
+        <div class="comp-cell aspect">Portable</div>
+        <div class="comp-cell col-cmd">May depend on external paths</div>
+        <div class="comp-cell col-skill">Self-contained, copy to any project</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- How Skills Are Invoked -->
+  <div class="triggers-section">
+    <h2 class="section-title">Three Ways to Invoke</h2>
+    <div class="triggers-grid">
+
+      <div class="trigger-card user-trigger">
+        <span class="trigger-who">User</span>
+        <h3>Slash Command</h3>
+        <p>Type <code>/skill-name</code> with optional args. Works when <code>user-invocable</code> is not <code>false</code>.</p>
+      </div>
+
+      <div class="trigger-card auto-trigger">
+        <span class="trigger-who">Claude</span>
+        <h3>Auto-Detection</h3>
+        <p>Claude reads all skill descriptions and loads one when your task matches. The main differentiator from commands.</p>
+      </div>
+
+      <div class="trigger-card chain-trigger">
+        <span class="trigger-who">Other Skill</span>
+        <h3>Chain Loading</h3>
+        <p>A command or another skill can reference it. Thin commands trigger rich skill knowledge.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Real Examples -->
+  <div class="examples-section">
+    <h2 class="section-title">Real Examples from This Project</h2>
+    <div class="examples-card">
+      <ul class="example-list">
+        <li>
+          <span class="example-name">html-pages</span>
+          <span class="example-desc">Create dark-themed presentation pages. Instructions only, no scripts. Auto-detects when page creation is needed.</span>
+        </li>
+        <li>
+          <span class="example-name">yt-processing</span>
+          <span class="example-desc">Extract YouTube transcripts + metadata. Bundles Python scripts. Claude-only (not user-invocable).</span>
+        </li>
+        <li>
+          <span class="example-name">chatgpt-image</span>
+          <span class="example-desc">Generate images via ChatGPT browser automation. Bundles scripts + reference docs. User-invocable with argument hint.</span>
+        </li>
+        <li>
+          <span class="example-name">skill-creator</span>
+          <span class="example-desc">Meta-skill for creating new skills. Bundles init scripts + packaging tools + reference docs.</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<!-- Source attribution bottom-left -->
+<div class="source-attribution">
+  Frontend Community Day<br>
+  Claude Code Skills
+</div>
+
+</body>
+</html>

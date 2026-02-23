@@ -207,6 +207,42 @@
     }
     .index-card.orange .card-title { color: #fb923c; }
 
+    .index-card.sky {
+      --_accent: var(--difference-primary);
+      background: linear-gradient(160deg, color-mix(in srgb, var(--_accent) 6%, transparent) 0%, var(--bg-card) 100%);
+      box-shadow: 0 0 40px color-mix(in srgb, var(--_accent) 4%, transparent);
+      border-left: 3px solid color-mix(in srgb, var(--_accent) 30%, transparent);
+    }
+    .index-card.sky:hover {
+      box-shadow: 0 8px 48px color-mix(in srgb, var(--_accent) 14%, transparent);
+      border-left-color: var(--_accent);
+    }
+    .index-card.sky .card-title { color: var(--difference-primary); }
+
+    .index-card.violet {
+      --_accent: var(--skillanat-primary);
+      background: linear-gradient(160deg, color-mix(in srgb, var(--_accent) 6%, transparent) 0%, var(--bg-card) 100%);
+      box-shadow: 0 0 40px color-mix(in srgb, var(--_accent) 4%, transparent);
+      border-left: 3px solid color-mix(in srgb, var(--_accent) 30%, transparent);
+    }
+    .index-card.violet:hover {
+      box-shadow: 0 8px 48px color-mix(in srgb, var(--_accent) 14%, transparent);
+      border-left-color: var(--_accent);
+    }
+    .index-card.violet .card-title { color: var(--skillanat-primary); }
+
+    .index-card.gold {
+      --_accent: var(--debugging-primary);
+      background: linear-gradient(160deg, color-mix(in srgb, var(--_accent) 6%, transparent) 0%, var(--bg-card) 100%);
+      box-shadow: 0 0 40px color-mix(in srgb, var(--_accent) 4%, transparent);
+      border-left: 3px solid color-mix(in srgb, var(--_accent) 30%, transparent);
+    }
+    .index-card.gold:hover {
+      box-shadow: 0 8px 48px color-mix(in srgb, var(--_accent) 14%, transparent);
+      border-left-color: var(--_accent);
+    }
+    .index-card.gold .card-title { color: var(--debugging-primary); }
+
     .index-card .card-subtext {
       font-size: 0.95rem;
       color: var(--text-secondary);
@@ -324,6 +360,36 @@
     <a href="developer-workflows.html" class="index-card orange">
       <div class="card-title">The Developer's Daily Loop</div>
       <p class="card-subtext">Six workflow patterns that define how experienced developers actually use Claude Code.</p>
+      <span class="card-arrow">&rsaquo;</span>
+    </a>
+
+    <a href="community-claude-difference.html" class="index-card sky">
+      <div class="card-title">What Makes Claude Code Different</div>
+      <p class="card-subtext">Terminal-native agent with four composable extension pillars &mdash; not another autocomplete.</p>
+      <span class="card-arrow">&rsaquo;</span>
+    </a>
+
+    <a href="community-skills-anatomy.html" class="index-card violet">
+      <div class="card-title">Skills &mdash; The Knowledge Layer</div>
+      <p class="card-subtext">Self-contained knowledge packages that make Claude smarter about your domain. Anatomy, loading, and real examples.</p>
+      <span class="card-arrow">&rsaquo;</span>
+    </a>
+
+    <a href="community-debugging-chrome.html" class="index-card gold">
+      <div class="card-title">Debugging with Claude in Chrome</div>
+      <p class="card-subtext">Connect Claude Code to your browser. Inspect DOM, read console, monitor network &mdash; fix without leaving the terminal.</p>
+      <span class="card-arrow">&rsaquo;</span>
+    </a>
+
+    <a href="community-skills-reference.html" class="index-card violet">
+      <div class="card-title">Skills Reference</div>
+      <p class="card-subtext">Every frontmatter field, string substitution, installation method, and context budget number &mdash; in one place.</p>
+      <span class="card-arrow">&rsaquo;</span>
+    </a>
+
+    <a href="community-skills-bestpractices.html" class="index-card purple">
+      <div class="card-title">Writing Better Skills</div>
+      <p class="card-subtext">Description triggers, body structure, scripts vs instructions, key patterns and anti-patterns.</p>
       <span class="card-arrow">&rsaquo;</span>
     </a>
 
