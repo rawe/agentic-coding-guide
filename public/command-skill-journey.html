@@ -506,25 +506,36 @@
         Claude writes a script, runs it, hands you the result. Done.
       </p>
 
-      <!-- image placeholder -->
-      <div style="display: flex; align-items: center; justify-content: center; gap: 0; margin: 28px auto 32px; max-width: 480px;">
-        <div style="display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 16px 24px; border: 2px solid rgba(251, 146, 60, 0.4); border-radius: 10px; background: rgba(251, 146, 60, 0.06); min-width: 80px;">
-          <span style="font-size: 1.6rem;">&#128196;</span>
-          <span style="font-family: var(--font-mono); font-size: 0.85rem; font-weight: 600; color: #fb923c;">PDF</span>
-        </div>
-        <div style="display: flex; align-items: center; padding: 0 12px;">
-          <span style="color: var(--text-muted); font-size: 1.2rem;">&#8594;</span>
-        </div>
-        <div style="display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 16px 24px; border: 2px dashed var(--text-muted); border-radius: 10px; background: rgba(100, 116, 139, 0.06); min-width: 80px;">
-          <span style="font-family: var(--font-mono); font-size: 1.6rem; color: var(--text-muted); font-weight: 700;">?</span>
-        </div>
-        <div style="display: flex; align-items: center; padding: 0 12px;">
-          <span style="color: var(--text-muted); font-size: 1.2rem;">&#8594;</span>
-        </div>
-        <div style="display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 16px 24px; border: 2px solid rgba(52, 211, 153, 0.4); border-radius: 10px; background: rgba(52, 211, 153, 0.06); min-width: 80px;">
-          <span style="font-size: 1.6rem;">&#128221;</span>
-          <span style="font-family: var(--font-mono); font-size: 0.85rem; font-weight: 600; color: var(--plan-primary);">.md</span>
-        </div>
+      <div style="display:flex; justify-content:center; margin: 28px 0;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 160" width="800" height="160" style="max-width:100%; height:auto;">
+          <!-- PDF document icon -->
+          <g transform="translate(120, 20)">
+            <!-- page shape with folded corner -->
+            <path d="M0,0 L70,0 L90,20 L90,120 L0,120 Z" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+            <path d="M70,0 L70,20 L90,20" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+            <!-- PDF label -->
+            <text x="45" y="75" text-anchor="middle" fill="#f59e0b" font-family="'JetBrains Mono','Fira Code','Courier New',monospace" font-size="22" font-weight="600">PDF</text>
+          </g>
+
+          <!-- Arrow 1 -->
+          <line x1="240" y1="80" x2="330" y2="80" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+          <polygon points="330,76 340,80 330,84" fill="rgba(255,255,255,0.3)"/>
+
+          <!-- Dashed circle with ? -->
+          <circle cx="400" cy="80" r="50" fill="none" stroke="#22d3ee" stroke-width="2" stroke-dasharray="8,5"/>
+          <text x="400" y="95" text-anchor="middle" fill="#22d3ee" font-family="'Inter','Segoe UI',sans-serif" font-size="40" font-weight="700">?</text>
+
+          <!-- Arrow 2 -->
+          <line x1="460" y1="80" x2="550" y2="80" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+          <polygon points="550,76 560,80 550,84" fill="rgba(255,255,255,0.3)"/>
+
+          <!-- .md document icon -->
+          <g transform="translate(590, 20)">
+            <path d="M0,0 L70,0 L90,20 L90,120 L0,120 Z" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+            <path d="M70,0 L70,20 L90,20" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+            <text x="45" y="75" text-anchor="middle" fill="#34d38d" font-family="'JetBrains Mono','Fira Code','Courier New',monospace" font-size="22" font-weight="600">.md</text>
+          </g>
+        </svg>
       </div>
 
       <p class="section-intro" style="max-width: 800px; margin-bottom: 16px;">
@@ -557,6 +568,80 @@
         <li>Tomorrow you ask again &mdash; Claude rewrites from scratch</li>
       </ul>
 
+      <div style="display:flex; justify-content:center; margin: 24px 0 8px;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 850 190" width="850" height="190" style="max-width:100%; height:auto;">
+
+          <!-- (1) Chat bubble — "You ask" -->
+          <g transform="translate(60, 30)">
+            <!-- bubble body -->
+            <rect x="0" y="0" width="72" height="52" rx="12" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+            <!-- three dots -->
+            <circle cx="20" cy="26" r="4" fill="#94a3b8"/>
+            <circle cx="36" cy="26" r="4" fill="#94a3b8"/>
+            <circle cx="52" cy="26" r="4" fill="#94a3b8"/>
+            <!-- tail -->
+            <path d="M14,52 L6,66 L26,52" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+            <!-- label -->
+            <text x="36" y="90" text-anchor="middle" fill="#e2e8f0" font-family="'Inter','Segoe UI',sans-serif" font-size="13">You ask</text>
+          </g>
+
+          <!-- Arrow 1 -->
+          <line x1="155" y1="56" x2="225" y2="56" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+          <polygon points="225,52 235,56 225,60" fill="rgba(255,255,255,0.2)"/>
+
+          <!-- (2) Gear icon — "Claude writes script" -->
+          <g transform="translate(260, 18)">
+            <!-- outer gear circle -->
+            <circle cx="36" cy="36" r="28" fill="none" stroke="#64748b" stroke-width="1.5"/>
+            <!-- gear teeth (simplified as small rects around the circle) -->
+            <rect x="30" y="0" width="12" height="10" rx="2" fill="#64748b"/>
+            <rect x="30" y="62" width="12" height="10" rx="2" fill="#64748b"/>
+            <rect x="0" y="30" width="10" height="12" rx="2" fill="#64748b"/>
+            <rect x="62" y="30" width="10" height="12" rx="2" fill="#64748b"/>
+            <!-- inner circle -->
+            <circle cx="36" cy="36" r="12" fill="none" stroke="#64748b" stroke-width="1.5"/>
+            <!-- label -->
+            <text x="36" y="92" text-anchor="middle" fill="#94a3b8" font-family="'Inter','Segoe UI',sans-serif" font-size="12">Claude writes</text>
+            <text x="36" y="106" text-anchor="middle" fill="#94a3b8" font-family="'Inter','Segoe UI',sans-serif" font-size="12">script</text>
+          </g>
+
+          <!-- Arrow 2 -->
+          <line x1="355" y1="56" x2="425" y2="56" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+          <polygon points="425,52 435,56 425,60" fill="rgba(255,255,255,0.2)"/>
+
+          <!-- (3) Document icon — output.md -->
+          <g transform="translate(450, 16)">
+            <!-- page shape -->
+            <path d="M0,0 L52,0 L68,16 L68,80 L0,80 Z" fill="none" stroke="#34d38d" stroke-width="1.5"/>
+            <path d="M52,0 L52,16 L68,16" fill="none" stroke="#34d38d" stroke-width="1.5"/>
+            <!-- lines on page -->
+            <line x1="12" y1="32" x2="56" y2="32" stroke="#34d38d" stroke-width="1" opacity="0.4"/>
+            <line x1="12" y1="44" x2="48" y2="44" stroke="#34d38d" stroke-width="1" opacity="0.4"/>
+            <line x1="12" y1="56" x2="52" y2="56" stroke="#34d38d" stroke-width="1" opacity="0.4"/>
+            <!-- label -->
+            <text x="34" y="110" text-anchor="middle" fill="#34d38d" font-family="'JetBrains Mono','Fira Code','Courier New',monospace" font-size="14" font-weight="600">output.md</text>
+          </g>
+
+          <!-- Arrow 3 -->
+          <line x1="540" y1="56" x2="610" y2="56" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+          <polygon points="610,52 620,56 610,60" fill="rgba(255,255,255,0.2)"/>
+
+          <!-- (4) Circular arrow with X — "Tomorrow: start over" -->
+          <g transform="translate(645, 14)">
+            <!-- circular arrow -->
+            <path d="M36,8 A30,30 0 1,1 10,46" fill="none" stroke="#64748b" stroke-width="2"/>
+            <!-- arrowhead on circular arrow -->
+            <polygon points="6,40 10,50 16,42" fill="#64748b"/>
+            <!-- red X in center -->
+            <line x1="26" y1="30" x2="46" y2="50" stroke="#f87171" stroke-width="3" stroke-linecap="round"/>
+            <line x1="46" y1="30" x2="26" y2="50" stroke="#f87171" stroke-width="3" stroke-linecap="round"/>
+            <!-- label -->
+            <text x="36" y="86" text-anchor="middle" fill="#94a3b8" font-family="'Inter','Segoe UI',sans-serif" font-size="12" font-style="italic">Tomorrow:</text>
+            <text x="36" y="100" text-anchor="middle" fill="#94a3b8" font-family="'Inter','Segoe UI',sans-serif" font-size="12" font-style="italic">start over</text>
+          </g>
+        </svg>
+      </div>
+
       <div class="code-block step-1-block">
 <span class="folder-name">project/</span>
 <span class="comment">  |</span>
@@ -579,6 +664,54 @@
       <p class="section-intro">
         Extract the script. Create a command as a stable entry point with arguments.
       </p>
+
+      <div style="display:flex; justify-content:center; margin: 24px 0 8px;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 850 210" width="850" height="210" style="max-width:100%; height:auto;">
+
+          <!-- (1) Command box — /doc-convert -->
+          <g transform="translate(60, 40)">
+            <rect x="0" y="0" width="180" height="52" rx="8" fill="none" stroke="#f59e0b" stroke-width="1.5"/>
+            <!-- terminal prompt -->
+            <text x="16" y="33" fill="#94a3b8" font-family="'JetBrains Mono','Fira Code','Courier New',monospace" font-size="16">&gt;_</text>
+            <!-- command name -->
+            <text x="50" y="33" fill="#f59e0b" font-family="'JetBrains Mono','Fira Code','Courier New',monospace" font-size="16" font-weight="600">/doc-convert</text>
+            <!-- subtitle -->
+            <text x="90" y="82" text-anchor="middle" fill="#94a3b8" font-family="'Inter','Segoe UI',sans-serif" font-size="12" font-style="italic">same interface, every time</text>
+          </g>
+
+          <!-- Arrow 1 -->
+          <line x1="265" y1="66" x2="335" y2="66" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+          <polygon points="335,62 345,66 335,70" fill="rgba(255,255,255,0.2)"/>
+
+          <!-- (2) scripts/ folder with doc-convert.py -->
+          <g transform="translate(360, 20)">
+            <!-- folder outer box -->
+            <rect x="0" y="0" width="200" height="92" rx="6" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1.2"/>
+            <!-- folder label -->
+            <text x="12" y="22" fill="#94a3b8" font-family="'JetBrains Mono','Fira Code','Courier New',monospace" font-size="13">scripts/</text>
+            <!-- inner file box -->
+            <rect x="20" y="36" width="160" height="40" rx="6" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+            <!-- file icon tiny -->
+            <rect x="32" y="46" width="14" height="18" rx="2" fill="none" stroke="#94a3b8" stroke-width="1"/>
+            <!-- file name -->
+            <text x="56" y="60" fill="#e2e8f0" font-family="'JetBrains Mono','Fira Code','Courier New',monospace" font-size="13">doc-convert.py</text>
+          </g>
+
+          <!-- Arrow 2 -->
+          <line x1="580" y1="66" x2="640" y2="66" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+          <polygon points="640,62 650,66 640,70" fill="rgba(255,255,255,0.2)"/>
+
+          <!-- (3) report.md document -->
+          <g transform="translate(665, 22)">
+            <path d="M0,0 L52,0 L68,16 L68,80 L0,80 Z" fill="none" stroke="#34d38d" stroke-width="1.5"/>
+            <path d="M52,0 L52,16 L68,16" fill="none" stroke="#34d38d" stroke-width="1.5"/>
+            <line x1="12" y1="30" x2="56" y2="30" stroke="#34d38d" stroke-width="1" opacity="0.4"/>
+            <line x1="12" y1="42" x2="48" y2="42" stroke="#34d38d" stroke-width="1" opacity="0.4"/>
+            <line x1="12" y1="54" x2="52" y2="54" stroke="#34d38d" stroke-width="1" opacity="0.4"/>
+            <text x="34" y="106" text-anchor="middle" fill="#34d38d" font-family="'JetBrains Mono','Fira Code','Courier New',monospace" font-size="14" font-weight="600">report.md</text>
+          </g>
+        </svg>
+      </div>
 
       <div class="code-block step-2-block">
 <span class="folder-name">project/</span>
@@ -621,6 +754,61 @@ Run <span class="keyword">`python scripts/doc-convert.py '$ARGUMENTS'`</span></d
       <p class="section-intro">
         Package script + instructions into one folder. Shareable across projects. The skill IS the trigger.
       </p>
+
+      <div style="display:flex; justify-content:center; margin: 24px 0 8px;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 850 240" width="850" height="240" style="max-width:100%; height:auto;">
+
+          <!-- Left: incoming /doc-convert label + arrow -->
+          <text x="56" y="98" fill="#f59e0b" font-family="'JetBrains Mono','Fira Code','Courier New',monospace" font-size="14" font-weight="600">/doc-convert</text>
+          <line x1="168" y1="94" x2="218" y2="94" stroke="#f59e0b" stroke-width="1.5"/>
+          <polygon points="218,90 228,94 218,98" fill="#f59e0b"/>
+
+          <!-- Center: skill box -->
+          <g transform="translate(230, 30)">
+            <!-- outer rounded rect with purple border -->
+            <rect x="0" y="0" width="340" height="130" rx="16" fill="rgba(124,110,240,0.06)" stroke="#7c6ef0" stroke-width="2"/>
+            <!-- label -->
+            <text x="170" y="30" text-anchor="middle" fill="#e2e8f0" font-family="'JetBrains Mono','Fira Code','Courier New',monospace" font-size="15" font-weight="600">doc-convert skill</text>
+
+            <!-- SKILL.md box -->
+            <rect x="30" y="50" width="130" height="44" rx="8" fill="rgba(124,110,240,0.15)" stroke="#7c6ef0" stroke-width="1.2"/>
+            <text x="95" y="77" text-anchor="middle" fill="#7c6ef0" font-family="'JetBrains Mono','Fira Code','Courier New',monospace" font-size="13" font-weight="600">SKILL.md</text>
+
+            <!-- doc-convert.py box -->
+            <rect x="180" y="50" width="130" height="44" rx="8" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.15)" stroke-width="1.2"/>
+            <text x="245" y="77" text-anchor="middle" fill="#e2e8f0" font-family="'JetBrains Mono','Fira Code','Courier New',monospace" font-size="13">doc-convert.py</text>
+          </g>
+
+          <!-- Right: outgoing arrow + report.md -->
+          <line x1="572" y1="94" x2="622" y2="94" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+          <polygon points="622,90 632,94 622,98" fill="rgba(255,255,255,0.2)"/>
+
+          <!-- report.md document -->
+          <g transform="translate(645, 56)">
+            <path d="M0,0 L44,0 L58,14 L58,70 L0,70 Z" fill="none" stroke="#34d38d" stroke-width="1.5"/>
+            <path d="M44,0 L44,14 L58,14" fill="none" stroke="#34d38d" stroke-width="1.5"/>
+            <line x1="10" y1="28" x2="48" y2="28" stroke="#34d38d" stroke-width="1" opacity="0.4"/>
+            <line x1="10" y1="38" x2="42" y2="38" stroke="#34d38d" stroke-width="1" opacity="0.4"/>
+            <line x1="10" y1="48" x2="46" y2="48" stroke="#34d38d" stroke-width="1" opacity="0.4"/>
+          </g>
+          <text x="674" y="146" text-anchor="middle" fill="#34d38d" font-family="'JetBrains Mono','Fira Code','Courier New',monospace" font-size="14" font-weight="600">report.md</text>
+
+          <!-- Bottom: copy to any project -->
+          <g transform="translate(320, 182)">
+            <!-- folder 1 -->
+            <rect x="0" y="0" width="28" height="22" rx="4" fill="#64748b" opacity="0.4"/>
+            <rect x="0" y="-4" width="14" height="6" rx="2" fill="#64748b" opacity="0.4"/>
+            <!-- arrow -->
+            <line x1="38" y1="10" x2="56" y2="10" stroke="#64748b" stroke-width="1.5"/>
+            <polygon points="56,6 64,10 56,14" fill="#64748b"/>
+            <!-- folder 2 -->
+            <rect x="72" y="0" width="28" height="22" rx="4" fill="#64748b" opacity="0.4"/>
+            <rect x="72" y="-4" width="14" height="6" rx="2" fill="#64748b" opacity="0.4"/>
+            <!-- label -->
+            <text x="50" y="42" text-anchor="middle" fill="#94a3b8" font-family="'Inter','Segoe UI',sans-serif" font-size="12" font-style="italic">copy to any project</text>
+          </g>
+        </svg>
+      </div>
 
       <div class="code-block step-3-block">
 <span class="folder-name">project/</span>
@@ -691,45 +879,97 @@ Given a file path via <span class="keyword">`$ARGUMENTS`</span>:
         Commands become verbs (<code>/doc-convert</code>, <code>/doc-extract</code>) &mdash; thin triggers that decide scope.
       </p>
 
-      <!-- image placeholder -->
-      <div style="display: flex; flex-direction: column; align-items: center; gap: 0; margin: 0 auto 32px; max-width: 600px;">
-        <!-- Skill box -->
-        <div style="border: 2px solid rgba(34, 211, 238, 0.4); border-radius: 12px; padding: 20px; background: rgba(34, 211, 238, 0.04); width: 100%; text-align: center;">
-          <div style="font-family: var(--font-mono); font-size: 0.85rem; font-weight: 600; color: var(--journey-primary); margin-bottom: 16px;">doc-processing (skill)</div>
-          <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
-            <div style="padding: 8px 14px; border: 1px solid rgba(124, 110, 240, 0.3); border-radius: 8px; background: rgba(124, 110, 240, 0.06); font-family: var(--font-mono); font-size: 0.75rem; color: var(--skills-primary);">doc-download.py</div>
-            <div style="padding: 8px 14px; border: 1px solid rgba(124, 110, 240, 0.3); border-radius: 8px; background: rgba(124, 110, 240, 0.06); font-family: var(--font-mono); font-size: 0.75rem; color: var(--skills-primary);">doc-convert.py</div>
-            <div style="padding: 8px 14px; border: 1px solid rgba(100, 116, 139, 0.3); border-radius: 8px; background: rgba(100, 116, 139, 0.06); font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted);">references/structure.md</div>
-          </div>
-        </div>
-        <!-- Connector line down -->
-        <div style="width: 2px; height: 24px; background: var(--text-muted); opacity: 0.4;"></div>
-        <!-- Branch point -->
-        <div style="display: flex; align-items: flex-start; width: 100%; justify-content: center; gap: 0;">
-          <!-- Left branch -->
-          <div style="display: flex; flex-direction: column; align-items: center; flex: 1;">
-            <div style="width: 2px; height: 20px; background: var(--text-muted); opacity: 0.4;"></div>
-            <div style="padding: 10px 16px; border: 2px solid rgba(245, 158, 11, 0.4); border-radius: 10px; background: rgba(245, 158, 11, 0.06); text-align: center;">
-              <div style="font-family: var(--font-mono); font-size: 0.8rem; font-weight: 600; color: #f59e0b;">/doc-convert</div>
-              <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 4px;">convert only</div>
-            </div>
-            <div style="width: 2px; height: 16px; background: var(--text-muted); opacity: 0.4;"></div>
-            <div style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-secondary); text-align: center;">report.md</div>
-          </div>
-          <!-- Horizontal connector -->
-          <div style="height: 2px; background: var(--text-muted); opacity: 0.4; align-self: flex-start; margin-top: 9px; flex: 0 0 40%;"></div>
-          <!-- Right branch -->
-          <div style="display: flex; flex-direction: column; align-items: center; flex: 1;">
-            <div style="width: 2px; height: 20px; background: var(--text-muted); opacity: 0.4;"></div>
-            <div style="padding: 10px 16px; border: 2px solid rgba(245, 158, 11, 0.4); border-radius: 10px; background: rgba(245, 158, 11, 0.06); text-align: center;">
-              <div style="font-family: var(--font-mono); font-size: 0.8rem; font-weight: 600; color: #f59e0b;">/doc-extract</div>
-              <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 4px;">full pipeline</div>
-            </div>
-            <div style="width: 2px; height: 16px; background: var(--text-muted); opacity: 0.4;"></div>
-            <div style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-secondary); text-align: center; line-height: 1.5;">sources/docs/2026-02-.../
-content.md + meta.md</div>
-          </div>
-        </div>
+      <div style="display:flex; justify-content:center; margin: 28px 0;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 850 420" width="850" height="420" style="max-width:100%; height:auto;">
+
+          <!-- ===== Top: skill box background (drawn first so lines render on top) ===== -->
+          <rect x="150" y="10" width="550" height="130" rx="16" fill="rgba(34,211,238,0.04)" stroke="#22d3ee" stroke-width="2"/>
+          <!-- skill label -->
+          <text x="425" y="42" text-anchor="middle" font-family="'JetBrains Mono','Fira Code','Courier New',monospace" font-size="15">
+            <tspan fill="#e2e8f0" font-style="italic">doc-processing </tspan><tspan fill="#94a3b8">(skill)</tspan>
+          </text>
+
+          <!-- capability 1: doc-download.py (center x=255, bottom y=108) -->
+          <rect x="180" y="64" width="150" height="44" rx="8" fill="rgba(124,110,240,0.15)" stroke="#7c6ef0" stroke-width="1.2"/>
+          <text x="255" y="91" text-anchor="middle" fill="#7c6ef0" font-family="'JetBrains Mono','Fira Code','Courier New',monospace" font-size="12" font-weight="600">doc-download.py</text>
+
+          <!-- capability 2: doc-convert.py (center x=425, bottom y=108) -->
+          <rect x="350" y="64" width="150" height="44" rx="8" fill="rgba(124,110,240,0.15)" stroke="#7c6ef0" stroke-width="1.2"/>
+          <text x="425" y="91" text-anchor="middle" fill="#7c6ef0" font-family="'JetBrains Mono','Fira Code','Courier New',monospace" font-size="12" font-weight="600">doc-convert.py</text>
+
+          <!-- capability 3: structure.md (center x=595, bottom y=108) -->
+          <rect x="520" y="64" width="150" height="44" rx="8" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.15)" stroke-width="1.2"/>
+          <text x="595" y="91" text-anchor="middle" fill="#94a3b8" font-family="'JetBrains Mono','Fira Code','Courier New',monospace" font-size="12">structure.md</text>
+
+          <!-- ===== Connector lines: drawn AFTER skill box so they render on top ===== -->
+          <!-- Arrowheads are rotated to match each line's angle -->
+
+          <!-- Left branch: from doc-convert.py (425,108) to /doc-convert (248,200) — angle ~153° -->
+          <line x1="425" y1="108" x2="251" y2="197" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+          <polygon points="248,199 255,188 259,196" fill="rgba(255,255,255,0.25)"/>
+
+          <!-- Right branch: three lines from each capability pill to /doc-extract (600,200) -->
+          <!-- from doc-download.py (255,108) — angle ~15° shallow right -->
+          <line x1="255" y1="108" x2="583" y2="197" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+          <polygon points="585,199 576,190 574,198" fill="rgba(255,255,255,0.25)"/>
+          <!-- from doc-convert.py (425,108) — angle ~27° -->
+          <line x1="425" y1="108" x2="598" y2="197" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+          <polygon points="600,199 593,188 589,196" fill="rgba(255,255,255,0.25)"/>
+          <!-- from structure.md (595,108) — angle ~79° nearly vertical -->
+          <line x1="595" y1="108" x2="611" y2="197" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+          <polygon points="612,199 614,186 606,188" fill="rgba(255,255,255,0.25)"/>
+
+          <!-- ===== Left command: /doc-convert ===== -->
+          <g transform="translate(140, 200)">
+            <rect x="0" y="0" width="200" height="48" rx="8" fill="rgba(245,158,11,0.1)" stroke="#f59e0b" stroke-width="1.5"/>
+            <text x="100" y="30" text-anchor="middle" fill="#f59e0b" font-family="'JetBrains Mono','Fira Code','Courier New',monospace" font-size="15" font-weight="600">/doc-convert</text>
+          </g>
+
+          <!-- Left output: report.md -->
+          <line x1="240" y1="248" x2="240" y2="285" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/>
+          <polygon points="236,285 240,295 244,285" fill="rgba(255,255,255,0.15)"/>
+
+          <g transform="translate(190, 300)">
+            <!-- small doc icon -->
+            <path d="M0,0 L36,0 L48,12 L48,56 L0,56 Z" fill="none" stroke="#34d38d" stroke-width="1.3"/>
+            <path d="M36,0 L36,12 L48,12" fill="none" stroke="#34d38d" stroke-width="1.3"/>
+            <line x1="8" y1="24" x2="40" y2="24" stroke="#34d38d" stroke-width="0.8" opacity="0.4"/>
+            <line x1="8" y1="32" x2="34" y2="32" stroke="#34d38d" stroke-width="0.8" opacity="0.4"/>
+            <line x1="8" y1="40" x2="38" y2="40" stroke="#34d38d" stroke-width="0.8" opacity="0.4"/>
+            <text x="60" y="34" fill="#34d38d" font-family="'JetBrains Mono','Fira Code','Courier New',monospace" font-size="14" font-weight="600">report.md</text>
+          </g>
+
+          <!-- ===== Right command: /doc-extract ===== -->
+          <g transform="translate(500, 200)">
+            <rect x="0" y="0" width="200" height="48" rx="8" fill="rgba(245,158,11,0.1)" stroke="#f59e0b" stroke-width="1.5"/>
+            <text x="100" y="30" text-anchor="middle" fill="#f59e0b" font-family="'JetBrains Mono','Fira Code','Courier New',monospace" font-size="15" font-weight="600">/doc-extract</text>
+          </g>
+
+          <!-- Right output: folder tree -->
+          <line x1="600" y1="248" x2="600" y2="285" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/>
+          <polygon points="596,285 600,295 604,285" fill="rgba(255,255,255,0.15)"/>
+
+          <!-- sources/docs/... tree -->
+          <g transform="translate(535, 300)">
+            <!-- folder icon -->
+            <rect x="0" y="0" width="22" height="16" rx="3" fill="#f59e0b" opacity="0.5"/>
+            <rect x="0" y="-3" width="10" height="5" rx="2" fill="#f59e0b" opacity="0.5"/>
+            <text x="30" y="14" fill="#94a3b8" font-family="'JetBrains Mono','Fira Code','Courier New',monospace" font-size="13">sources/docs/...</text>
+
+            <!-- tree lines -->
+            <line x1="11" y1="22" x2="11" y2="75" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+
+            <!-- content.md -->
+            <line x1="11" y1="42" x2="26" y2="42" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+            <rect x="28" y="33" width="14" height="18" rx="2" fill="none" stroke="#22d3ee" stroke-width="1" opacity="0.5"/>
+            <text x="48" y="47" fill="#22d3ee" font-family="'JetBrains Mono','Fira Code','Courier New',monospace" font-size="12">content.md</text>
+
+            <!-- meta.md -->
+            <line x1="11" y1="68" x2="26" y2="68" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+            <rect x="28" y="59" width="14" height="18" rx="2" fill="none" stroke="#22d3ee" stroke-width="1" opacity="0.5"/>
+            <text x="48" y="73" fill="#22d3ee" font-family="'JetBrains Mono','Fira Code','Courier New',monospace" font-size="12">meta.md</text>
+          </g>
+        </svg>
       </div>
 
       <div class="code-block step-4-block">
