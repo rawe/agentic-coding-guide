@@ -9,8 +9,7 @@
 | # | Document | Why here |
 |---|----------|----------|
 | 1 | **Why Claude Code** | Platform-level overview. The agentic loop, five composable primitives (CLAUDE.md, Skills, Subagents, Hooks, MCP), composition patterns, and beyond-interactive capabilities (Plugins, Headless, Agent SDK). The broadest "why" before diving into specifics. |
-| 2 | **What Makes Claude Code Different** | Narrows to the 4 extensibility pillars and architectural differentiators vs. autocomplete tools. |
-| 3 | **Three Layers, Three Jobs** | Narrows further to the 3 extensibility mechanisms (Skills vs MCP vs Commands) with a side-by-side comparison. Sets vocabulary for everything that follows. |
+| 2 | **Three Layers, Three Jobs** | Narrows to the 3 extensibility mechanisms (Skills vs MCP vs Commands) with a side-by-side comparison. Sets vocabulary for everything that follows. |
 
 ## 02 — Foundations
 
