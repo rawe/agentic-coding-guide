@@ -12,6 +12,7 @@ Master index of all collected materials. Update this file whenever a new source 
 | 4 | 2026-02-cole-medin-claude-code-s-agent-teams-are-insane-multiple-ai-agents-codin | Claude Code's Agent Teams Are Insane - Multiple AI Agents Coding Together in Real Time | Cole Medin | claude-code, agent-teams, subagents, multi-agent, tmux, parallel-agents, contract-first-spawning, token-efficiency, collaboration-vs-isolation, skills, opus-4-6 |
 | 5 | 2026-02-indydevdan-my-4-layer-agentic-browser-automation-stack-skill-subagent-pr | My 4-Layer Agentic Browser Automation Stack (Skill, Subagent, Prompt, ????) | IndyDevDan | browser-automation, agentic-ui-testing, playwright-cli, claude-code-chrome, skills, subagents, slash-commands, task-runners, parallel-agents |
 | 6 | 2026-02-cole-medin-why-the-best-ai-coding-tools-abandoned-rag-and-what-they-use- | Why the Best AI Coding Tools Abandoned RAG (And What They Use Instead) | Cole Medin | rag, agentic-search, structured-vs-unstructured-data, claude-code, cline, aider, ripgrep, codebase-indexing, vector-databases, semantic-search |
+| 7 | 2026-02-diy-smart-code-why-most-developers-are-using-claude-code-wrong-here-s-wh | Why Most Developers Are Using Claude Code Wrong (Here's What You're Missing)! | DIY Smart Code | claude-code, claude-md, skills, subagents, hooks, mcp-servers, decision-matrix, context-window-optimization, customization-features |
 
 ## Documents
 
