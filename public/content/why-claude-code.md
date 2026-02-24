@@ -6,20 +6,21 @@ More than an AI coding tool — an extensible platform for agent-driven workflow
 
 Most AI coding tools are moving toward agentic workflows — but Claude Code was an early mover and has built a deeply evolved harness around it. The difference isn't the model; it's the harness around it. The same Opus model behaves differently in Claude Code than in other tools because of how the loop is orchestrated.
 
-Claude Code runs a continuous cycle: **gather context → take action → verify results → repeat.** It reads files to understand the problem, makes edits or runs commands, then checks whether what it did actually worked. When a test fails, it reads the error, fixes the code, and runs again — without you stepping in. This self-correction loop continues until the task is complete or you redirect.
+Claude Code runs a continuous three-phase cycle: **gather context → take action → verify results** — then course-corrects and repeats. It reads files to understand the problem, makes edits or runs commands, then checks whether what it did actually worked. When a test fails, it reads the error, fixes the code, and runs again — without you stepping in. The loop continues until the task is complete or you redirect.
 
 The verification step is what separates a good agent from a reckless one. Anthropic calls it "the single highest-leverage thing you can do" — giving the agent a way to check its own work. Agents that verify their output catch mistakes before they compound and self-correct when they drift.
 
 Claude Code runs in your terminal, in VS Code, in JetBrains, or as a desktop app. Same agent, same loop, multiple surfaces.
 
-<!-- Visualization: Circular flow diagram — four nodes connected by arrows:
-"Gather Context" (magnifying glass/files icon) →
-"Take Action" (code edit/terminal icon) →
-"Verify Results" (checkmark/test output icon) →
-"Correct & Repeat" (loop arrow icon) →
-back to Gather Context.
-Center label: "Autonomous until complete."
-Note on the Verify node: "runs tests, checks output, reads errors." -->
+<!-- Visualization: Three-node cycle diagram with prominent loop arrow.
+Three nodes arranged in a triangle or circular layout:
+1. "Gather Context" (magnifying glass icon) — "Read files, search code, understand"
+2. "Take Action" (terminal/code icon) — "Edit files, run commands, create"
+3. "Verify Results" (checkmark icon) — "Run tests, check output, validate"
+Arrows connecting: 1→2→3, then a prominent loop arrow from 3 back to 1
+labeled "Course-correct and repeat."
+Center or bottom note: "You can interrupt at any point."
+The loop arrow should be visually prominent to convey the self-correction cycle. -->
 
 ## Composable Extension Primitives
 
