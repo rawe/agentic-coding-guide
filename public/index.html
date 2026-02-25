@@ -319,6 +319,18 @@
     }
     .index-card.rose .card-title { color: var(--agents-primary); }
 
+    .index-card.seafoam {
+      --_accent: var(--fork-primary);
+      background: linear-gradient(160deg, color-mix(in srgb, var(--_accent) 6%, transparent) 0%, var(--bg-card) 100%);
+      box-shadow: 0 0 40px color-mix(in srgb, var(--_accent) 4%, transparent);
+      border-left: 3px solid color-mix(in srgb, var(--_accent) 30%, transparent);
+    }
+    .index-card.seafoam:hover {
+      box-shadow: 0 8px 48px color-mix(in srgb, var(--_accent) 14%, transparent);
+      border-left-color: var(--_accent);
+    }
+    .index-card.seafoam .card-title { color: var(--fork-primary); }
+
     .index-card .card-subtext {
       font-size: 0.95rem;
       color: var(--text-secondary);
@@ -497,6 +509,11 @@
       <a href="custom-subagents.html" class="index-card rose">
         <div class="card-title">Custom Subagents</div>
         <p class="card-subtext">Define specialized subagent personas with custom instructions, tool restrictions, and model choices in <code>.claude/agents/</code>.</p>
+        <span class="card-arrow">&rsaquo;</span>
+      </a>
+      <a href="skill-agent-fork-pattern.html" class="index-card seafoam">
+        <div class="card-title">The Skill-Agent Fork Pattern</div>
+        <p class="card-subtext">Combine a skill and a custom sub-agent into a repeatable, isolated workflow with <code>context: fork</code>.</p>
         <span class="card-arrow">&rsaquo;</span>
       </a>
       <a href="hooks-guide.html" class="index-card pink">

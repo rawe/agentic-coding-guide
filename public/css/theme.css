@@ -78,6 +78,9 @@
   --agents-secondary: #fb7185;
   --agents-glow: rgba(244, 63, 94, 0.15);
 
+  --fork-primary: #2dd4bf;
+  --fork-glow: rgba(45, 212, 191, 0.15);
+
   --warn: #f06e6e;
 
   --text-primary: #f1f5f9;

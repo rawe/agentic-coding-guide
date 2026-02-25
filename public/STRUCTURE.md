@@ -1,6 +1,6 @@
 # Document Structure & Reading Order
 
-18 guides organized into 4 groups following a **progressive depth** principle: understand what it is, learn the mental models, build your toolbox, master advanced patterns.
+19 guides organized into 4 groups following a **progressive depth** principle: understand what it is, learn the mental models, build your toolbox, master advanced patterns.
 
 ## 01 — Orientation
 
@@ -46,8 +46,9 @@
 | 14 | **The Developer's Daily Loop** | Capstone page. References skills, commands, CLAUDE.md, context management, subagents, MCP, and debugging. Six workflow patterns from Boris Cherny (Claude Code creator). Ties all prior knowledge together. |
 | 15 | **Subagents vs Agent Teams** | Multi-agent architecture decision. Hub-and-spoke (subagents) vs mesh (teams) with a single decision axis: do workers need to communicate? |
 | 16 | **Custom Subagents** | How to define specialized subagent personas in `.claude/agents/`. File format, tool restrictions, model selection, practical examples (code reviewer, debugger). Builds on subagent concepts from the previous page. |
-| 17 | **Hooks** | Event-driven automation. Shell commands and LLM prompts triggered by lifecycle events (PreToolUse, PostToolUse, Stop, etc.) to enforce guardrails, format code, and validate output. The only mechanism that can intercept and block Claude's actions. |
-| 18 | **Debugging with Claude in Chrome** | Specialized tool integration. Chrome MCP extension for DOM inspection, console reading, and network monitoring — concrete debugging workflows for frontend developers. |
+| 17 | **The Skill-Agent Fork Pattern** | How to combine a skill (`context: fork`) and a custom agent into a repeatable, isolated workflow. Three-component architecture (activator skill + agent + knowledge skill), real implementation trace, and fork vs agent-only comparison. Requires understanding both skills and custom subagents. |
+| 18 | **Hooks** | Event-driven automation. Shell commands and LLM prompts triggered by lifecycle events (PreToolUse, PostToolUse, Stop, etc.) to enforce guardrails, format code, and validate output. The only mechanism that can intercept and block Claude's actions. |
+| 19 | **Debugging with Claude in Chrome** | Specialized tool integration. Chrome MCP extension for DOM inspection, console reading, and network monitoring — concrete debugging workflows for frontend developers. |
 
 ## Design Decisions
 
@@ -60,6 +61,8 @@
 **Developer's Daily Loop in Advanced, not Foundations**: Despite being about "daily" workflows, it references nearly every other topic. A reader who hasn't seen skills, commands, subagents, and context management would miss most of the value.
 
 **Custom Subagents after Subagents vs Teams**: Custom subagents are the mechanism for creating the specialized roles discussed in the subagents page. Reading order: understand the architecture (subagents vs teams) → learn to define subagents.
+
+**Skill-Agent Fork Pattern after Custom Subagents**: The fork pattern combines skills (Group 3) with custom subagents (previous page) into a composed workflow. Readers need to understand both primitives before seeing how they work together.
 
 **Hooks near the end of Advanced**: Hooks are the most powerful but also most complex extensibility mechanism. They intercept Claude's actions — understanding what those actions are (tools, commands, skills, MCP calls) is prerequisite knowledge.
 

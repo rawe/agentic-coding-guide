@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Skill-Agent Fork Pattern</title>
+  <link rel="stylesheet" href="css/theme.css">
+  <style>
+    /* ── Background image & overlay ── */
+    body {
+      background-image: url('assets/bg-dark-abstract.png');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(10, 14, 26, 0.92) 0%,
+        rgba(10, 14, 26, 0.80) 40%,
+        rgba(10, 14, 26, 0.88) 100%
+      );
+      z-index: 0;
+    }
+
+    .page-wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 60px 40px 100px;
+    }
+
+    /* ── Header ── */
+    header {
+      text-align: center;
+      margin-bottom: 72px;
+    }
+
+    .badge {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--fork-primary);
+      background: var(--fork-glow);
+      border: 1px solid rgba(45, 212, 191, 0.2);
+      padding: 6px 16px;
+      border-radius: 20px;
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      font-size: clamp(2.2rem, 5vw, 3.6rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, var(--fork-primary) 0%, var(--implement-primary) 50%, var(--skills-primary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      font-size: 1.15rem;
+      color: var(--text-secondary);
+      max-width: 700px;
+      margin: 0 auto;
+      line-height: 1.6;
+      font-weight: 400;
+    }
+
+    /* ── Section shared ── */
+    .section {
+      margin-bottom: 72px;
+    }
+
+    .section-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 40px;
+    }
+
+    .section-card h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+
+    .section-card .section-intro {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 28px;
+      max-width: 700px;
+    }
+
+    /* ── Inline code ── */
+    code {
+      font-family: var(--font-mono);
+      font-size: 0.85em;
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.06);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    /* ── Code blocks ── */
+    .code-block {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 20px 24px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      line-height: 1.7;
+      color: var(--text-secondary);
+      overflow-x: auto;
+      margin-top: 16px;
+      white-space: pre-wrap;
+    }
+
+    .code-block .comment    { color: var(--text-muted); }
+    .code-block .keyword    { color: var(--fork-primary); }
+    .code-block .string     { color: var(--plan-primary); }
+    .code-block .frontmatter { color: var(--skills-primary); }
+    .code-block .argument   { color: var(--implement-primary); }
+    .code-block .file-name  { color: var(--fork-primary); }
+
+    /* ── Bullet lists in sections ── */
+    .section-list {
+      list-style: none;
+      margin-top: 8px;
+    }
+
+    .section-list li {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      padding: 5px 0 5px 18px;
+      position: relative;
+      line-height: 1.6;
+    }
+
+    .section-list li::before {
+      content: '\2022';
+      position: absolute;
+      left: 0;
+      color: var(--text-muted);
+    }
+
+    /* ── SVG diagram container ── */
+    .diagram-container {
+      margin: 28px 0 24px;
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--border-subtle);
+      padding: 28px 24px;
+      overflow-x: auto;
+    }
+
+    .diagram-container svg {
+      display: block;
+      margin: 0 auto;
+      width: 100%;
+      max-width: 860px;
+      height: auto;
+    }
+
+    /* ── Pieces table ── */
+    .pieces-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 24px;
+    }
+
+    .pieces-table th {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--fork-primary);
+      text-align: left;
+      padding: 10px 16px;
+      border-bottom: 1px solid rgba(45, 212, 191, 0.15);
+    }
+
+    .pieces-table td {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-subtle);
+      line-height: 1.5;
+      vertical-align: top;
+    }
+
+    .pieces-table td:first-child {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      color: var(--fork-primary);
+      white-space: nowrap;
+    }
+
+    .pieces-table td:nth-child(2) {
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      white-space: nowrap;
+    }
+
+    .pieces-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* ── Steps list ── */
+    .steps-list {
+      list-style: none;
+      counter-reset: step;
+      margin-top: 20px;
+    }
+
+    .steps-list li {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      padding: 10px 0 10px 44px;
+      position: relative;
+      counter-increment: step;
+      line-height: 1.6;
+    }
+
+    .steps-list li::before {
+      content: counter(step);
+      position: absolute;
+      left: 0;
+      top: 10px;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      background: var(--fork-glow);
+      color: var(--fork-primary);
+      border: 2px solid rgba(45, 212, 191, 0.3);
+    }
+
+    .steps-list li strong {
+      color: var(--text-primary);
+    }
+
+    .steps-list .detail {
+      display: block;
+      margin-top: 4px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .steps-list .detail-list {
+      list-style: none;
+      margin: 4px 0 0;
+      padding: 0;
+    }
+
+    .steps-list .detail-list li {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      padding: 2px 0 2px 18px;
+      counter-increment: none;
+    }
+
+    .steps-list .detail-list li::before {
+      content: '\2022';
+      position: absolute;
+      left: 0;
+      top: 2px;
+      width: auto;
+      height: auto;
+      border-radius: 0;
+      background: none;
+      border: none;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      display: block;
+    }
+
+    /* ── Key fields grid ── */
+    .key-fields {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .key-field {
+      padding: 14px 18px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-subtle);
+      display: flex;
+      gap: 16px;
+      align-items: baseline;
+    }
+
+    .key-field .field-name {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      color: var(--fork-primary);
+      white-space: nowrap;
+      min-width: 140px;
+    }
+
+    .key-field .field-desc {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* ── What each part does ── */
+    .part-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .part-item {
+      padding: 14px 18px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .part-item h4 {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .part-item p {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* ── Comparison table ── */
+    .compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    .compare-table th {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      text-align: left;
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .compare-table th:nth-child(2) {
+      color: var(--fork-primary);
+      border-bottom-color: rgba(45, 212, 191, 0.2);
+    }
+
+    .compare-table th:nth-child(3) {
+      color: var(--text-muted);
+    }
+
+    .compare-table th:first-child {
+      color: var(--text-muted);
+    }
+
+    .compare-table td {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-subtle);
+      line-height: 1.5;
+      vertical-align: top;
+    }
+
+    .compare-table td:first-child {
+      font-weight: 600;
+      color: var(--text-muted);
+      font-size: 0.82rem;
+      white-space: nowrap;
+    }
+
+    .compare-table td:nth-child(2) {
+      color: var(--text-primary);
+    }
+
+    .compare-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* ── Separation table (4-column) ── */
+    .separation-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    .separation-table th {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--fork-primary);
+      text-align: left;
+      padding: 10px 14px;
+      border-bottom: 1px solid rgba(45, 212, 191, 0.15);
+    }
+
+    .separation-table td {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border-subtle);
+      line-height: 1.5;
+      vertical-align: top;
+    }
+
+    .separation-table td:first-child {
+      color: var(--text-primary);
+      font-weight: 600;
+      font-size: 0.84rem;
+      white-space: nowrap;
+    }
+
+    .separation-table td:nth-child(2) {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--fork-primary);
+      white-space: nowrap;
+    }
+
+    .separation-table td:nth-child(4) {
+      color: var(--text-muted);
+      font-size: 0.78rem;
+    }
+
+    .separation-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* ── Callout ── */
+    .callout {
+      margin-top: 24px;
+      padding: 20px 24px;
+      border-radius: 10px;
+      background: linear-gradient(160deg, rgba(45, 212, 191, 0.06) 0%, rgba(15, 20, 35, 0.6) 100%);
+      border: 1px solid rgba(45, 212, 191, 0.15);
+      border-left: 3px solid var(--fork-primary);
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .callout strong {
+      color: var(--fork-primary);
+    }
+
+    /* ── Takeaway boxes ── */
+    .takeaway-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .takeaway {
+      padding: 20px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+
+    .takeaway .takeaway-label {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .takeaway p {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .takeaway.teal { border-top: 3px solid var(--fork-primary); }
+    .takeaway.teal .takeaway-label { color: var(--fork-primary); }
+
+    .takeaway.amber { border-top: 3px solid var(--implement-primary); }
+    .takeaway.amber .takeaway-label { color: var(--implement-primary); }
+
+    .takeaway.purple { border-top: 3px solid var(--skills-primary); }
+    .takeaway.purple .takeaway-label { color: var(--skills-primary); }
+
+    /* ── Sources list ── */
+    .sources-list {
+      list-style: none;
+    }
+
+    .sources-list li {
+      padding: 8px 0;
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+
+    .sources-list li a {
+      color: var(--fork-primary);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(45, 212, 191, 0.3);
+      transition: border-color 0.2s ease;
+    }
+
+    .sources-list li a:hover {
+      border-color: var(--fork-primary);
+    }
+
+    .sources-list li span {
+      color: var(--text-muted);
+      font-size: 0.82rem;
+    }
+
+    /* ── Source attribution ── */
+    .source-attribution {
+      position: fixed;
+      bottom: 20px;
+      left: 24px;
+      z-index: 10;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      opacity: 0.6;
+      transition: opacity 0.3s ease;
+    }
+
+    .source-attribution:hover {
+      opacity: 1;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 700px) {
+      .takeaway-grid { grid-template-columns: 1fr; }
+      .key-field { flex-direction: column; gap: 4px; }
+      .key-field .field-name { min-width: auto; }
+    }
+
+    @media (max-width: 600px) {
+      .page-wrapper { padding: 40px 20px 60px; }
+      .section-card { padding: 28px 20px; }
+      .diagram-container { padding: 16px 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-wrapper">
+
+  <!-- Header -->
+  <header>
+    <div class="badge">Advanced Patterns</div>
+    <h1>The Skill-Agent Fork Pattern</h1>
+    <p class="subtitle">
+      How to combine a skill and a custom sub-agent into a repeatable, isolated workflow&hairsp;&mdash;&hairsp;using a real example that generates HTML pages from YouTube research.
+    </p>
+  </header>
+
+  <!-- Section 1: The Problem -->
+  <div class="section">
+    <div class="section-card">
+      <h2>The Problem</h2>
+      <p class="section-intro">
+        Skills teach Claude procedures. Agents provide isolated context windows with restricted tools. But some workflows need both: a repeatable procedure that runs in its own context, every time, without polluting the main conversation.
+      </p>
+      <ul class="section-list">
+        <li>A summarization workflow that reads long transcripts shouldn&rsquo;t flood the main context with 10,000 tokens of source material.</li>
+        <li>An HTML page generator that reads theme files, existing pages, and source summaries needs room to work&hairsp;&mdash;&hairsp;and the main conversation doesn&rsquo;t need to see it.</li>
+        <li>Any multi-step procedure you want to invoke with a slash command and get clean results back from.</li>
+      </ul>
+      <div class="callout">
+        The <code>context: fork</code> pattern solves this. A skill defines <strong>WHAT</strong> to do. An agent defines <strong>WHO</strong> does it. The skill body becomes the task; the agent provides the execution environment. One slash command, full isolation.
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 2: Meet generate-html-page -->
+  <div class="section">
+    <div class="section-card">
+      <h2>Meet generate-html-page</h2>
+      <p class="section-intro">
+        To make this concrete, we&rsquo;ll trace through a real implementation: <code>/generate-html-page</code>, which takes a YouTube source folder (containing <code>summary.md</code> and <code>meta.md</code>) and produces a dark-themed HTML presentation page in <code>public/</code>.
+      </p>
+      <p class="section-intro">Three pieces make it work:</p>
+
+      <!-- SVG: Three-component relationship diagram -->
+      <div class="diagram-container">
+        <svg viewBox="0 0 860 260" xmlns="http://www.w3.org/2000/svg" style="font-family: 'Inter', system-ui, sans-serif;">
+          <defs>
+            <marker id="arr-teal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--fork-primary)"/>
+            </marker>
+            <marker id="arr-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--skills-primary)"/>
+            </marker>
+          </defs>
+
+          <!-- Box 1: Activator Skill -->
+          <text x="140" y="22" text-anchor="middle" fill="var(--fork-primary)" font-size="10" font-weight="600" letter-spacing="1.5" style="font-family: 'JetBrains Mono', monospace;">ACTIVATOR SKILL</text>
+          <rect x="15" y="36" width="250" height="120" rx="10" fill="rgba(45, 212, 191, 0.05)" stroke="var(--fork-primary)" stroke-width="1.5"/>
+          <text x="140" y="66" text-anchor="middle" fill="var(--text-primary)" font-size="13" font-weight="600" style="font-family: 'JetBrains Mono', monospace;">generate-html-page</text>
+          <text x="140" y="92" text-anchor="middle" fill="var(--text-muted)" font-size="10" style="font-family: 'JetBrains Mono', monospace;">context: fork</text>
+          <text x="140" y="110" text-anchor="middle" fill="var(--text-muted)" font-size="10" style="font-family: 'JetBrains Mono', monospace;">agent: html-page-generator</text>
+          <text x="140" y="128" text-anchor="middle" fill="var(--text-muted)" font-size="10" style="font-family: 'JetBrains Mono', monospace;">7-step procedure</text>
+
+          <!-- Arrow: Box 1 → Box 2 (dashed, teal) -->
+          <line x1="265" y1="96" x2="290" y2="96" stroke="var(--fork-primary)" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr-teal)"/>
+          <text x="278" y="86" text-anchor="middle" fill="var(--fork-primary)" font-size="8" font-weight="500" style="font-family: 'JetBrains Mono', monospace;">forks</text>
+          <text x="278" y="114" text-anchor="middle" fill="var(--fork-primary)" font-size="8" font-weight="500" style="font-family: 'JetBrains Mono', monospace;">into</text>
+
+          <!-- Box 2: Custom Agent -->
+          <text x="430" y="22" text-anchor="middle" fill="var(--implement-primary)" font-size="10" font-weight="600" letter-spacing="1.5" style="font-family: 'JetBrains Mono', monospace;">CUSTOM AGENT</text>
+          <rect x="305" y="36" width="250" height="120" rx="10" fill="rgba(251, 146, 60, 0.05)" stroke="var(--implement-primary)" stroke-width="1.5"/>
+          <text x="430" y="66" text-anchor="middle" fill="var(--text-primary)" font-size="13" font-weight="600" style="font-family: 'JetBrains Mono', monospace;">html-page-generator</text>
+          <text x="430" y="92" text-anchor="middle" fill="var(--text-muted)" font-size="10" style="font-family: 'JetBrains Mono', monospace;">tools: Read, Write, Edit&hellip;</text>
+          <text x="430" y="110" text-anchor="middle" fill="var(--text-muted)" font-size="10" style="font-family: 'JetBrains Mono', monospace;">model: opus</text>
+          <text x="430" y="128" text-anchor="middle" fill="var(--text-muted)" font-size="10" style="font-family: 'JetBrains Mono', monospace;">skills: html-pages</text>
+
+          <!-- Arrow: Box 3 → Box 2 (solid, purple) -->
+          <line x1="595" y1="96" x2="570" y2="96" stroke="var(--skills-primary)" stroke-width="1.5" marker-end="url(#arr-purple)"/>
+          <text x="583" y="82" text-anchor="middle" fill="var(--skills-primary)" font-size="8" font-weight="500" style="font-family: 'JetBrains Mono', monospace;">preloaded</text>
+          <text x="583" y="114" text-anchor="middle" fill="var(--skills-primary)" font-size="8" font-weight="500" style="font-family: 'JetBrains Mono', monospace;">into</text>
+
+          <!-- Box 3: Knowledge Skill -->
+          <text x="720" y="22" text-anchor="middle" fill="var(--skills-primary)" font-size="10" font-weight="600" letter-spacing="1.5" style="font-family: 'JetBrains Mono', monospace;">KNOWLEDGE SKILL</text>
+          <rect x="595" y="36" width="250" height="120" rx="10" fill="rgba(124, 110, 240, 0.05)" stroke="var(--skills-primary)" stroke-width="1.5"/>
+          <text x="720" y="66" text-anchor="middle" fill="var(--text-primary)" font-size="13" font-weight="600" style="font-family: 'JetBrains Mono', monospace;">html-pages</text>
+          <text x="720" y="92" text-anchor="middle" fill="var(--text-muted)" font-size="10" style="font-family: 'JetBrains Mono', monospace;">theme colors</text>
+          <text x="720" y="110" text-anchor="middle" fill="var(--text-muted)" font-size="10" style="font-family: 'JetBrains Mono', monospace;">page skeleton</text>
+          <text x="720" y="128" text-anchor="middle" fill="var(--text-muted)" font-size="10" style="font-family: 'JetBrains Mono', monospace;">card patterns</text>
+
+          <!-- Bottom bracket -->
+          <path d="M 15 185 L 15 198 L 430 198 L 430 208 L 430 198 L 845 198 L 845 185" stroke="var(--text-muted)" stroke-width="1" fill="none" opacity="0.35"/>
+          <line x1="430" y1="208" x2="430" y2="218" stroke="var(--text-muted)" stroke-width="1" opacity="0.35"/>
+          <text x="430" y="240" text-anchor="middle" fill="var(--text-muted)" font-size="10" opacity="0.7" style="font-family: 'JetBrains Mono', monospace;">User types: /generate-html-page sources/youtube/2026-02-some-video/</text>
+        </svg>
+      </div>
+
+      <table class="pieces-table">
+        <thead>
+          <tr>
+            <th>Piece</th>
+            <th>Type</th>
+            <th>Job</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>generate-html-page</td>
+            <td>Activator skill</td>
+            <td>Entry point. Holds the 7-step procedure. Has <code>context: fork</code> to run in isolation.</td>
+          </tr>
+          <tr>
+            <td>html-page-generator</td>
+            <td>Custom agent</td>
+            <td>Execution environment. Defines voice, tone, and tools. Preloads the html-pages skill.</td>
+          </tr>
+          <tr>
+            <td>html-pages</td>
+            <td>Knowledge skill</td>
+            <td>Reference material. Theme system, page skeleton, card patterns, index integration.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Section 3: What Happens When You Type the Command -->
+  <div class="section">
+    <div class="section-card">
+      <h2>What Happens When You Type the Command</h2>
+      <p class="section-intro" style="margin-bottom: 8px;">
+        <code>/generate-html-page sources/youtube/2026-02-leon-van-zyl-claude-code-skills/</code>
+      </p>
+
+      <!-- SVG: Two-lane sequence diagram -->
+      <div class="diagram-container">
+        <svg viewBox="0 0 780 480" xmlns="http://www.w3.org/2000/svg" style="font-family: 'Inter', system-ui, sans-serif;">
+          <defs>
+            <marker id="seq-teal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--fork-primary)"/>
+            </marker>
+            <marker id="seq-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--plan-primary)"/>
+            </marker>
+          </defs>
+
+          <!-- Left lane: Main Context -->
+          <rect x="15" y="10" width="340" height="455" rx="10" fill="rgba(45, 212, 191, 0.025)" stroke="var(--fork-primary)" stroke-width="1" stroke-opacity="0.25"/>
+          <text x="185" y="38" text-anchor="middle" fill="var(--fork-primary)" font-size="10" font-weight="600" letter-spacing="1.5" style="font-family: 'JetBrains Mono', monospace;">MAIN CONTEXT</text>
+
+          <!-- Right lane: Forked Context -->
+          <rect x="425" y="10" width="340" height="455" rx="10" fill="rgba(251, 146, 60, 0.025)" stroke="var(--implement-primary)" stroke-width="1" stroke-opacity="0.25"/>
+          <text x="595" y="38" text-anchor="middle" fill="var(--implement-primary)" font-size="10" font-weight="600" letter-spacing="1.5" style="font-family: 'JetBrains Mono', monospace;">FORKED CONTEXT</text>
+
+          <!-- Step 1 (left) -->
+          <rect x="40" y="58" width="290" height="32" rx="6" fill="rgba(45, 212, 191, 0.06)" stroke="rgba(45, 212, 191, 0.15)" stroke-width="1"/>
+          <circle cx="57" cy="74" r="9" fill="var(--fork-glow)" stroke="var(--fork-primary)" stroke-width="1.5"/>
+          <text x="57" y="78" text-anchor="middle" fill="var(--fork-primary)" font-size="9" font-weight="700" style="font-family: 'JetBrains Mono', monospace;">1</text>
+          <text x="76" y="78" fill="var(--text-secondary)" font-size="11">User types /generate-html-page &lt;path&gt;</text>
+
+          <!-- Step 2 (left) -->
+          <rect x="40" y="102" width="290" height="32" rx="6" fill="rgba(45, 212, 191, 0.06)" stroke="rgba(45, 212, 191, 0.15)" stroke-width="1"/>
+          <circle cx="57" cy="118" r="9" fill="var(--fork-glow)" stroke="var(--fork-primary)" stroke-width="1.5"/>
+          <text x="57" y="122" text-anchor="middle" fill="var(--fork-primary)" font-size="9" font-weight="700" style="font-family: 'JetBrains Mono', monospace;">2</text>
+          <text x="76" y="122" fill="var(--text-secondary)" font-size="11">Reads frontmatter &rarr; context: fork</text>
+
+          <!-- Fork arrow crossing lanes -->
+          <path d="M 330 134 C 378 148, 378 158, 425 172" stroke="var(--fork-primary)" stroke-width="2" fill="none" stroke-dasharray="6,4" marker-end="url(#seq-teal)"/>
+          <rect x="352" y="142" width="52" height="18" rx="4" fill="rgba(45, 212, 191, 0.12)" stroke="none"/>
+          <text x="378" y="155" text-anchor="middle" fill="var(--fork-primary)" font-size="9" font-weight="700" style="font-family: 'JetBrains Mono', monospace;">FORK</text>
+          <text x="378" y="136" text-anchor="middle" fill="var(--text-muted)" font-size="8" style="font-family: 'JetBrains Mono', monospace;">$ARGUMENTS substituted</text>
+
+          <!-- Step 3 (right) -->
+          <rect x="450" y="168" width="290" height="62" rx="6" fill="rgba(251, 146, 60, 0.06)" stroke="rgba(251, 146, 60, 0.15)" stroke-width="1"/>
+          <circle cx="467" cy="184" r="9" fill="rgba(251, 146, 60, 0.15)" stroke="var(--implement-primary)" stroke-width="1.5"/>
+          <text x="467" y="188" text-anchor="middle" fill="var(--implement-primary)" font-size="9" font-weight="700" style="font-family: 'JetBrains Mono', monospace;">3</text>
+          <text x="486" y="188" fill="var(--text-secondary)" font-size="11">Sub-agent starts with:</text>
+          <text x="486" y="205" fill="var(--text-muted)" font-size="9" style="font-family: 'JetBrains Mono', monospace;">prompt = agent body + html-pages skill</text>
+          <text x="486" y="220" fill="var(--text-muted)" font-size="9" style="font-family: 'JetBrains Mono', monospace;">task = skill body &middot; tools = R/W/E/&hellip;</text>
+
+          <!-- Step 4 (right) -->
+          <rect x="450" y="244" width="290" height="32" rx="6" fill="rgba(251, 146, 60, 0.06)" stroke="rgba(251, 146, 60, 0.15)" stroke-width="1"/>
+          <circle cx="467" cy="260" r="9" fill="rgba(251, 146, 60, 0.15)" stroke="var(--implement-primary)" stroke-width="1.5"/>
+          <text x="467" y="264" text-anchor="middle" fill="var(--implement-primary)" font-size="9" font-weight="700" style="font-family: 'JetBrains Mono', monospace;">4</text>
+          <text x="486" y="264" fill="var(--text-secondary)" font-size="11">Reads summary.md, meta.md from source</text>
+
+          <!-- Step 5 (right) -->
+          <rect x="450" y="288" width="290" height="32" rx="6" fill="rgba(251, 146, 60, 0.06)" stroke="rgba(251, 146, 60, 0.15)" stroke-width="1"/>
+          <circle cx="467" cy="304" r="9" fill="rgba(251, 146, 60, 0.15)" stroke="var(--implement-primary)" stroke-width="1.5"/>
+          <text x="467" y="308" text-anchor="middle" fill="var(--implement-primary)" font-size="9" font-weight="700" style="font-family: 'JetBrains Mono', monospace;">5</text>
+          <text x="486" y="308" fill="var(--text-secondary)" font-size="11">Reads existing pages, theme.css, STRUCTURE.md</text>
+
+          <!-- Step 6 (right) -->
+          <rect x="450" y="332" width="290" height="32" rx="6" fill="rgba(251, 146, 60, 0.06)" stroke="rgba(251, 146, 60, 0.15)" stroke-width="1"/>
+          <circle cx="467" cy="348" r="9" fill="rgba(251, 146, 60, 0.15)" stroke="var(--implement-primary)" stroke-width="1.5"/>
+          <text x="467" y="352" text-anchor="middle" fill="var(--implement-primary)" font-size="9" font-weight="700" style="font-family: 'JetBrains Mono', monospace;">6</text>
+          <text x="486" y="352" fill="var(--text-secondary)" font-size="11">Writes content.md + HTML + index updates</text>
+
+          <!-- Step 7 (right) -->
+          <rect x="450" y="376" width="290" height="32" rx="6" fill="rgba(251, 146, 60, 0.06)" stroke="rgba(251, 146, 60, 0.15)" stroke-width="1"/>
+          <circle cx="467" cy="392" r="9" fill="rgba(251, 146, 60, 0.15)" stroke="var(--implement-primary)" stroke-width="1.5"/>
+          <text x="467" y="396" text-anchor="middle" fill="var(--implement-primary)" font-size="9" font-weight="700" style="font-family: 'JetBrains Mono', monospace;">7</text>
+          <text x="486" y="396" fill="var(--text-secondary)" font-size="11">Agent completes</text>
+
+          <!-- Return arrow crossing lanes -->
+          <path d="M 450 408 C 402 418, 402 425, 355 435" stroke="var(--plan-primary)" stroke-width="2" fill="none" marker-end="url(#seq-green)"/>
+          <rect x="370" y="415" width="68" height="18" rx="4" fill="rgba(52, 211, 153, 0.12)" stroke="none"/>
+          <text x="404" y="428" text-anchor="middle" fill="var(--plan-primary)" font-size="9" font-weight="700" style="font-family: 'JetBrains Mono', monospace;">RESULTS</text>
+
+          <!-- Step 8 (left) -->
+          <rect x="40" y="428" width="290" height="24" rx="6" fill="rgba(45, 212, 191, 0.06)" stroke="rgba(45, 212, 191, 0.15)" stroke-width="1"/>
+          <text x="185" y="444" text-anchor="middle" fill="var(--text-secondary)" font-size="10">Context window stayed clean &mdash; never saw source material</text>
+        </svg>
+      </div>
+
+      <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 20px;">Step by step:</p>
+
+      <ol class="steps-list">
+        <li>
+          <strong>System reads the skill frontmatter</strong>&hairsp;&mdash;&hairsp;sees <code>context: fork</code> and <code>agent: html-page-generator</code>
+        </li>
+        <li>
+          <strong><code>$ARGUMENTS</code> substitution</strong>&hairsp;&mdash;&hairsp;the source path replaces <code>$ARGUMENTS[0]</code> in the skill body
+        </li>
+        <li>
+          <strong>Fork</strong>&hairsp;&mdash;&hairsp;a new sub-agent starts with its own context window:
+          <span class="detail">
+            <strong>System prompt</strong> = agent definition body + full <code>html-pages</code> skill content (preloaded via <code>skills:</code> field)<br>
+            <strong>Task</strong> = skill body (the 7-step procedure, with the source path baked in)<br>
+            <strong>Tools</strong> = Read, Write, Edit, Glob, Grep, Bash (from agent&rsquo;s <code>tools:</code> field)<br>
+            <strong>Model</strong> = Sonnet (from agent&rsquo;s <code>model:</code> field)
+          </span>
+        </li>
+        <li>
+          <strong>Agent works</strong>&hairsp;&mdash;&hairsp;reads source material, studies existing pages, drafts content markdown, builds HTML, updates index
+        </li>
+        <li>
+          <strong>Results return</strong>&hairsp;&mdash;&hairsp;main context receives a summary. It never saw the transcript, theme files, or intermediate drafts.
+        </li>
+      </ol>
+
+      <div class="callout">
+        The main conversation&rsquo;s context window stays clean. The sub-agent had all the room it needed.
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 4: The Activator Skill -->
+  <div class="section">
+    <div class="section-card">
+      <h2>The Activator Skill</h2>
+      <p class="section-intro">
+        <code>.claude/skills/generate-html-page/SKILL.md</code>&hairsp;&mdash;&hairsp;the entry point and procedure definition.
+      </p>
+      <div class="code-block">
+<span class="comment"># .claude/skills/generate-html-page/SKILL.md</span>
+<span class="frontmatter">---</span>
+<span class="frontmatter">name:</span> <span class="string">generate-html-page</span>
+<span class="frontmatter">description:</span> <span class="string">Generate a presentation-ready HTML page from a source folder.
+  Use when converting YouTube or document summaries into dark-themed
+  HTML guides for public/.</span>
+<span class="frontmatter">user-invocable:</span> <span class="string">true</span>
+<span class="frontmatter">argument-hint:</span> <span class="string">&lt;source-folder-path&gt; [page-name]</span>
+<span class="frontmatter">context:</span> <span class="keyword">fork</span>
+<span class="frontmatter">agent:</span> <span class="keyword">html-page-generator</span>
+<span class="frontmatter">---</span>
+
+Generate an HTML presentation page from the source at <span class="argument">`$ARGUMENTS[0]`</span>.
+
+<span class="comment">## Step 1 — Read source material</span>
+Read <span class="argument">`meta.md`</span> and <span class="argument">`summary.md`</span> from <span class="argument">`$ARGUMENTS[0]`</span>.
+
+<span class="comment">## Step 2 — Determine page name</span>
+If <span class="argument">`$ARGUMENTS[1]`</span> is provided, use it. Otherwise, derive a slug.
+
+<span class="comment">## Step 3 — Study existing pages</span>
+Read STRUCTURE.md, content/README.md, and 1 similar page.
+
+<span class="comment">## Step 4 — Draft content markdown</span>
+Write public/content/&lt;page-name&gt;.md.
+
+<span class="comment">## Step 5 — Choose accent colors</span>
+Read theme.css. Reuse existing variables where possible.
+
+<span class="comment">## Step 6 — Build HTML</span>
+Read one existing page as template. Build public/&lt;page-name&gt;.html.
+
+<span class="comment">## Step 7 — Update index and structure</span>
+Add card to index.html. Add entry to STRUCTURE.md.</div>
+
+      <p style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 24px; margin-bottom: 16px;">Key frontmatter fields:</p>
+
+      <div class="key-fields">
+        <div class="key-field">
+          <span class="field-name">user-invocable: true</span>
+          <span class="field-desc">Registers as <code>/generate-html-page</code> in the slash menu</span>
+        </div>
+        <div class="key-field">
+          <span class="field-name">argument-hint</span>
+          <span class="field-desc">Shows <code>&lt;source-folder-path&gt; [page-name]</code> in autocomplete</span>
+        </div>
+        <div class="key-field">
+          <span class="field-name">context: fork</span>
+          <span class="field-desc">Runs in an isolated sub-agent, not the main context</span>
+        </div>
+        <div class="key-field">
+          <span class="field-name">agent: html-page-generator</span>
+          <span class="field-desc">Specifies which agent definition provides the execution environment</span>
+        </div>
+        <div class="key-field">
+          <span class="field-name">$ARGUMENTS[0], [1]</span>
+          <span class="field-desc">Mechanical substitution. The user&rsquo;s input is baked into the procedure before the agent sees it.</span>
+        </div>
+      </div>
+
+      <div class="callout" style="margin-top: 24px;">
+        The body is the task&hairsp;&mdash;&hairsp;the exact procedure the sub-agent follows. It&rsquo;s version-controlled, carefully authored, and identical every invocation.
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 5: The Agent -->
+  <div class="section">
+    <div class="section-card">
+      <h2 style="color: var(--implement-primary);">The Agent</h2>
+      <p class="section-intro">
+        <code>.claude/agents/html-page-generator.md</code>&hairsp;&mdash;&hairsp;the execution environment and voice.
+      </p>
+      <div class="code-block">
+<span class="comment"># .claude/agents/html-page-generator.md</span>
+<span class="frontmatter">---</span>
+<span class="frontmatter">name:</span> <span class="string">html-page-generator</span>
+<span class="frontmatter">description:</span> <span class="string">Sub-agent that builds dark-themed HTML presentation pages
+  from source material. Knows the project's theme system, page patterns,
+  and writing conventions.</span>
+<span class="frontmatter">tools:</span> <span class="string">Read, Write, Edit, Glob, Grep, Bash</span>
+<span class="frontmatter">model:</span> <span class="string">sonnet</span>
+<span class="frontmatter">skills:</span> <span class="keyword">html-pages</span>
+<span class="frontmatter">---</span>
+
+You produce presentation-ready HTML pages for the public/ directory.
+
+The <span class="keyword">`html-pages`</span> skill (preloaded) is your reference for all HTML/CSS
+decisions. Follow it exactly.
+
+<span class="comment">## Voice</span>
+These pages teach. Every section should help the reader understand fast.
+
+- Visual-first: diagrams, tables, color-coded cards, highlighted
+  callouts over running prose.
+- No plain-text deserts — if a section is more than 3-4 lines of text,
+  break it up with structure.
+- Bullet points over paragraphs. Facts over commentary.
+- No filler. No AI slop. Every sentence must carry information.
+- Always cite the original source with URL and author.</div>
+
+      <p style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 24px; margin-bottom: 16px;">What each part does:</p>
+
+      <div class="part-list">
+        <div class="part-item">
+          <h4 style="color: var(--skills-primary);">skills: html-pages</h4>
+          <p>The full <code>html-pages</code> SKILL.md content is injected into the agent&rsquo;s context at startup. The agent knows the theme system, page skeleton, and card patterns without being told.</p>
+        </div>
+        <div class="part-item">
+          <h4 style="color: var(--implement-primary);">tools:</h4>
+          <p>Allowlist. The agent can read files, write files, search, and run shell commands. Nothing else.</p>
+        </div>
+        <div class="part-item">
+          <h4 style="color: var(--implement-primary);">model: opus</h4>
+          <p>Highest capability for complex content generation.</p>
+        </div>
+        <div class="part-item">
+          <h4 style="color: var(--implement-primary);">Body (system prompt)</h4>
+          <p>Pure voice and identity. Defines <em>how</em> the agent communicates, not <em>what</em> it does&hairsp;&mdash;&hairsp;the procedure lives in the activator skill.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 6: The Knowledge Skill -->
+  <div class="section">
+    <div class="section-card">
+      <h2 style="color: var(--skills-primary);">The Knowledge Skill</h2>
+      <p class="section-intro">
+        <code>.claude/skills/html-pages/SKILL.md</code>&hairsp;&mdash;&hairsp;the reference material the agent loads at startup.
+      </p>
+      <div class="code-block">
+<span class="comment"># .claude/skills/html-pages/SKILL.md</span>
+<span class="frontmatter">---</span>
+<span class="frontmatter">name:</span> <span class="string">html-pages</span>
+<span class="frontmatter">description:</span> <span class="string">Create and maintain dark-themed HTML presentation pages
+  in public/. Covers page structure, theme colors, teaser images,
+  image optimization, and index page integration.</span>
+<span class="frontmatter">---</span>
+
+<span class="comment"># HTML Presentation Pages</span>
+
+<span class="comment">## Project Structure</span>
+public/ &mdash; index.html, css/theme.css, assets/, individual *.html pages
+
+<span class="comment">## Theme &amp; Colors</span>
+All accents in theme.css as CSS variables. Never hardcode hex.
+New page &rarr; add --name-primary and --name-glow to :root.
+
+<span class="comment">## Creating a New Page</span>
+1. Choose accent colors    2. Page skeleton (bg overlay, wrapper, header, cards)
+3. H1 gradient (clip text) 4. Card pattern (card-image + card-body)
+
+<span class="comment">## Teaser Images</span>
+Generate via /chatgpt-image on dark navy bg with accent glow. Optimize to 720&times;450.
+
+<span class="comment">## Index Page Integration</span>
+Card variant CSS with color-mix() accent + card HTML.
+
+<span class="comment">## Checklist</span>
+Six-step: colors &rarr; skeleton &rarr; teasers &rarr; optimize &rarr; index card &rarr; verify</div>
+
+      <div class="callout" style="margin-top: 24px;">
+        No workflow fields in the frontmatter. No steps. No voice. Pure reference&hairsp;&mdash;&hairsp;this content gets injected into the agent&rsquo;s context via the <code>skills:</code> field.
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 7: What Goes Where -->
+  <div class="section">
+    <div class="section-card">
+      <h2>What Goes Where</h2>
+      <p class="section-intro">
+        Each file answers exactly one question. No information appears in two places.
+      </p>
+
+      <table class="separation-table">
+        <thead>
+          <tr>
+            <th>Question</th>
+            <th>Answered by</th>
+            <th>Contains</th>
+            <th>Does NOT contain</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>How do HTML pages work?</td>
+            <td>html-pages</td>
+            <td>Theme system, page skeleton, card patterns, teaser images, index integration</td>
+            <td>Workflow steps, arguments, persona, tone</td>
+          </tr>
+          <tr>
+            <td>How should I communicate?</td>
+            <td>html-page-generator</td>
+            <td>Voice, didactic approach, writing style, pointer to preloaded skill</td>
+            <td>Procedure, output files, file paths, steps</td>
+          </tr>
+          <tr>
+            <td>What do I do, step by step?</td>
+            <td>generate-html-page</td>
+            <td>Ordered steps, <code>$ARGUMENTS</code>, files to read/write, outputs to produce</td>
+            <td>HTML/CSS reference (skill&rsquo;s job), writing voice (agent&rsquo;s job)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="callout" style="margin-top: 24px;">
+        Three non-overlapping concerns: <strong>how things look</strong>&hairsp;&mdash;&hairsp;<strong>how you speak</strong>&hairsp;&mdash;&hairsp;<strong>what you do</strong>.
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 8: Why Fork Beats Agent-Only -->
+  <div class="section">
+    <div class="section-card">
+      <h2>Why Fork Beats Agent-Only</h2>
+      <p class="section-intro">
+        Two approaches exist for this workflow:
+      </p>
+
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Fork Pattern (A)</th>
+            <th>Agent-Only (B)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Entry point</td>
+            <td><code>/generate-html-page &lt;path&gt;</code></td>
+            <td>User asks Claude to delegate to the agent</td>
+          </tr>
+          <tr>
+            <td>Path passing</td>
+            <td><code>$ARGUMENTS</code>&hairsp;&mdash;&hairsp;mechanical, exact</td>
+            <td>Main Claude formulates a Task prompt&hairsp;&mdash;&hairsp;variable</td>
+          </tr>
+          <tr>
+            <td>Procedure</td>
+            <td>Skill body&hairsp;&mdash;&hairsp;version-controlled, identical every run</td>
+            <td>Agent system prompt or ad-hoc Task prompt</td>
+          </tr>
+          <tr>
+            <td>Discoverability</td>
+            <td>Appears in <code>/</code> menu with tab-completion</td>
+            <td>User must know the agent exists</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 28px; margin-bottom: 16px;">The fork pattern wins for repeatable workflows because:</p>
+
+      <div class="takeaway-grid">
+        <div class="takeaway teal">
+          <div class="takeaway-label">Skill = WHAT</div>
+          <p>The procedure, version-controlled, with argument substitution</p>
+        </div>
+        <div class="takeaway amber">
+          <div class="takeaway-label">Agent = WHO</div>
+          <p>The voice, tools, model, preloaded knowledge</p>
+        </div>
+        <div class="takeaway purple">
+          <div class="takeaway-label">Separation of Concerns</div>
+          <p>Change the procedure without touching the agent, or swap the agent without rewriting the procedure</p>
+        </div>
+      </div>
+
+      <div class="callout" style="margin-top: 24px;">
+        The agent-only approach merges both into one file. That works for ad-hoc delegation, but for a command you&rsquo;ll run dozens of times, the fork pattern gives you a deterministic entry point with exact argument handling.
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 9: Sources -->
+  <div class="section">
+    <div class="section-card">
+      <h2>Sources &amp; Further Reading</h2>
+      <ul class="sources-list">
+        <li>
+          <a href="https://code.claude.com/docs/en/skills#run-skills-in-a-subagent" target="_blank" rel="noopener">Claude Code Skills &mdash; context: fork</a>
+          <span>&mdash; Running skills in a subagent with isolated context.</span>
+        </li>
+        <li>
+          <a href="https://code.claude.com/docs/en/sub-agents" target="_blank" rel="noopener">Claude Code Custom Subagents</a>
+          <span>&mdash; Full reference for agent frontmatter fields and configuration.</span>
+        </li>
+        <li>
+          <a href="https://code.claude.com/docs/en/sub-agents#preload-skills-into-subagents" target="_blank" rel="noopener">Preload skills into subagents</a>
+          <span>&mdash; How the <code>skills:</code> field injects knowledge into agents at startup.</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<!-- Source attribution bottom-left -->
+<div class="source-attribution">
+  Claude Code Docs<br>
+  <a href="https://code.claude.com/docs/en/skills#run-skills-in-a-subagent" target="_blank" rel="noopener">Skills &mdash; context: fork</a>
+</div>
+
+</body>
+</html>
