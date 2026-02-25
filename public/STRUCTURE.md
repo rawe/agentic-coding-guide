@@ -1,6 +1,6 @@
 # Document Structure & Reading Order
 
-19 guides organized into 4 groups following a **progressive depth** principle: understand what it is, learn the mental models, build your toolbox, master advanced patterns.
+20 guides organized into 4 groups following a **progressive depth** principle: understand what it is, learn the mental models, build your toolbox, master advanced patterns.
 
 ## 01 — Orientation
 
@@ -49,6 +49,7 @@
 | 17 | **The Skill-Agent Fork Pattern** | How to combine a skill (`context: fork`) and a custom agent into a repeatable, isolated workflow. Three-component architecture (activator skill + agent + knowledge skill), real implementation trace, and fork vs agent-only comparison. Requires understanding both skills and custom subagents. |
 | 18 | **Hooks** | Event-driven automation. Shell commands and LLM prompts triggered by lifecycle events (PreToolUse, PostToolUse, Stop, etc.) to enforce guardrails, format code, and validate output. The only mechanism that can intercept and block Claude's actions. |
 | 19 | **Debugging with Claude in Chrome** | Specialized tool integration. Chrome MCP extension for DOM inspection, console reading, and network monitoring — concrete debugging workflows for frontend developers. |
+| 20 | **Remote Control** | Mobile and remote access to Claude Code sessions. Setup methods, three security strategies (server isolation, sandboxing, proxy filtering), and comparison with OpenClaw. Assumes familiarity with skills, MCP servers, permissions, and settings configuration from Groups 1-3. |
 
 ## Design Decisions
 
@@ -66,4 +67,6 @@
 
 **Hooks near the end of Advanced**: Hooks are the most powerful but also most complex extensibility mechanism. They intercept Claude's actions — understanding what those actions are (tools, commands, skills, MCP calls) is prerequisite knowledge.
 
-**Debugging is last**: It's the most specialized page (Chrome MCP only) and the narrowest audience (frontend developers). It's valuable but optional for the general reader.
+**Debugging is specialized**: Chrome MCP only, narrowest audience (frontend developers). Valuable but optional for the general reader.
+
+**Remote Control is last**: It covers mobile/remote access and security strategies for running Claude Code on servers. Readers benefit from understanding skills, MCP servers, permissions, and sandboxing first — all concepts from Groups 1-3. The security strategies (sandbox config, proxy filtering) make more sense after reading the extensibility and hooks pages.

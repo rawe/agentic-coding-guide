@@ -81,6 +81,10 @@
   --fork-primary: #2dd4bf;
   --fork-glow: rgba(45, 212, 191, 0.15);
 
+  --remote-primary: #06b6d4;
+  --remote-secondary: #22d3ee;
+  --remote-glow: rgba(6, 182, 212, 0.15);
+
   --warn: #f06e6e;
 
   --text-primary: #f1f5f9;

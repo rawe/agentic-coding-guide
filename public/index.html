@@ -331,6 +331,18 @@
     }
     .index-card.seafoam .card-title { color: var(--fork-primary); }
 
+    .index-card.aqua {
+      --_accent: var(--remote-primary);
+      background: linear-gradient(160deg, color-mix(in srgb, var(--_accent) 6%, transparent) 0%, var(--bg-card) 100%);
+      box-shadow: 0 0 40px color-mix(in srgb, var(--_accent) 4%, transparent);
+      border-left: 3px solid color-mix(in srgb, var(--_accent) 30%, transparent);
+    }
+    .index-card.aqua:hover {
+      box-shadow: 0 8px 48px color-mix(in srgb, var(--_accent) 14%, transparent);
+      border-left-color: var(--_accent);
+    }
+    .index-card.aqua .card-title { color: var(--remote-primary); }
+
     .index-card .card-subtext {
       font-size: 0.95rem;
       color: var(--text-secondary);
@@ -524,6 +536,11 @@
       <a href="community-debugging-chrome.html" class="index-card gold">
         <div class="card-title">Debugging with Claude in Chrome</div>
         <p class="card-subtext">Connect Claude Code to your browser. Inspect DOM, read console, monitor network &mdash; fix without leaving the terminal.</p>
+        <span class="card-arrow">&rsaquo;</span>
+      </a>
+      <a href="claude-code-remote.html" class="index-card aqua">
+        <div class="card-title">Remote Control</div>
+        <p class="card-subtext">Control Claude Code from your phone &mdash; setup, three security strategies, and always-on remote agents.</p>
         <span class="card-arrow">&rsaquo;</span>
       </a>
     </div>

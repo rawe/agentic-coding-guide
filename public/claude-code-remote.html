@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claude Code Remote Control &mdash; Mobile Access &amp; Security</title>
+  <link rel="stylesheet" href="css/theme.css">
+  <style>
+    /* ── Background image & overlay ── */
+    body {
+      background-image: url('assets/bg-dark-abstract.png');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(10, 14, 26, 0.92) 0%,
+        rgba(10, 14, 26, 0.80) 40%,
+        rgba(10, 14, 26, 0.88) 100%
+      );
+      z-index: 0;
+    }
+
+    .page-wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 60px 40px 80px;
+    }
+
+    /* ── Header ── */
+    header {
+      text-align: center;
+      margin-bottom: 72px;
+    }
+
+    .badge {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--remote-primary);
+      background: var(--remote-glow);
+      border: 1px solid rgba(6, 182, 212, 0.2);
+      padding: 6px 16px;
+      border-radius: 20px;
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      font-size: clamp(2.2rem, 5vw, 3.6rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, var(--remote-primary) 0%, var(--remote-secondary) 40%, var(--research-primary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      font-size: 1.15rem;
+      color: var(--text-secondary);
+      max-width: 640px;
+      margin: 0 auto;
+      line-height: 1.6;
+      font-weight: 400;
+    }
+
+    /* ── Section shared ── */
+    .section {
+      margin-bottom: 72px;
+    }
+
+    .section-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 40px;
+    }
+
+    .section-card h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+      color: var(--remote-secondary);
+    }
+
+    .section-card .section-intro {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 28px;
+      max-width: 700px;
+    }
+
+    /* ── Inline code ── */
+    code {
+      font-family: var(--font-mono);
+      font-size: 0.85em;
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.06);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    /* ── Code blocks ── */
+    .code-block {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 20px 24px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      line-height: 1.7;
+      color: var(--text-secondary);
+      overflow-x: auto;
+      margin-top: 16px;
+      white-space: pre-wrap;
+    }
+
+    .code-block .comment  { color: var(--text-muted); }
+    .code-block .keyword  { color: var(--remote-primary); }
+    .code-block .string   { color: var(--plan-primary); }
+    .code-block .prop     { color: var(--research-primary); }
+    .code-block .value    { color: #f59e0b; }
+
+    /* ── Callout ── */
+    .callout {
+      margin-top: 24px;
+      padding: 20px 24px;
+      border-radius: 10px;
+      background: linear-gradient(160deg, rgba(6, 182, 212, 0.06) 0%, rgba(15, 20, 35, 0.6) 100%);
+      border: 1px solid rgba(6, 182, 212, 0.15);
+      border-left: 3px solid var(--remote-primary);
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .callout strong {
+      color: var(--remote-primary);
+    }
+
+    /* ── Feature list ── */
+    .feature-list {
+      list-style: none;
+      margin-top: 16px;
+    }
+
+    .feature-list li {
+      position: relative;
+      padding: 6px 0 6px 20px;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .feature-list li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 14px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--remote-primary);
+      opacity: 0.7;
+    }
+
+    /* ── Setup grid ── */
+    .setup-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .setup-card {
+      padding: 24px 20px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .setup-card .setup-label {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 6px;
+    }
+
+    .setup-card.sc-session .setup-label {
+      color: var(--remote-primary);
+      background: var(--remote-glow);
+    }
+    .setup-card.sc-session { border-top: 3px solid var(--remote-primary); }
+
+    .setup-card.sc-persist .setup-label {
+      color: var(--remote-secondary);
+      background: rgba(34, 211, 238, 0.12);
+    }
+    .setup-card.sc-persist { border-top: 3px solid var(--remote-secondary); }
+
+    .setup-card.sc-server .setup-label {
+      color: var(--research-primary);
+      background: var(--research-glow);
+    }
+    .setup-card.sc-server { border-top: 3px solid var(--research-primary); }
+
+    .setup-card h4 {
+      font-size: 0.92rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: var(--text-primary);
+    }
+
+    .setup-card p {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .setup-card .code-block {
+      margin-top: 12px;
+      padding: 14px 16px;
+      font-size: 0.75rem;
+    }
+
+    /* ── Security strategy cards ── */
+    .strategy-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .strategy-card {
+      padding: 28px 24px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .strategy-card .strat-label {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 6px;
+    }
+
+    .strategy-card.st-server .strat-label {
+      color: var(--remote-primary);
+      background: var(--remote-glow);
+    }
+    .strategy-card.st-server { border-top: 3px solid var(--remote-primary); }
+
+    .strategy-card.st-sandbox .strat-label {
+      color: var(--plan-primary);
+      background: var(--plan-glow);
+    }
+    .strategy-card.st-sandbox { border-top: 3px solid var(--plan-primary); }
+
+    .strategy-card.st-proxy .strat-label {
+      color: var(--research-primary);
+      background: var(--research-glow);
+    }
+    .strategy-card.st-proxy { border-top: 3px solid var(--research-primary); }
+
+    .strategy-card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--text-primary);
+    }
+
+    .strategy-card p {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.55;
+      margin-bottom: 12px;
+    }
+
+    .strategy-card .strat-details {
+      list-style: none;
+    }
+
+    .strategy-card .strat-details li {
+      position: relative;
+      padding: 4px 0 4px 16px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .strategy-card .strat-details li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 11px;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--text-muted);
+      opacity: 0.5;
+    }
+
+    /* ── Comparison table ── */
+    .compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      font-size: 0.85rem;
+    }
+
+    .compare-table th {
+      text-align: left;
+      padding: 12px 16px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border-subtle);
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .compare-table th:first-child {
+      border-radius: 8px 0 0 0;
+    }
+
+    .compare-table th:last-child {
+      border-radius: 0 8px 0 0;
+    }
+
+    .compare-table td {
+      padding: 12px 16px;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border-subtle);
+      line-height: 1.5;
+    }
+
+    .compare-table td:first-child {
+      font-weight: 600;
+      color: var(--text-primary);
+      white-space: nowrap;
+    }
+
+    .compare-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .compare-table tbody tr:hover {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    /* ── vs grid ── */
+    .vs-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .vs-card {
+      padding: 24px 22px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .vs-card.vs-rc {
+      border-top: 3px solid var(--remote-primary);
+    }
+
+    .vs-card.vs-oc {
+      border-top: 3px solid var(--text-muted);
+    }
+
+    .vs-card h4 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+    }
+
+    .vs-card.vs-rc h4 { color: var(--remote-primary); }
+
+    .vs-card .vs-items {
+      list-style: none;
+    }
+
+    .vs-card .vs-items li {
+      padding: 6px 0;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .vs-card .vs-items li strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    /* ── Sources section ── */
+    .sources-list {
+      list-style: none;
+      margin-top: 16px;
+    }
+
+    .sources-list li {
+      padding: 8px 0;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .sources-list li a {
+      color: var(--remote-primary);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(6, 182, 212, 0.3);
+      transition: border-color 0.2s ease;
+    }
+
+    .sources-list li a:hover {
+      border-bottom-color: var(--remote-primary);
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 700px) {
+      .setup-grid { grid-template-columns: 1fr; }
+      .strategy-grid { grid-template-columns: 1fr; }
+      .vs-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 600px) {
+      .page-wrapper {
+        padding: 40px 20px 60px;
+      }
+
+      .section-card {
+        padding: 28px 20px;
+      }
+
+      .compare-table {
+        font-size: 0.78rem;
+      }
+
+      .compare-table th,
+      .compare-table td {
+        padding: 10px 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-wrapper">
+
+  <!-- Header -->
+  <header>
+    <div class="badge">Remote Access</div>
+    <h1>Claude Code Remote Control</h1>
+    <p class="subtitle">
+      Control Claude Code from your phone or any browser&hairsp;&mdash;&hairsp;send prompts, approve permissions, and run agents on remote servers without your laptop.
+    </p>
+  </header>
+
+  <!-- Section 1: What Remote Control Is -->
+  <div class="section">
+    <div class="section-card">
+      <h2>What Remote Control Is</h2>
+      <p class="section-intro">
+        <code>claude rc</code> opens a secure connection through Anthropic&rsquo;s servers. Once active, you can send prompts from the Claude mobile app or web interface directly into your terminal session.
+      </p>
+
+      <ul class="feature-list">
+        <li>The session inherits your full local config: skills, MCP servers, plan mode, permission settings</li>
+        <li>Messages from the phone appear instantly in the terminal</li>
+        <li>Permissions can be approved from mobile when not using <code>--dangerously-skip-permissions</code></li>
+      </ul>
+
+      <div class="callout">
+        <strong>Replaces the workaround:</strong> No more tmux + Tailscale + Terminus. One built-in command gives you mobile access to your full Claude Code environment.
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 2: Setup -->
+  <div class="section">
+    <div class="section-card">
+      <h2>Setup</h2>
+      <p class="section-intro">
+        Three ways to enable remote control, from one-off to always-on.
+      </p>
+
+      <div class="setup-grid">
+        <div class="setup-card sc-session">
+          <span class="setup-label">Per-Session</span>
+          <h4>Quick Start</h4>
+          <p>Run once to enable for the current session only.</p>
+          <div class="code-block">claude rc</div>
+          <p style="margin-top: 10px; font-size: 0.78rem; color: var(--text-muted);">Or type <code>/remote-control</code> inside an active session.</p>
+        </div>
+        <div class="setup-card sc-persist">
+          <span class="setup-label">Persistent</span>
+          <h4>All Sessions</h4>
+          <p>Enable once in config, active for every future session.</p>
+          <div class="code-block"><span class="comment"># Inside Claude Code:</span>
+/config
+<span class="comment"># Search "remote control"</span>
+<span class="comment"># Set to true</span></div>
+        </div>
+        <div class="setup-card sc-server">
+          <span class="setup-label">Remote Server</span>
+          <h4>Always-On Agent</h4>
+          <p>SSH into a VPS, run in tmux, detach. The session stays alive 24/7.</p>
+          <div class="code-block">ssh your-server
+tmux
+claude --dangerously-skip-permissions
+/remote-control
+<span class="comment"># Detach: Ctrl+B :detach</span></div>
+        </div>
+      </div>
+
+      <div class="callout">
+        <strong>On the client side:</strong> Open the Claude app (mobile or web) &rarr; go to the Code tab &rarr; pick the session. Messages sent from the phone appear instantly in the terminal.
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 3: Security Strategies -->
+  <div class="section">
+    <div class="section-card">
+      <h2>Three Security Strategies</h2>
+      <p class="section-intro">
+        Remote sessions need security boundaries. Three approaches, each with a different trade-off between convenience and control.
+      </p>
+
+      <div class="strategy-grid">
+        <div class="strategy-card st-server">
+          <span class="strat-label">Isolation</span>
+          <h3>Remote Server</h3>
+          <p>Deploy Claude Code on a disposable VPS. Even with <code>--dangerously-skip-permissions</code>, damage is confined to the server.</p>
+          <ul class="strat-details">
+            <li>Install MCP servers for 24/7 background tasks</li>
+            <li>Your laptop can be off entirely</li>
+            <li>If compromised, nuke and re-spin the server</li>
+            <li>Example: $3.49/mo Hetzner instance</li>
+          </ul>
+        </div>
+        <div class="strategy-card st-sandbox">
+          <span class="strat-label">Lockdown</span>
+          <h3>Sandboxing</h3>
+          <p>Configure <code>settings.local.json</code> to create a zero-write research environment.</p>
+          <ul class="strat-details">
+            <li>URL allowlist (e.g., arxiv, Google Scholar)</li>
+            <li>Deny edit, write, and bash tools</li>
+            <li>No permission prompts needed</li>
+            <li>Claude can fetch but cannot modify anything</li>
+          </ul>
+        </div>
+        <div class="strategy-card st-proxy">
+          <span class="strat-label">Filtering</span>
+          <h3>Proxy</h3>
+          <p>A local HTTP proxy filters network access at the domain level while keeping bash and curl available.</p>
+          <ul class="strat-details">
+            <li>Deny <code>WebFetch</code> and <code>WebSearch</code> (they bypass the proxy)</li>
+            <li>Set <code>httpProxyPort</code> in settings</li>
+            <li>Node.js proxy with domain allowlist</li>
+            <li><code>api.anthropic.com</code> must be allowed</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Comparison table -->
+      <table class="compare-table" style="margin-top: 32px;">
+        <thead>
+          <tr>
+            <th>Strategy</th>
+            <th>Network Control</th>
+            <th>File System</th>
+            <th>Best For</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Remote Server</td>
+            <td>Full (isolated machine)</td>
+            <td>Full access on server</td>
+            <td>Always-on agents, disposable environments</td>
+          </tr>
+          <tr>
+            <td>Sandboxing</td>
+            <td>URL allowlist</td>
+            <td>Read-only</td>
+            <td>Research-only agents, zero-write environments</td>
+          </tr>
+          <tr>
+            <td>Proxy</td>
+            <td>Domain-level filtering</td>
+            <td>Full access</td>
+            <td>Agents that need bash but restricted network</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Section 4: Sandbox Config Example -->
+  <div class="section">
+    <div class="section-card">
+      <h2>Sandbox Configuration Example</h2>
+      <p class="section-intro">
+        A minimal <code>settings.local.json</code> that creates a locked-down research agent.
+      </p>
+
+      <div class="code-block">
+<span class="comment">// .claude/settings.local.json</span>
+{
+  <span class="prop">"sandbox"</span>: { <span class="prop">"enabled"</span>: <span class="value">true</span> },
+  <span class="prop">"permissions"</span>: { <span class="prop">"defaultMode"</span>: <span class="string">"dontAsk"</span> },
+  <span class="prop">"allowedUrls"</span>: [
+    <span class="string">"arxiv.org"</span>,
+    <span class="string">"scholar.google.com"</span>,
+    <span class="string">"pubmed.ncbi.nlm.nih.gov"</span>
+  ],
+  <span class="prop">"deny"</span>: [<span class="string">"edit"</span>, <span class="string">"write"</span>, <span class="string">"bash"</span>]
+}</div>
+
+      <div class="callout">
+        <strong>Result:</strong> Claude can read files and fetch from allowed URLs, but cannot modify your file system or run shell commands. No permission prompts appear because <code>defaultMode: "dontAsk"</code> auto-denies anything not explicitly allowed.
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 5: Remote Control vs OpenClaw -->
+  <div class="section">
+    <div class="section-card">
+      <h2>Remote Control vs OpenClaw</h2>
+      <p class="section-intro">
+        Remote control is passive (you prompt it). OpenClaw is proactive (it can schedule tasks and push notifications).
+      </p>
+
+      <div class="vs-grid">
+        <div class="vs-card vs-rc">
+          <h4>Remote Control</h4>
+          <ul class="vs-items">
+            <li><strong>Interaction:</strong> You send prompts, Claude executes</li>
+            <li><strong>Setup:</strong> Built-in &mdash; <code>claude rc</code></li>
+            <li><strong>Config:</strong> Inherits full local environment</li>
+            <li><strong>Scheduling:</strong> None (manual prompts only)</li>
+            <li><strong>Notifications:</strong> Not yet supported</li>
+          </ul>
+        </div>
+        <div class="vs-card vs-oc">
+          <h4>OpenClaw</h4>
+          <ul class="vs-items">
+            <li><strong>Interaction:</strong> Proactive &mdash; scheduled tasks, auto-triggers</li>
+            <li><strong>Setup:</strong> Separate tool installation</li>
+            <li><strong>Config:</strong> Independent configuration</li>
+            <li><strong>Scheduling:</strong> Cron-like scheduled tasks</li>
+            <li><strong>Notifications:</strong> Push notifications to phone</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="callout">
+        <strong>Bottom line:</strong> For on-demand mobile access to your Claude Code environment (skills, MCP servers, project context), remote control already covers most use cases. Anthropic is expected to add hooks for phone notifications during remote sessions, which would close most of the gap.
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 6: Source -->
+  <div class="section">
+    <div class="section-card">
+      <h2>Source</h2>
+      <ul class="sources-list">
+        <li><a href="https://www.youtube.com/watch?v=y3xzYwxQuHc" target="_blank" rel="noopener">Anthropic Just Dropped the Feature Everyone Asked For</a> &mdash; Ray Amjad (2026-02-25, 9 min)</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<!-- Source attribution bottom-left -->
+<div class="source-attribution">
+  Ray Amjad<br>
+  <a href="https://www.youtube.com/watch?v=y3xzYwxQuHc" target="_blank" rel="noopener">YouTube &mdash; Feb 2026</a>
+</div>
+
+</body>
+</html>
