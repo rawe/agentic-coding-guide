@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claude Code Reference</title>
+  <link rel="stylesheet" href="css/theme.css">
+  <style>
+    /* ── Background image & overlay ── */
+    body {
+      background-image: url('assets/bg-dark-abstract.png');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(10, 14, 26, 0.92) 0%,
+        rgba(10, 14, 26, 0.80) 40%,
+        rgba(10, 14, 26, 0.88) 100%
+      );
+      z-index: 0;
+    }
+
+    .page-wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 60px 40px 100px;
+    }
+
+    /* ── Header ── */
+    header {
+      text-align: center;
+      margin-bottom: 64px;
+    }
+
+    .badge {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #22d3ee;
+      background: rgba(34, 211, 238, 0.12);
+      border: 1px solid rgba(34, 211, 238, 0.2);
+      padding: 6px 16px;
+      border-radius: 20px;
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      font-size: clamp(2.2rem, 5vw, 3.4rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, #22d3ee 0%, #a78bfa 50%, #f472b6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      max-width: 640px;
+      margin: 0 auto;
+      line-height: 1.6;
+      font-weight: 400;
+    }
+
+    /* ── TOC ── */
+    .toc {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 56px;
+    }
+
+    .toc a {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-subtle);
+      padding: 6px 14px;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+
+    .toc a:hover {
+      color: #22d3ee;
+      border-color: rgba(34, 211, 238, 0.3);
+      background: rgba(34, 211, 238, 0.06);
+    }
+
+    /* ── Sections ── */
+    .section {
+      margin-bottom: 56px;
+    }
+
+    .section-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 36px 40px;
+    }
+
+    .section-card h2 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      letter-spacing: -0.02em;
+    }
+
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 6px;
+      margin-bottom: 14px;
+    }
+
+    .section-intro {
+      font-size: 0.92rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 24px;
+      max-width: 760px;
+    }
+
+    /* ── Color variants for section labels + h2 ── */
+    .label-cyan { color: #22d3ee; background: rgba(34, 211, 238, 0.12); }
+    .label-fuchsia { color: #e879f9; background: rgba(232, 121, 249, 0.12); }
+    .label-purple { color: #a78bfa; background: rgba(167, 139, 250, 0.12); }
+    .label-pink { color: #f472b6; background: rgba(244, 114, 182, 0.12); }
+    .label-coral { color: #fb923c; background: rgba(251, 146, 60, 0.12); }
+    .label-green { color: #34d399; background: rgba(52, 211, 153, 0.12); }
+    .label-violet { color: #818cf8; background: rgba(129, 140, 248, 0.12); }
+    .label-amber { color: #fbbf24; background: rgba(251, 191, 36, 0.12); }
+    .label-sky { color: #38bdf8; background: rgba(56, 189, 248, 0.12); }
+    .label-teal { color: #2dd4bf; background: rgba(45, 212, 191, 0.12); }
+
+    .h2-cyan { color: #22d3ee; }
+    .h2-fuchsia { color: #e879f9; }
+    .h2-purple { color: #a78bfa; }
+    .h2-pink { color: #f472b6; }
+    .h2-coral { color: #fb923c; }
+    .h2-green { color: #34d399; }
+    .h2-violet { color: #818cf8; }
+    .h2-amber { color: #fbbf24; }
+    .h2-sky { color: #38bdf8; }
+    .h2-teal { color: #2dd4bf; }
+
+    /* ── Inline code ── */
+    code {
+      font-family: var(--font-mono);
+      font-size: 0.84em;
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.06);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    /* ── Code blocks ── */
+    .code-block {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 18px 22px;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      line-height: 1.7;
+      color: var(--text-secondary);
+      overflow-x: auto;
+      margin-top: 14px;
+      white-space: pre-wrap;
+    }
+
+    .code-block .comment { color: var(--text-muted); }
+    .code-block .keyword { color: #38bdf8; }
+    .code-block .string { color: #34d399; }
+    .code-block .flag { color: #fbbf24; }
+    .code-block .cmd { color: #a78bfa; }
+    .code-block .file { color: #22d3ee; }
+    .code-block .val { color: #f472b6; }
+
+    /* ── Info grid (2-col) ── */
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .info-card {
+      padding: 20px 22px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .info-card h4 {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .info-card p, .info-card li {
+      font-size: 0.84rem;
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+
+    .info-card ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .info-card ul li {
+      padding: 3px 0 3px 16px;
+      position: relative;
+    }
+
+    .info-card ul li::before {
+      content: '\2022';
+      position: absolute;
+      left: 0;
+      color: var(--text-muted);
+    }
+
+    /* ── Mini table ── */
+    .mini-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+      font-size: 0.82rem;
+    }
+
+    .mini-table th {
+      text-align: left;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .mini-table td {
+      padding: 10px 14px;
+      color: var(--text-secondary);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+      vertical-align: top;
+    }
+
+    .mini-table td:first-child {
+      color: var(--text-primary);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .mini-table td code {
+      font-size: 0.78em;
+    }
+
+    .mini-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* ── Callout ── */
+    .callout {
+      margin-top: 20px;
+      padding: 18px 22px;
+      border-radius: 10px;
+      font-size: 0.86rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .callout strong { font-weight: 700; }
+
+    .callout-cyan {
+      background: linear-gradient(160deg, rgba(34, 211, 238, 0.06) 0%, rgba(15, 20, 35, 0.6) 100%);
+      border: 1px solid rgba(34, 211, 238, 0.15);
+      border-left: 3px solid #22d3ee;
+    }
+    .callout-cyan strong { color: #22d3ee; }
+
+    .callout-purple {
+      background: linear-gradient(160deg, rgba(167, 139, 250, 0.06) 0%, rgba(15, 20, 35, 0.6) 100%);
+      border: 1px solid rgba(167, 139, 250, 0.15);
+      border-left: 3px solid #a78bfa;
+    }
+    .callout-purple strong { color: #a78bfa; }
+
+    .callout-green {
+      background: linear-gradient(160deg, rgba(52, 211, 153, 0.06) 0%, rgba(15, 20, 35, 0.6) 100%);
+      border: 1px solid rgba(52, 211, 153, 0.15);
+      border-left: 3px solid #34d399;
+    }
+    .callout-green strong { color: #34d399; }
+
+    .callout-amber {
+      background: linear-gradient(160deg, rgba(251, 191, 36, 0.06) 0%, rgba(15, 20, 35, 0.6) 100%);
+      border: 1px solid rgba(251, 191, 36, 0.15);
+      border-left: 3px solid #fbbf24;
+    }
+    .callout-amber strong { color: #fbbf24; }
+
+    .callout-warn {
+      background: linear-gradient(160deg, rgba(240, 110, 110, 0.05) 0%, rgba(15, 20, 35, 0.6) 100%);
+      border: 1px solid rgba(240, 110, 110, 0.15);
+      border-left: 3px solid var(--warn);
+    }
+    .callout-warn strong { color: var(--warn); }
+
+    /* ── Layer stack ── */
+    .layer-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 18px;
+    }
+
+    .layer-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 18px;
+      border-radius: 10px;
+      border: 1px solid var(--border-subtle);
+      font-size: 0.84rem;
+    }
+
+    .layer-row .lr-num {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 700;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .layer-row .lr-name {
+      font-weight: 600;
+      color: var(--text-primary);
+      min-width: 140px;
+    }
+
+    .layer-row .lr-desc {
+      color: var(--text-muted);
+      font-size: 0.82rem;
+    }
+
+    .layer-row .lr-scope {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-left: auto;
+      white-space: nowrap;
+    }
+
+    /* layer colors */
+    .layer-row:nth-child(1) { background: linear-gradient(160deg, rgba(232, 121, 249, 0.06) 0%, rgba(15, 20, 35, 0.4) 100%); }
+    .layer-row:nth-child(1) .lr-num { background: rgba(232, 121, 249, 0.15); color: #e879f9; border: 1.5px solid #e879f9; }
+    .layer-row:nth-child(2) { background: linear-gradient(160deg, rgba(232, 121, 249, 0.04) 0%, rgba(15, 20, 35, 0.4) 100%); }
+    .layer-row:nth-child(2) .lr-num { background: rgba(232, 121, 249, 0.12); color: #e879f9; border: 1.5px solid rgba(232, 121, 249, 0.6); }
+    .layer-row:nth-child(3) { background: linear-gradient(160deg, rgba(167, 139, 250, 0.05) 0%, rgba(15, 20, 35, 0.4) 100%); }
+    .layer-row:nth-child(3) .lr-num { background: rgba(167, 139, 250, 0.12); color: #a78bfa; border: 1.5px solid #a78bfa; }
+    .layer-row:nth-child(4) { background: linear-gradient(160deg, rgba(56, 189, 248, 0.05) 0%, rgba(15, 20, 35, 0.4) 100%); }
+    .layer-row:nth-child(4) .lr-num { background: rgba(56, 189, 248, 0.12); color: #38bdf8; border: 1.5px solid #38bdf8; }
+    .layer-row:nth-child(5) { background: linear-gradient(160deg, rgba(56, 189, 248, 0.04) 0%, rgba(15, 20, 35, 0.4) 100%); }
+    .layer-row:nth-child(5) .lr-num { background: rgba(56, 189, 248, 0.1); color: #38bdf8; border: 1.5px solid rgba(56, 189, 248, 0.6); }
+    .layer-row:nth-child(6) { background: linear-gradient(160deg, rgba(34, 211, 238, 0.04) 0%, rgba(15, 20, 35, 0.4) 100%); }
+    .layer-row:nth-child(6) .lr-num { background: rgba(34, 211, 238, 0.1); color: #22d3ee; border: 1.5px solid rgba(34, 211, 238, 0.6); }
+
+    /* ── Hook event grid ── */
+    .hook-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .hook-chip {
+      padding: 10px 14px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-subtle);
+      font-size: 0.8rem;
+    }
+
+    .hook-chip .hc-name {
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      display: block;
+      margin-bottom: 3px;
+    }
+
+    .hook-chip .hc-when {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+    }
+
+    .hook-chip.can-block {
+      border-left: 2px solid #f472b6;
+    }
+
+    /* ── Subagent cards ── */
+    .agent-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .agent-card {
+      padding: 18px 20px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-subtle);
+      border-top: 2px solid;
+    }
+
+    .agent-card .ac-name {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .agent-card .ac-model {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .agent-card .ac-desc {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      line-height: 1.45;
+    }
+
+    /* ── Comparison table ── */
+    .compare-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .compare-col {
+      padding: 22px 24px;
+      border-radius: 12px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .compare-col h4 {
+      font-size: 0.92rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .compare-col ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .compare-col ul li {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      padding: 3px 0 3px 16px;
+      position: relative;
+    }
+
+    .compare-col ul li::before {
+      content: '\2022';
+      position: absolute;
+      left: 0;
+      color: var(--text-muted);
+    }
+
+    .compare-col.sub {
+      background: linear-gradient(160deg, rgba(251, 146, 60, 0.04) 0%, rgba(15, 20, 35, 0.5) 100%);
+      border-left: 3px solid #fb923c;
+    }
+    .compare-col.sub h4 { color: #fb923c; }
+
+    .compare-col.team {
+      background: linear-gradient(160deg, rgba(52, 211, 153, 0.04) 0%, rgba(15, 20, 35, 0.5) 100%);
+      border-left: 3px solid #34d399;
+    }
+    .compare-col.team h4 { color: #34d399; }
+
+    /* ── Permission flow ── */
+    .perm-flow {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+
+    .perm-step {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: 1px solid;
+    }
+
+    .perm-step.deny-step { color: var(--warn); background: rgba(240, 110, 110, 0.08); border-color: rgba(240, 110, 110, 0.2); }
+    .perm-step.ask-step { color: #fbbf24; background: rgba(251, 191, 36, 0.08); border-color: rgba(251, 191, 36, 0.2); }
+    .perm-step.allow-step { color: #34d399; background: rgba(52, 211, 153, 0.08); border-color: rgba(52, 211, 153, 0.2); }
+
+    .perm-arrow {
+      color: var(--text-muted);
+      font-size: 1rem;
+    }
+
+    /* ── Anti-pattern list ── */
+    .antipattern {
+      margin-top: 12px;
+      padding: 18px 22px;
+      border-radius: 10px;
+      border: 1px solid var(--border-subtle);
+      background: linear-gradient(160deg, rgba(240, 110, 110, 0.04) 0%, rgba(15, 20, 35, 0.5) 100%);
+      border-left: 3px solid var(--warn);
+    }
+
+    .antipattern + .antipattern { margin-top: 10px; }
+
+    .antipattern h4 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .antipattern p {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .antipattern .fix {
+      color: #34d399;
+      margin-top: 4px;
+    }
+
+    /* ── Source attribution ── */
+    .source-attribution {
+      position: fixed;
+      bottom: 20px;
+      left: 24px;
+      z-index: 10;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      opacity: 0.6;
+      transition: opacity 0.3s ease;
+    }
+
+    .source-attribution:hover { opacity: 1; }
+
+    .source-attribution a {
+      color: var(--text-muted);
+      text-decoration: none;
+      border: none;
+    }
+
+    .source-attribution a:hover { color: var(--text-secondary); }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .hook-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 700px) {
+      .info-grid { grid-template-columns: 1fr; }
+      .compare-grid { grid-template-columns: 1fr; }
+      .hook-grid { grid-template-columns: 1fr; }
+      .layer-row { flex-direction: column; align-items: flex-start; gap: 4px; }
+      .layer-row .lr-name { min-width: auto; }
+      .layer-row .lr-scope { margin-left: 0; }
+    }
+
+    @media (max-width: 600px) {
+      .page-wrapper { padding: 40px 20px 80px; }
+      .section-card { padding: 28px 20px; }
+      .toc { gap: 6px; }
+      .toc a { padding: 5px 10px; font-size: 0.68rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-wrapper">
+
+  <!-- Header -->
+  <header>
+    <div class="badge">Quick Reference</div>
+    <h1>Claude Code Reference</h1>
+    <p class="subtitle">
+      Everything you need to use Claude Code effectively &mdash; from installation to agent teams, in one page.
+    </p>
+  </header>
+
+  <!-- TOC -->
+  <nav class="toc">
+    <a href="#overview">Overview</a>
+    <a href="#memory">Memory</a>
+    <a href="#skills">Skills</a>
+    <a href="#hooks">Hooks</a>
+    <a href="#subagents">Subagents</a>
+    <a href="#teams">Teams</a>
+    <a href="#mcp">MCP</a>
+    <a href="#settings">Settings</a>
+    <a href="#cli">CLI</a>
+    <a href="#practices">Practices</a>
+  </nav>
+
+  <!-- ═══ 1. Overview & Installation ═══ -->
+  <div class="section" id="overview">
+    <div class="section-card">
+      <span class="section-label label-cyan">01</span>
+      <h2 class="h2-cyan">Overview &amp; Installation</h2>
+      <p class="section-intro">
+        AI coding agent that understands entire codebases. Terminal-native, editor-integrated, composable via Unix pipes.
+      </p>
+
+      <div class="info-grid">
+        <div class="info-card">
+          <h4>Surfaces</h4>
+          <ul>
+            <li><strong>Terminal CLI</strong> &mdash; primary, full-featured</li>
+            <li><strong>VS Code</strong> &mdash; inline diffs, @-mentions, plan review</li>
+            <li><strong>JetBrains</strong> &mdash; diff viewer, selection sharing</li>
+            <li><strong>Desktop app</strong> &mdash; multiple sessions, cloud sessions</li>
+            <li><strong>Web</strong> (claude.ai/code) &mdash; no local setup, parallel tasks</li>
+          </ul>
+        </div>
+        <div class="info-card">
+          <h4>Key Capabilities</h4>
+          <ul>
+            <li>Build features and fix bugs from natural language</li>
+            <li>Create commits and PRs directly via git</li>
+            <li>Connect external tools via MCP</li>
+            <li>Run agent teams &mdash; parallel coordination</li>
+            <li>Pipe, script, automate with <code>claude -p</code></li>
+            <li><code>/teleport</code> sessions across surfaces</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="code-block">
+<span class="comment"># Install (auto-updates)</span>
+<span class="cmd">curl</span> <span class="flag">-fsSL</span> https://claude.ai/install.sh | <span class="cmd">bash</span>    <span class="comment"># macOS / Linux / WSL</span>
+<span class="cmd">irm</span> https://claude.ai/install.ps1 | <span class="cmd">iex</span>            <span class="comment"># Windows PowerShell</span>
+
+<span class="comment"># Homebrew (manual updates)</span>
+<span class="cmd">brew</span> install <span class="flag">--cask</span> claude-code
+
+<span class="comment"># Start</span>
+<span class="cmd">cd</span> your-project && <span class="cmd">claude</span></div>
+    </div>
+  </div>
+
+  <!-- ═══ 2. Memory System ═══ -->
+  <div class="section" id="memory">
+    <div class="section-card">
+      <span class="section-label label-fuchsia">02</span>
+      <h2 class="h2-fuchsia">Memory System (CLAUDE.md)</h2>
+      <p class="section-intro">
+        Two types of persistent memory: auto memory (Claude saves context automatically) and CLAUDE.md files (you write and maintain). Both loaded at session start.
+      </p>
+
+      <h3 style="font-size: 1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 12px;">Hierarchy (highest to lowest specificity)</h3>
+      <div class="layer-stack">
+        <div class="layer-row">
+          <div class="lr-num">1</div>
+          <div class="lr-name">Managed policy</div>
+          <div class="lr-desc">Org-wide CLAUDE.md</div>
+          <div class="lr-scope">All users</div>
+        </div>
+        <div class="layer-row">
+          <div class="lr-num">2</div>
+          <div class="lr-name">Project CLAUDE.md</div>
+          <div class="lr-desc"><code>./CLAUDE.md</code> or <code>.claude/CLAUDE.md</code></div>
+          <div class="lr-scope">Team (git)</div>
+        </div>
+        <div class="layer-row">
+          <div class="lr-num">3</div>
+          <div class="lr-name">Project rules</div>
+          <div class="lr-desc"><code>.claude/rules/*.md</code> with optional path globs</div>
+          <div class="lr-scope">Team (git)</div>
+        </div>
+        <div class="layer-row">
+          <div class="lr-num">4</div>
+          <div class="lr-name">User CLAUDE.md</div>
+          <div class="lr-desc"><code>~/.claude/CLAUDE.md</code></div>
+          <div class="lr-scope">All projects</div>
+        </div>
+        <div class="layer-row">
+          <div class="lr-num">5</div>
+          <div class="lr-name">Project local</div>
+          <div class="lr-desc"><code>./CLAUDE.local.md</code> (gitignored)</div>
+          <div class="lr-scope">Just you</div>
+        </div>
+        <div class="layer-row">
+          <div class="lr-num">6</div>
+          <div class="lr-name">Auto memory</div>
+          <div class="lr-desc"><code>~/.claude/projects/&lt;project&gt;/memory/</code></div>
+          <div class="lr-scope">Just you</div>
+        </div>
+      </div>
+
+      <div class="info-grid" style="margin-top: 24px;">
+        <div class="info-card">
+          <h4>Imports</h4>
+          <p>Use <code>@path/to/file</code> to include external content. Relative and absolute paths supported. Recursive imports up to 5 hops. Not evaluated inside code blocks.</p>
+          <div class="code-block" style="font-size: 0.74rem; padding: 14px 18px;">
+<span class="comment"># In CLAUDE.md:</span>
+See <span class="file">@README</span> for project overview.
+<span class="file">@docs/git-instructions.md</span>
+<span class="file">@~/.claude/my-project-rules.md</span></div>
+        </div>
+        <div class="info-card">
+          <h4>Modular Rules</h4>
+          <p>All <code>.md</code> files in <code>.claude/rules/</code> auto-loaded. Use YAML frontmatter with <code>paths</code> for file-scoped rules. User-level rules at <code>~/.claude/rules/</code>.</p>
+          <div class="code-block" style="font-size: 0.74rem; padding: 14px 18px;">
+<span class="comment"># .claude/rules/api.md</span>
+<span class="val">---</span>
+<span class="keyword">paths</span>:
+  - <span class="string">"src/api/**/*.ts"</span>
+<span class="val">---</span>
+Always validate input with zod.</div>
+        </div>
+      </div>
+
+      <div class="callout callout-purple">
+        <strong>Auto memory:</strong> Enable with <code>CLAUDE_CODE_DISABLE_AUTO_MEMORY=0</code>. MEMORY.md acts as index (first 200 lines loaded). Topic files loaded on demand. Use <code>/memory</code> to edit.
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ 3. Skills ═══ -->
+  <div class="section" id="skills">
+    <div class="section-card">
+      <span class="section-label label-purple">03</span>
+      <h2 class="h2-purple">Skills</h2>
+      <p class="section-intro">
+        Self-contained knowledge packages that extend Claude. Create a SKILL.md with instructions; invoke manually with <code>/skill-name</code> or let Claude auto-trigger by matching the description.
+      </p>
+
+      <div class="info-grid">
+        <div class="info-card">
+          <h4>Skill Locations (priority order)</h4>
+          <ul>
+            <li><strong>Enterprise</strong> &mdash; managed settings (org-wide)</li>
+            <li><strong>Personal</strong> &mdash; <code>~/.claude/skills/&lt;name&gt;/</code></li>
+            <li><strong>Project</strong> &mdash; <code>.claude/skills/&lt;name&gt;/</code></li>
+            <li><strong>Plugin</strong> &mdash; via installed plugin</li>
+          </ul>
+        </div>
+        <div class="info-card">
+          <h4>File Structure</h4>
+          <div class="code-block" style="font-size: 0.74rem; padding: 14px 18px; margin-top: 0;">
+<span class="file">my-skill/</span>
+├── <span class="keyword">SKILL.md</span>          <span class="comment"># Instructions (required)</span>
+├── template.md       <span class="comment"># Template to fill in</span>
+├── examples/
+│   └── sample.md     <span class="comment"># Example output</span>
+└── scripts/
+    └── validate.sh   <span class="comment"># Executable script</span></div>
+        </div>
+      </div>
+
+      <h3 style="font-size: 1rem; font-weight: 700; color: var(--text-primary); margin: 24px 0 12px;">Key Frontmatter Fields</h3>
+      <table class="mini-table">
+        <tr><th>Field</th><th>Purpose</th></tr>
+        <tr><td><code>description</code></td><td>Helps Claude decide when to auto-trigger. Write like a search query.</td></tr>
+        <tr><td><code>argument-hint</code></td><td>Autocomplete hint shown in <code>/</code> menu, e.g. <code>[issue-number]</code></td></tr>
+        <tr><td><code>disable-model-invocation</code></td><td>Only user can invoke (<code>/name</code>), not Claude</td></tr>
+        <tr><td><code>user-invocable: false</code></td><td>Hidden from <code>/</code> menu &mdash; only Claude triggers it</td></tr>
+        <tr><td><code>allowed-tools</code></td><td>Restrict tool access: <code>Read, Grep, Glob</code></td></tr>
+        <tr><td><code>model</code></td><td>Override model: <code>sonnet</code>, <code>haiku</code>, <code>opus</code></td></tr>
+        <tr><td><code>context: fork</code></td><td>Run in forked subagent context (isolated window)</td></tr>
+        <tr><td><code>agent</code></td><td>Agent type when forked: <code>Explore</code>, <code>Plan</code>, <code>general-purpose</code></td></tr>
+      </table>
+
+      <div class="info-grid" style="margin-top: 20px;">
+        <div class="info-card">
+          <h4>String Substitutions</h4>
+          <ul>
+            <li><code>$ARGUMENTS</code> &mdash; all arguments passed</li>
+            <li><code>$ARGUMENTS[N]</code> / <code>$N</code> &mdash; by index</li>
+            <li><code>${CLAUDE_SESSION_ID}</code> &mdash; session ID</li>
+          </ul>
+        </div>
+        <div class="info-card">
+          <h4>Dynamic Context</h4>
+          <p>Use <code>!`command`</code> in SKILL.md body to inject shell command output before the skill content is sent to Claude.</p>
+          <div class="code-block" style="font-size: 0.74rem; padding: 12px 16px; margin-top: 8px;">
+PR diff: <span class="cmd">!`gh pr diff`</span>
+Files: <span class="cmd">!`gh pr diff --name-only`</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ 4. Hooks ═══ -->
+  <div class="section" id="hooks">
+    <div class="section-card">
+      <span class="section-label label-pink">04</span>
+      <h2 class="h2-pink">Hooks</h2>
+      <p class="section-intro">
+        User-defined shell commands or LLM prompts that fire at lifecycle events. Three handler types: <strong>command</strong> (shell script), <strong>prompt</strong> (LLM yes/no), <strong>agent</strong> (multi-turn subagent).
+      </p>
+
+      <h3 style="font-size: 1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 12px;">Lifecycle Events</h3>
+      <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 12px;">Events with pink left border can block execution (exit code 2 = block with error).</p>
+
+      <div class="hook-grid">
+        <div class="hook-chip">
+          <span class="hc-name">SessionStart</span>
+          <span class="hc-when">Session begins/resumes</span>
+        </div>
+        <div class="hook-chip can-block">
+          <span class="hc-name">UserPromptSubmit</span>
+          <span class="hc-when">User submits prompt</span>
+        </div>
+        <div class="hook-chip can-block">
+          <span class="hc-name">PreToolUse</span>
+          <span class="hc-when">Before tool call</span>
+        </div>
+        <div class="hook-chip can-block">
+          <span class="hc-name">PermissionRequest</span>
+          <span class="hc-when">Permission dialog appears</span>
+        </div>
+        <div class="hook-chip">
+          <span class="hc-name">PostToolUse</span>
+          <span class="hc-when">After tool succeeds</span>
+        </div>
+        <div class="hook-chip">
+          <span class="hc-name">PostToolUseFailure</span>
+          <span class="hc-when">After tool fails</span>
+        </div>
+        <div class="hook-chip">
+          <span class="hc-name">Notification</span>
+          <span class="hc-when">Claude sends notification</span>
+        </div>
+        <div class="hook-chip">
+          <span class="hc-name">SubagentStart/Stop</span>
+          <span class="hc-when">Subagent spawned/finished</span>
+        </div>
+        <div class="hook-chip can-block">
+          <span class="hc-name">Stop</span>
+          <span class="hc-when">Claude finishes responding</span>
+        </div>
+        <div class="hook-chip can-block">
+          <span class="hc-name">TeammateIdle</span>
+          <span class="hc-when">Agent about to idle</span>
+        </div>
+        <div class="hook-chip can-block">
+          <span class="hc-name">TaskCompleted</span>
+          <span class="hc-when">Task marked completed</span>
+        </div>
+        <div class="hook-chip">
+          <span class="hc-name">PreCompact</span>
+          <span class="hc-when">Before compaction</span>
+        </div>
+        <div class="hook-chip can-block">
+          <span class="hc-name">ConfigChange</span>
+          <span class="hc-when">Config file changed</span>
+        </div>
+        <div class="hook-chip can-block">
+          <span class="hc-name">WorktreeCreate</span>
+          <span class="hc-when">Worktree created</span>
+        </div>
+        <div class="hook-chip">
+          <span class="hc-name">SessionEnd</span>
+          <span class="hc-when">Session terminates</span>
+        </div>
+      </div>
+
+      <div class="info-grid" style="margin-top: 24px;">
+        <div class="info-card">
+          <h4>Exit Codes</h4>
+          <ul>
+            <li><strong>Exit 0</strong> &mdash; success, proceed; stdout parsed for JSON</li>
+            <li><strong>Exit 2</strong> &mdash; blocking error; stderr fed back</li>
+            <li><strong>Other</strong> &mdash; non-blocking error; continues</li>
+          </ul>
+        </div>
+        <div class="info-card">
+          <h4>Key Features</h4>
+          <ul>
+            <li>Regex matchers filter by tool name, session source</li>
+            <li><code>"async": true</code> &mdash; non-blocking background execution</li>
+            <li><code>CLAUDE_ENV_FILE</code> &mdash; persist env vars from SessionStart</li>
+            <li><code>/hooks</code> &mdash; interactive management menu</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="callout callout-cyan" style="margin-top: 16px;">
+        <strong>PreToolUse decision control:</strong> Output JSON with <code>permissionDecision: "allow|deny|ask"</code>, <code>updatedInput</code> to modify tool parameters, and <code>additionalContext</code> to inform Claude.
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ 5. Subagents ═══ -->
+  <div class="section" id="subagents">
+    <div class="section-card">
+      <span class="section-label label-coral">05</span>
+      <h2 class="h2-coral">Subagents</h2>
+      <p class="section-intro">
+        Specialized AI assistants running in isolated context windows. Each gets its own system prompt, tool access, and permissions. Cannot nest (no subagent-of-subagent).
+      </p>
+
+      <h3 style="font-size: 1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 12px;">Built-in Agents</h3>
+      <div class="agent-grid">
+        <div class="agent-card" style="border-top-color: #22d3ee;">
+          <div class="ac-name">Explore</div>
+          <div class="ac-model">haiku &middot; read-only</div>
+          <div class="ac-desc">File discovery, code search, codebase exploration. Fast and cheap.</div>
+        </div>
+        <div class="agent-card" style="border-top-color: #a78bfa;">
+          <div class="ac-name">Plan</div>
+          <div class="ac-model">inherit &middot; read-only</div>
+          <div class="ac-desc">Codebase research for planning. Returns investigation summaries.</div>
+        </div>
+        <div class="agent-card" style="border-top-color: #fb923c;">
+          <div class="ac-name">general-purpose</div>
+          <div class="ac-model">inherit &middot; all tools</div>
+          <div class="ac-desc">Complex research, multi-step operations. Full tool access.</div>
+        </div>
+        <div class="agent-card" style="border-top-color: #f472b6;">
+          <div class="ac-name">Bash</div>
+          <div class="ac-model">inherit &middot; terminal</div>
+          <div class="ac-desc">Running terminal commands in a separate context window.</div>
+        </div>
+      </div>
+
+      <h3 style="font-size: 1rem; font-weight: 700; color: var(--text-primary); margin: 24px 0 12px;">Custom Subagent Config</h3>
+      <div class="code-block">
+<span class="comment"># .claude/agents/code-reviewer.md</span>
+<span class="val">---</span>
+<span class="keyword">name</span>: code-reviewer
+<span class="keyword">description</span>: Reviews code for quality and best practices
+<span class="keyword">tools</span>: Read, Glob, Grep, Bash
+<span class="keyword">disallowedTools</span>: Write, Edit
+<span class="keyword">model</span>: sonnet
+<span class="keyword">maxTurns</span>: 50
+<span class="keyword">memory</span>: user                 <span class="comment"># persistent across sessions</span>
+<span class="keyword">isolation</span>: worktree           <span class="comment"># git worktree isolation</span>
+<span class="keyword">background</span>: false
+<span class="val">---</span>
+Your system prompt here...</div>
+
+      <div class="callout callout-amber" style="margin-top: 16px;">
+        <strong>Scope priority:</strong> <code>--agents</code> CLI flag &gt; <code>.claude/agents/</code> (project) &gt; <code>~/.claude/agents/</code> (user) &gt; plugin agents. Restrict which agents can be spawned with <code>tools: Task(worker, researcher)</code>.
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ 6. Agent Teams ═══ -->
+  <div class="section" id="teams">
+    <div class="section-card">
+      <span class="section-label label-green">06</span>
+      <h2 class="h2-green">Agent Teams</h2>
+      <p class="section-intro">
+        Multiple Claude Code instances working together. One session leads, others are teammates with their own context windows. <strong>Experimental</strong> &mdash; enable with <code>CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1</code>.
+      </p>
+
+      <div class="info-grid">
+        <div class="info-card">
+          <h4>Architecture</h4>
+          <ul>
+            <li><strong>Team lead</strong> &mdash; main session, creates team, coordinates</li>
+            <li><strong>Teammates</strong> &mdash; separate instances, own context</li>
+            <li><strong>Task list</strong> &mdash; shared work items agents claim</li>
+            <li><strong>Mailbox</strong> &mdash; inter-agent messaging system</li>
+          </ul>
+        </div>
+        <div class="info-card">
+          <h4>Best Use Cases</h4>
+          <ul>
+            <li>Parallel investigation across modules</li>
+            <li>Independent feature ownership</li>
+            <li>Competing hypotheses for debugging</li>
+            <li>Cross-layer work (frontend + backend + tests)</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3 style="font-size: 1rem; font-weight: 700; color: var(--text-primary); margin: 24px 0 12px;">Subagents vs Agent Teams</h3>
+      <div class="compare-grid">
+        <div class="compare-col sub">
+          <h4>Subagents</h4>
+          <ul>
+            <li>Own context window; results return to caller</li>
+            <li>Report back to main agent only</li>
+            <li>Main agent manages all work</li>
+            <li>Lower token cost (summarized returns)</li>
+            <li>Good for: investigation, review, batch</li>
+          </ul>
+        </div>
+        <div class="compare-col team">
+          <h4>Agent Teams</h4>
+          <ul>
+            <li>Fully independent context windows</li>
+            <li>Teammates message each other directly</li>
+            <li>Shared task list, self-coordination</li>
+            <li>Higher token cost (separate instances)</li>
+            <li>Good for: parallel features, multi-layer work</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ 7. MCP ═══ -->
+  <div class="section" id="mcp">
+    <div class="section-card">
+      <span class="section-label label-violet">07</span>
+      <h2 class="h2-violet">MCP (Model Context Protocol)</h2>
+      <p class="section-intro">
+        Open standard for connecting Claude to external tools and data sources. HTTP (recommended for remote), SSE (deprecated), and stdio (local processes).
+      </p>
+
+      <div class="code-block">
+<span class="comment"># Add servers</span>
+<span class="cmd">claude mcp add</span> <span class="flag">--transport http</span> <span class="string">myserver</span> https://example.com/mcp
+<span class="cmd">claude mcp add</span> <span class="string">local-tool</span> <span class="flag">--</span> npx <span class="string">@tool/server</span>
+<span class="cmd">claude mcp add-from-claude-desktop</span>     <span class="comment"># import from Claude Desktop</span>
+<span class="cmd">claude mcp add-json</span> <span class="string">name</span> <span class="string">'{"command": "npx", "args": [...]}'</span>
+
+<span class="comment"># Manage</span>
+<span class="cmd">claude mcp list</span>
+<span class="cmd">claude mcp get</span> <span class="string">name</span>
+<span class="cmd">claude mcp remove</span> <span class="string">name</span>
+<span class="cmd">claude mcp serve</span>              <span class="comment"># use Claude Code as MCP server</span>
+<span class="cmd">/mcp</span>                           <span class="comment"># in-session: status, auth, manage</span></div>
+
+      <div class="info-grid" style="margin-top: 20px;">
+        <div class="info-card">
+          <h4>Scopes</h4>
+          <ul>
+            <li><strong>Local</strong> (default) &mdash; private, in <code>~/.claude.json</code></li>
+            <li><strong>Project</strong> &mdash; shared via <code>.mcp.json</code> (committable)</li>
+            <li><strong>User</strong> &mdash; all projects, in <code>~/.claude.json</code></li>
+          </ul>
+        </div>
+        <div class="info-card">
+          <h4>Features</h4>
+          <ul>
+            <li>OAuth 2.0 authentication for remote servers</li>
+            <li>Env var expansion in <code>.mcp.json</code>: <code>${VAR:-default}</code></li>
+            <li>Tool Search &mdash; auto-enables when tools exceed context budget</li>
+            <li>MCP prompts as commands: <code>/mcp__server__prompt</code></li>
+            <li><code>MAX_MCP_OUTPUT_TOKENS</code> (default 25,000)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ 8. Settings & Permissions ═══ -->
+  <div class="section" id="settings">
+    <div class="section-card">
+      <span class="section-label label-amber">08</span>
+      <h2 class="h2-amber">Settings &amp; Permissions</h2>
+      <p class="section-intro">
+        JSON-based configuration with a clear precedence hierarchy. Permission rules evaluated in order: deny &rarr; ask &rarr; allow (first match wins).
+      </p>
+
+      <h3 style="font-size: 1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 12px;">Settings Precedence</h3>
+      <table class="mini-table">
+        <tr><th>#</th><th>Source</th><th>Location</th></tr>
+        <tr><td>1</td><td>Managed (org)</td><td>System-level managed-settings.json</td></tr>
+        <tr><td>2</td><td>CLI arguments</td><td><code>--model</code>, <code>--permission-mode</code>, etc.</td></tr>
+        <tr><td>3</td><td>Local project</td><td><code>.claude/settings.local.json</code></td></tr>
+        <tr><td>4</td><td>Project</td><td><code>.claude/settings.json</code></td></tr>
+        <tr><td>5</td><td>User</td><td><code>~/.claude/settings.json</code></td></tr>
+      </table>
+
+      <h3 style="font-size: 1rem; font-weight: 700; color: var(--text-primary); margin: 24px 0 12px;">Permission Evaluation</h3>
+      <div class="perm-flow">
+        <span class="perm-step deny-step">deny[]</span>
+        <span class="perm-arrow">&rarr;</span>
+        <span class="perm-step ask-step">ask[]</span>
+        <span class="perm-arrow">&rarr;</span>
+        <span class="perm-step allow-step">allow[]</span>
+        <span class="perm-arrow">&rarr;</span>
+        <span style="font-size: 0.82rem; color: var(--text-muted);">first match wins</span>
+      </div>
+
+      <h3 style="font-size: 1rem; font-weight: 700; color: var(--text-primary); margin: 24px 0 12px;">Rule Syntax</h3>
+      <div class="code-block">
+<span class="keyword">Tool</span>                        <span class="comment"># matches all uses of tool</span>
+<span class="keyword">Tool</span>(<span class="string">specifier</span>)             <span class="comment"># matches specific use</span>
+<span class="keyword">Bash</span>(<span class="string">npm run *</span>)             <span class="comment"># wildcard patterns</span>
+<span class="keyword">Read</span>(<span class="string">./.env</span>)                <span class="comment"># file path</span>
+<span class="keyword">Read</span>(<span class="string">src/**</span>)                <span class="comment"># recursive glob</span>
+<span class="keyword">WebFetch</span>(<span class="string">domain:example.com</span>) <span class="comment"># domain filter</span>
+<span class="keyword">Task</span>(<span class="string">Explore</span>)               <span class="comment"># subagent control</span>
+<span class="keyword">Skill</span>(<span class="string">commit</span>)               <span class="comment"># skill control</span>
+<span class="keyword">mcp__server__tool</span>           <span class="comment"># MCP tool</span></div>
+
+      <h3 style="font-size: 1rem; font-weight: 700; color: var(--text-primary); margin: 24px 0 12px;">Permission Modes</h3>
+      <table class="mini-table">
+        <tr><th>Mode</th><th>Behavior</th></tr>
+        <tr><td>default</td><td>Standard prompts for each tool call</td></tr>
+        <tr><td>acceptEdits</td><td>Auto-accept file edits, prompt for others</td></tr>
+        <tr><td>plan</td><td>Read-only analysis, no writes</td></tr>
+        <tr><td>dontAsk</td><td>Auto-deny unless pre-approved in allow[]</td></tr>
+        <tr><td>bypassPermissions</td><td>Skip all checks (sandboxed containers only)</td></tr>
+      </table>
+
+      <div class="callout callout-amber" style="margin-top: 16px;">
+        <strong>Sandbox mode:</strong> OS-level isolation for Bash. Enable with <code>"sandbox": {"enabled": true}</code>. Auto-allow bash when sandboxed with <code>autoAllowBashIfSandboxed</code>. Restrict network with <code>allowedDomains</code>.
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ 9. CLI Reference ═══ -->
+  <div class="section" id="cli">
+    <div class="section-card">
+      <span class="section-label label-sky">09</span>
+      <h2 class="h2-sky">CLI Reference</h2>
+      <p class="section-intro">
+        Core commands and flags for terminal usage. Composable with pipes, loops, and scripts.
+      </p>
+
+      <div class="info-grid">
+        <div class="info-card">
+          <h4>Core Commands</h4>
+          <div class="code-block" style="font-size: 0.74rem; padding: 14px 18px; margin-top: 8px;">
+<span class="cmd">claude</span>                    <span class="comment"># interactive REPL</span>
+<span class="cmd">claude</span> <span class="string">"query"</span>            <span class="comment"># start with prompt</span>
+<span class="cmd">claude</span> <span class="flag">-p</span> <span class="string">"query"</span>         <span class="comment"># print mode (non-interactive)</span>
+<span class="cmd">claude</span> <span class="flag">-c</span>                 <span class="comment"># continue last conversation</span>
+<span class="cmd">claude</span> <span class="flag">-r</span> <span class="string">"id"</span> <span class="string">"query"</span>  <span class="comment"># resume specific session</span>
+<span class="cmd">claude update</span>             <span class="comment"># update to latest</span>
+<span class="cmd">claude agents</span>             <span class="comment"># list subagents</span>
+<span class="cmd">claude mcp</span>                <span class="comment"># configure MCP</span></div>
+        </div>
+        <div class="info-card">
+          <h4>Session Commands</h4>
+          <div class="code-block" style="font-size: 0.74rem; padding: 14px 18px; margin-top: 8px;">
+<span class="cmd">/clear</span>       <span class="comment"># reset context window</span>
+<span class="cmd">/compact</span>     <span class="comment"># compress context (+ focus)</span>
+<span class="cmd">/rewind</span>      <span class="comment"># restore previous state</span>
+<span class="cmd">/rename</span>      <span class="comment"># rename session</span>
+<span class="cmd">/teleport</span>    <span class="comment"># move session across surfaces</span>
+<span class="cmd">/desktop</span>     <span class="comment"># hand off to desktop app</span>
+<span class="cmd">/memory</span>      <span class="comment"># edit memory files</span>
+<span class="cmd">/hooks</span>       <span class="comment"># manage hooks</span>
+<span class="cmd">/mcp</span>         <span class="comment"># MCP status &amp; management</span>
+<span class="cmd">/init</span>        <span class="comment"># generate starter CLAUDE.md</span></div>
+        </div>
+      </div>
+
+      <h3 style="font-size: 1rem; font-weight: 700; color: var(--text-primary); margin: 24px 0 12px;">Key Flags</h3>
+      <table class="mini-table">
+        <tr><th>Flag</th><th>Purpose</th></tr>
+        <tr><td><code>--model</code></td><td>Set model (sonnet, opus, haiku, or full ID)</td></tr>
+        <tr><td><code>--permission-mode</code></td><td>Start in specific permission mode</td></tr>
+        <tr><td><code>--allowedTools</code></td><td>Whitelist specific tools for this session</td></tr>
+        <tr><td><code>--max-turns</code></td><td>Limit agentic turns (good for batch scripts)</td></tr>
+        <tr><td><code>--max-budget-usd</code></td><td>Spending cap for the session</td></tr>
+        <tr><td><code>--output-format</code></td><td><code>text</code>, <code>json</code>, <code>stream-json</code></td></tr>
+        <tr><td><code>--json-schema</code></td><td>Structured output with validation (print mode)</td></tr>
+        <tr><td><code>--worktree</code></td><td>Isolated git worktree for the session</td></tr>
+        <tr><td><code>--agent</code></td><td>Specify which agent to use</td></tr>
+        <tr><td><code>--add-dir</code></td><td>Additional working directories</td></tr>
+        <tr><td><code>--chrome</code></td><td>Enable Chrome browser integration</td></tr>
+        <tr><td><code>--remote</code></td><td>Create web session on claude.ai</td></tr>
+        <tr><td><code>--debug</code></td><td>Debug mode with category filtering</td></tr>
+        <tr><td><code>--fallback-model</code></td><td>Auto-fallback on overload</td></tr>
+      </table>
+
+      <h3 style="font-size: 1rem; font-weight: 700; color: var(--text-primary); margin: 24px 0 12px;">Key Environment Variables</h3>
+      <table class="mini-table">
+        <tr><th>Variable</th><th>Purpose</th></tr>
+        <tr><td><code>ANTHROPIC_API_KEY</code></td><td>API key for authentication</td></tr>
+        <tr><td><code>ANTHROPIC_MODEL</code></td><td>Model override</td></tr>
+        <tr><td><code>CLAUDE_CODE_EFFORT_LEVEL</code></td><td><code>low</code> / <code>medium</code> / <code>high</code></td></tr>
+        <tr><td><code>CLAUDE_CODE_MAX_OUTPUT_TOKENS</code></td><td>Max output (default 32K, max 64K)</td></tr>
+        <tr><td><code>CLAUDE_CODE_AUTOCOMPACT_PCT_OVERRIDE</code></td><td>Auto-compaction threshold</td></tr>
+        <tr><td><code>MAX_THINKING_TOKENS</code></td><td>Extended thinking budget</td></tr>
+        <tr><td><code>CLAUDE_CODE_SIMPLE</code></td><td>Minimal mode (bash, read, edit only)</td></tr>
+        <tr><td><code>ENABLE_TOOL_SEARCH</code></td><td>MCP tool search: <code>auto</code>/<code>true</code>/<code>false</code></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══ 10. Best Practices ═══ -->
+  <div class="section" id="practices">
+    <div class="section-card">
+      <span class="section-label label-teal">10</span>
+      <h2 class="h2-teal">Best Practices</h2>
+      <p class="section-intro">
+        Core principles, workflow patterns, and common failure modes.
+      </p>
+
+      <div class="info-grid">
+        <div class="info-card">
+          <h4>Core Principles</h4>
+          <ul>
+            <li><strong>Give Claude verification</strong> &mdash; tests, screenshots, expected outputs. Single highest-leverage practice.</li>
+            <li><strong>Explore, plan, then code</strong> &mdash; Plan Mode (<kbd>Ctrl+G</kbd>) separates research from implementation.</li>
+            <li><strong>Provide specific context</strong> &mdash; reference files, mention constraints, point to patterns.</li>
+            <li><strong>Manage context aggressively</strong> &mdash; <code>/clear</code> between tasks, subagents for investigation.</li>
+          </ul>
+        </div>
+        <div class="info-card">
+          <h4>Effective CLAUDE.md</h4>
+          <ul>
+            <li>Run <code>/init</code> to generate starter file</li>
+            <li>Only include what Claude can't infer from code</li>
+            <li>Include: bash commands, code style, test commands, architecture</li>
+            <li>Exclude: standard conventions, detailed API docs, volatile info</li>
+            <li>If Claude ignores rules, file is too long &mdash; prune</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="info-grid" style="margin-top: 16px;">
+        <div class="info-card">
+          <h4>Workflow Patterns</h4>
+          <ul>
+            <li><strong>Plan Mode</strong> &mdash; Explore &rarr; Plan &rarr; Implement &rarr; Commit</li>
+            <li><strong>Subagent investigation</strong> &mdash; "use subagents to investigate X"</li>
+            <li><strong>Rewind</strong> &mdash; Esc+Esc or <code>/rewind</code> to restore state</li>
+            <li><strong>Rich input</strong> &mdash; <code>@</code> files, paste images, pipe data, URLs</li>
+            <li><strong>Writer/Reviewer</strong> &mdash; Session A writes, Session B reviews</li>
+          </ul>
+        </div>
+        <div class="info-card">
+          <h4>Scaling Patterns</h4>
+          <ul>
+            <li><strong>Headless</strong> &mdash; <code>claude -p "prompt"</code> for CI/scripts</li>
+            <li><strong>Fan-out</strong> &mdash; loop <code>claude -p</code> across files</li>
+            <li><strong>Parallel sessions</strong> &mdash; Desktop, web, or agent teams</li>
+            <li><strong>Auto mode</strong> &mdash; <code>--dangerously-skip-permissions</code> in sandboxed containers only</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3 style="font-size: 1rem; font-weight: 700; color: var(--text-primary); margin: 24px 0 12px;">Common Failure Patterns</h3>
+      <div class="antipattern">
+        <h4>Kitchen Sink Session</h4>
+        <p>Mixing unrelated tasks in one context. Claude confuses which task is current.</p>
+        <p class="fix"><strong>Fix:</strong> <code>/clear</code> between tasks. One focused session beats one long session.</p>
+      </div>
+      <div class="antipattern">
+        <h4>Correction Spiral</h4>
+        <p>Stacking corrections fills context with wrong approaches. Claude attends to mistakes as much as fixes.</p>
+        <p class="fix"><strong>Fix:</strong> After two corrections, <code>/clear</code> and write a better initial prompt.</p>
+      </div>
+      <div class="antipattern">
+        <h4>Bloated CLAUDE.md</h4>
+        <p>200 lines of contradicting rules. When everything is important, nothing is.</p>
+        <p class="fix"><strong>Fix:</strong> Cut to &lt;50 lines. Move domain knowledge to skills and rules files.</p>
+      </div>
+      <div class="antipattern">
+        <h4>Infinite Exploration</h4>
+        <p>Unscoped investigation reads 30 files, fills context with irrelevant internals.</p>
+        <p class="fix"><strong>Fix:</strong> Scope investigations to specific files. Delegate open-ended exploration to subagents.</p>
+      </div>
+      <div class="antipattern">
+        <h4>Trust Without Verification</h4>
+        <p>No tests, no screenshots, no expected outputs. No way for Claude to self-correct.</p>
+        <p class="fix"><strong>Fix:</strong> Always give Claude a way to verify its work. Tests are the highest-leverage practice.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Source attribution bottom-left -->
+<div class="source-attribution">
+  Source: <a href="https://code.claude.com/docs/en/" target="_blank" rel="noopener">code.claude.com/docs</a><br>
+  Claude Code Reference &middot; Feb 2026
+</div>
+
+</body>
+</html>

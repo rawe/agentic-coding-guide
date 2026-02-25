@@ -1,6 +1,6 @@
 # Document Structure & Reading Order
 
-20 guides organized into 4 groups following a **progressive depth** principle: understand what it is, learn the mental models, build your toolbox, master advanced patterns.
+21 guides organized into 4 groups following a **progressive depth** principle: understand what it is, learn the mental models, build your toolbox, master advanced patterns.
 
 ## 01 — Orientation
 
@@ -10,6 +10,7 @@
 |---|----------|----------|
 | 1 | **Why Claude Code** | Platform-level overview. The agentic loop, five composable primitives (CLAUDE.md, Skills, Subagents, Hooks, MCP), composition patterns, and beyond-interactive capabilities (Plugins, Headless, Agent SDK). The broadest "why" before diving into specifics. |
 | 2 | **Three Layers, Three Jobs** | Narrows to the 3 extensibility mechanisms (Skills vs MCP vs Commands) with a side-by-side comparison. Sets vocabulary for everything that follows. |
+| 3 | **Claude Code Reference** | Complete quick-reference covering all features in one page. Serves as a lookup companion while reading the deeper pages that follow. |
 
 ## 02 — Foundations
 
@@ -52,6 +53,8 @@
 | 20 | **Remote Control** | Mobile and remote access to Claude Code sessions. Setup methods, three security strategies (server isolation, sandboxing, proxy filtering), and comparison with OpenClaw. Assumes familiarity with skills, MCP servers, permissions, and settings configuration from Groups 1-3. |
 
 ## Design Decisions
+
+**Reference in Orientation, not an appendix**: The reference page covers every feature but assumes no prior knowledge — it's a map, not a tutorial. Placing it third in Orientation (after the "why" and the vocabulary) gives readers a lookup companion for all the deep-dive pages that follow. It fills the #3 slot left by the removed community-claude-difference page.
 
 **Context Window before CLAUDE.md**: Understanding context pressure explains *why* you right-size CLAUDE.md, *why* skills use progressive disclosure, and *why* subagents isolate context. It's the conceptual foundation.
 
