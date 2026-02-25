@@ -1042,65 +1042,28 @@ Six-step: colors &rarr; skeleton &rarr; teasers &rarr; optimize &rarr; index car
     </div>
   </div>
 
-  <!-- Section 8: Why Fork Beats Agent-Only -->
+  <!-- Section 8: The Alternative -->
   <div class="section">
     <div class="section-card">
-      <h2>Why Fork Beats Agent-Only</h2>
+      <h2>The Alternative: Agent as Entry Point</h2>
       <p class="section-intro">
-        Two approaches exist for this workflow:
+        Everything above uses the fork pattern: a skill triggers an agent. But there&rsquo;s a simpler setup&hairsp;&mdash;&hairsp;make the agent the entry point itself.
+      </p>
+      <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 24px;">
+        In that approach, the <code>html-page-generator</code> agent would contain the full procedure in its body (persona + steps + file paths). No activator skill exists. The user asks Claude to delegate: <em>&ldquo;Use the html-page-generator agent on sources/youtube/2026-02-some-video/&rdquo;</em>&hairsp;&mdash;&hairsp;and the main Claude spawns it via the Task tool, formulating the prompt on the fly.
+      </p>
+      <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 20px;">
+        This works. But three things degrade:
       </p>
 
-      <table class="compare-table">
-        <thead>
-          <tr>
-            <th></th>
-            <th>Fork Pattern (A)</th>
-            <th>Agent-Only (B)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Entry point</td>
-            <td><code>/generate-html-page &lt;path&gt;</code></td>
-            <td>User asks Claude to delegate to the agent</td>
-          </tr>
-          <tr>
-            <td>Path passing</td>
-            <td><code>$ARGUMENTS</code>&hairsp;&mdash;&hairsp;mechanical, exact</td>
-            <td>Main Claude formulates a Task prompt&hairsp;&mdash;&hairsp;variable</td>
-          </tr>
-          <tr>
-            <td>Procedure</td>
-            <td>Skill body&hairsp;&mdash;&hairsp;version-controlled, identical every run</td>
-            <td>Agent system prompt or ad-hoc Task prompt</td>
-          </tr>
-          <tr>
-            <td>Discoverability</td>
-            <td>Appears in <code>/</code> menu with tab-completion</td>
-            <td>User must know the agent exists</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <p style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 28px; margin-bottom: 16px;">The fork pattern wins for repeatable workflows because:</p>
-
-      <div class="takeaway-grid">
-        <div class="takeaway teal">
-          <div class="takeaway-label">Skill = WHAT</div>
-          <p>The procedure, version-controlled, with argument substitution</p>
-        </div>
-        <div class="takeaway amber">
-          <div class="takeaway-label">Agent = WHO</div>
-          <p>The voice, tools, model, preloaded knowledge</p>
-        </div>
-        <div class="takeaway purple">
-          <div class="takeaway-label">Separation of Concerns</div>
-          <p>Change the procedure without touching the agent, or swap the agent without rewriting the procedure</p>
-        </div>
-      </div>
+      <ul class="section-list">
+        <li><strong style="color: var(--text-primary);">Argument passing becomes interpretive.</strong> With the fork pattern, <code>$ARGUMENTS[0]</code> is mechanically substituted&hairsp;&mdash;&hairsp;the exact path the user typed ends up in the procedure. With agent-only, the main Claude rewrites the user&rsquo;s request into a Task prompt. The path might be paraphrased, truncated, or reformulated.</li>
+        <li><strong style="color: var(--text-primary);">The procedure is no longer version-controlled separately.</strong> It either lives in the agent body (merging WHO and WHAT into one file) or gets improvised each time the main Claude delegates. Either way, you lose the clean separation.</li>
+        <li><strong style="color: var(--text-primary);">Discoverability disappears.</strong> A slash command shows up in the <code>/</code> menu with tab-completion and an argument hint. An agent exists silently&hairsp;&mdash;&hairsp;the user must know it&rsquo;s there and ask for it by name.</li>
+      </ul>
 
       <div class="callout" style="margin-top: 24px;">
-        The agent-only approach merges both into one file. That works for ad-hoc delegation, but for a command you&rsquo;ll run dozens of times, the fork pattern gives you a deterministic entry point with exact argument handling.
+        For ad-hoc, one-off delegations, agent-only is fine. For a command you&rsquo;ll run dozens of times with exact inputs, the fork pattern gives you a deterministic entry point.
       </div>
     </div>
   </div>

@@ -214,24 +214,21 @@ Each file answers exactly one question. No information appears in two places.
 
 Three non-overlapping concerns: **how things look** — **how you speak** — **what you do**.
 
-## Why Fork Beats Agent-Only
+## The Alternative: Agent as Entry Point
 
-Two approaches exist for this workflow:
+Everything above uses the fork pattern: a skill triggers an agent. But there's a simpler setup — make the agent the entry point itself.
 
-| | Fork pattern (Approach A) | Agent-only (Approach B) |
-|--|--------------------------|------------------------|
-| **Entry point** | `/generate-html-page <path>` | User asks Claude to delegate to the agent |
-| **Path passing** | `$ARGUMENTS` — mechanical, exact | Main Claude formulates a Task prompt — variable |
-| **Procedure** | Skill body — version-controlled, identical every run | Agent system prompt or ad-hoc Task prompt |
-| **Discoverability** | Appears in `/` menu with tab-completion | User must know the agent exists |
+In that approach, the `html-page-generator` agent would contain the full procedure in its body (persona + steps + file paths). No activator skill exists. The user asks Claude to delegate: *"Use the html-page-generator agent on sources/youtube/2026-02-some-video/"* — and the main Claude spawns it via the Task tool, formulating the prompt on the fly.
 
-The fork pattern wins for repeatable workflows because:
+This works. But three things degrade:
 
-- **Skill = WHAT** (the procedure, version-controlled, with argument substitution)
-- **Agent = WHO** (the voice, tools, model, preloaded knowledge)
-- **Separation of concerns** — change the procedure without touching the agent, or swap the agent without rewriting the procedure
+- **Argument passing becomes interpretive.** With the fork pattern, `$ARGUMENTS[0]` is mechanically substituted — the exact path the user typed ends up in the procedure. With agent-only, the main Claude rewrites the user's request into a Task prompt. The path might be paraphrased, truncated, or reformulated.
 
-The agent-only approach merges both into one file. That works for ad-hoc delegation, but for a command you'll run dozens of times, the fork pattern gives you a deterministic entry point with exact argument handling.
+- **The procedure is no longer version-controlled separately.** It either lives in the agent body (merging WHO and WHAT into one file) or gets improvised each time the main Claude delegates. Either way, you lose the clean separation.
+
+- **Discoverability disappears.** A slash command shows up in the `/` menu with tab-completion and an argument hint. An agent exists silently — the user must know it's there and ask for it by name.
+
+For ad-hoc, one-off delegations, agent-only is fine. For a command you'll run dozens of times with exact inputs, the fork pattern gives you a deterministic entry point.
 
 ---
 
