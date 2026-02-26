@@ -1,0 +1,1875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claude Code vs GitHub Copilot &mdash; Platform Breadth vs Agent Depth</title>
+  <link rel="stylesheet" href="css/theme.css">
+  <style>
+    /* ── Background image & overlay ── */
+    body {
+      background-image: url('assets/bg-dark-abstract.png');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(10, 14, 26, 0.92) 0%,
+        rgba(10, 14, 26, 0.80) 40%,
+        rgba(10, 14, 26, 0.88) 100%
+      );
+      z-index: 0;
+    }
+
+    .page-wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 60px 40px 80px;
+    }
+
+    /* ── Header ── */
+    header {
+      text-align: center;
+      margin-bottom: 72px;
+    }
+
+    .badge {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--compare-copilot);
+      background: var(--compare-copilot-glow);
+      border: 1px solid rgba(88, 166, 255, 0.2);
+      padding: 6px 16px;
+      border-radius: 20px;
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      font-size: clamp(2.2rem, 5vw, 3.6rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, var(--compare-copilot) 0%, var(--compare-claude) 50%, var(--compare-copilot) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      font-size: 1.15rem;
+      color: var(--text-secondary);
+      max-width: 700px;
+      margin: 0 auto;
+      line-height: 1.6;
+      font-weight: 400;
+    }
+
+    /* ── Section shared ── */
+    .section {
+      margin-bottom: 72px;
+    }
+
+    .section-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 40px;
+    }
+
+    .section-card h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+    }
+
+    .section-card .section-intro {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 28px;
+      max-width: 800px;
+    }
+
+    /* ── Inline code ── */
+    code {
+      font-family: var(--font-mono);
+      font-size: 0.85em;
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.06);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    /* ── Two-column architecture ── */
+    .arch-columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-top: 24px;
+    }
+
+    .arch-col {
+      padding: 28px 24px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .arch-col-image {
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      overflow: hidden;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .arch-col.copilot .arch-col-image {
+      box-shadow: 0 0 20px var(--compare-copilot-glow);
+    }
+
+    .arch-col.claude .arch-col-image {
+      box-shadow: 0 0 20px var(--compare-claude-glow);
+    }
+
+    .arch-col-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .arch-col.copilot {
+      border-top: 3px solid var(--compare-copilot);
+    }
+
+    .arch-col.claude {
+      border-top: 3px solid var(--compare-claude);
+    }
+
+    .arch-col-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .arch-col-header h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+    }
+
+    .arch-col.copilot h3 { color: var(--compare-copilot); }
+    .arch-col.claude h3 { color: var(--compare-claude); }
+
+    .arch-col-subtitle {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 6px;
+      margin-bottom: 16px;
+    }
+
+    .arch-col.copilot .arch-col-subtitle {
+      color: var(--compare-copilot);
+      background: var(--compare-copilot-glow);
+    }
+
+    .arch-col.claude .arch-col-subtitle {
+      color: var(--compare-claude);
+      background: var(--compare-claude-glow);
+    }
+
+    .arch-col-desc {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+
+    .arch-col ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .arch-col ul li {
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+      padding: 5px 0;
+      padding-left: 16px;
+      position: relative;
+    }
+
+    .arch-col ul li::before {
+      content: '\2192';
+      position: absolute;
+      left: 0;
+      opacity: 0.5;
+    }
+
+    .arch-col.copilot ul li::before { color: var(--compare-copilot); }
+    .arch-col.claude ul li::before { color: var(--compare-claude); }
+
+    .arch-col ul li strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .arch-divider-note {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    /* ── Shared capabilities pill grid ── */
+    .shared-capabilities {
+      margin-top: 24px;
+      padding: 28px 24px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .shared-capabilities h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+    }
+
+    .shared-capabilities .shared-note {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      font-style: italic;
+    }
+
+    .pill-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .pill {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      padding: 5px 12px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text-secondary);
+    }
+
+    /* ── Differentiator columns ── */
+    .differ-columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-top: 24px;
+    }
+
+    .differ-col {
+      padding: 24px 20px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .differ-col.copilot { border-left: 3px solid var(--compare-copilot); }
+    .differ-col.claude { border-left: 3px solid var(--compare-claude); }
+
+    .differ-col h4 {
+      font-size: 0.88rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .differ-col.copilot h4 { color: var(--compare-copilot); }
+    .differ-col.claude h4 { color: var(--compare-claude); }
+
+    .differ-col ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .differ-col ul li {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      padding: 4px 0;
+      padding-left: 16px;
+      position: relative;
+    }
+
+    .differ-col ul li::before {
+      content: '\2192';
+      position: absolute;
+      left: 0;
+      opacity: 0.5;
+    }
+
+    .differ-col.copilot ul li::before { color: var(--compare-copilot); }
+    .differ-col.claude ul li::before { color: var(--compare-claude); }
+
+    /* ── Comparison grid (shared by feature, IDE, enterprise, customization tables) ── */
+    .compare-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin-top: 24px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .compare-header {
+      display: grid;
+      grid-template-columns: 200px 1fr 1fr;
+      gap: 0;
+    }
+
+    .compare-header-cell {
+      padding: 14px 20px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      background: rgba(255, 255, 255, 0.03);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .compare-header-cell:first-child {
+      color: var(--text-muted);
+    }
+
+    .compare-header-cell.copilot {
+      color: var(--compare-copilot);
+      background: linear-gradient(180deg, rgba(88, 166, 255, 0.08) 0%, rgba(88, 166, 255, 0.02) 100%);
+      border-left: 1px solid var(--border-subtle);
+    }
+
+    .compare-header-cell.claude {
+      color: var(--compare-claude);
+      background: linear-gradient(180deg, rgba(246, 164, 76, 0.08) 0%, rgba(246, 164, 76, 0.02) 100%);
+      border-left: 1px solid var(--border-subtle);
+    }
+
+    .compare-row {
+      display: grid;
+      grid-template-columns: 200px 1fr 1fr;
+      gap: 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .compare-row:last-child {
+      border-bottom: none;
+    }
+
+    .compare-row:nth-child(even) {
+      background: rgba(255, 255, 255, 0.015);
+    }
+
+    .compare-cell {
+      padding: 14px 20px;
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .compare-cell:not(:first-child) {
+      border-left: 1px solid var(--border-subtle);
+    }
+
+    .compare-cell.label {
+      font-weight: 600;
+      color: var(--text-secondary);
+      font-size: 0.82rem;
+    }
+
+    /* ── Four-column differentiator table ── */
+    .differ-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin-top: 24px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .differ-header {
+      display: grid;
+      grid-template-columns: 170px 1fr 1fr 100px;
+      gap: 0;
+    }
+
+    .differ-header-cell {
+      padding: 14px 16px;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      background: rgba(255, 255, 255, 0.03);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .differ-header-cell:first-child {
+      color: var(--text-muted);
+    }
+
+    .differ-header-cell.copilot {
+      color: var(--compare-copilot);
+      background: linear-gradient(180deg, rgba(88, 166, 255, 0.08) 0%, rgba(88, 166, 255, 0.02) 100%);
+      border-left: 1px solid var(--border-subtle);
+    }
+
+    .differ-header-cell.claude {
+      color: var(--compare-claude);
+      background: linear-gradient(180deg, rgba(246, 164, 76, 0.08) 0%, rgba(246, 164, 76, 0.02) 100%);
+      border-left: 1px solid var(--border-subtle);
+    }
+
+    .differ-header-cell.advantage {
+      color: var(--text-muted);
+      border-left: 1px solid var(--border-subtle);
+    }
+
+    .differ-row {
+      display: grid;
+      grid-template-columns: 170px 1fr 1fr 100px;
+      gap: 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .differ-row:last-child {
+      border-bottom: none;
+    }
+
+    .differ-row:nth-child(even) {
+      background: rgba(255, 255, 255, 0.015);
+    }
+
+    .differ-cell {
+      padding: 12px 16px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
+    .differ-cell:not(:first-child) {
+      border-left: 1px solid var(--border-subtle);
+    }
+
+    .differ-cell.label {
+      font-weight: 600;
+      color: var(--text-secondary);
+      font-size: 0.80rem;
+    }
+
+    .differ-cell.advantage-cell {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .advantage-tag {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 6px;
+      display: inline-block;
+    }
+
+    .advantage-tag.copilot {
+      color: var(--compare-copilot);
+      background: var(--compare-copilot-glow);
+    }
+
+    .advantage-tag.claude {
+      color: var(--compare-claude);
+      background: var(--compare-claude-glow);
+    }
+
+    /* ── Pricing cards ── */
+    .pricing-columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-top: 24px;
+    }
+
+    .pricing-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .pricing-stack-header {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .pricing-stack.copilot .pricing-stack-header { color: var(--compare-copilot); }
+    .pricing-stack.claude .pricing-stack-header { color: var(--compare-claude); }
+
+    .pricing-card {
+      padding: 16px 20px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-subtle);
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 4px 16px;
+      align-items: baseline;
+    }
+
+    .pricing-stack.copilot .pricing-card { border-left: 3px solid var(--compare-copilot); }
+    .pricing-stack.claude .pricing-card { border-left: 3px solid var(--compare-claude); }
+
+    .pricing-plan {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .pricing-price {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      font-weight: 600;
+      text-align: right;
+    }
+
+    .pricing-stack.copilot .pricing-price { color: var(--compare-copilot); }
+    .pricing-stack.claude .pricing-price { color: var(--compare-claude); }
+
+    .pricing-highlights {
+      grid-column: 1 / -1;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .pricing-callout {
+      margin-top: 24px;
+      padding: 20px 24px;
+      border-radius: 10px;
+      background: linear-gradient(160deg, rgba(88, 166, 255, 0.04) 0%, rgba(246, 164, 76, 0.04) 50%, rgba(15, 20, 35, 0.6) 100%);
+      border: 1px solid var(--border-subtle);
+      border-left: 3px solid var(--compare-copilot);
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      line-height: 1.65;
+    }
+
+    /* ── Decision table (when to use which) ── */
+    .decision-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin-top: 24px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .decision-header {
+      display: grid;
+      grid-template-columns: 1fr 140px 1fr;
+      gap: 0;
+    }
+
+    .decision-header-cell {
+      padding: 14px 20px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      background: rgba(255, 255, 255, 0.03);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .decision-header-cell:not(:first-child) {
+      border-left: 1px solid var(--border-subtle);
+    }
+
+    .decision-row {
+      display: grid;
+      grid-template-columns: 1fr 140px 1fr;
+      gap: 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .decision-row:last-child {
+      border-bottom: none;
+    }
+
+    .decision-row:nth-child(even) {
+      background: rgba(255, 255, 255, 0.015);
+    }
+
+    .decision-cell {
+      padding: 14px 20px;
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .decision-cell:not(:first-child) {
+      border-left: 1px solid var(--border-subtle);
+    }
+
+    .decision-cell.task {
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    .decision-tool {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 6px;
+      display: inline-block;
+    }
+
+    .decision-tool.copilot {
+      color: var(--compare-copilot);
+      background: var(--compare-copilot-glow);
+    }
+
+    .decision-tool.claude {
+      color: var(--compare-claude);
+      background: var(--compare-claude-glow);
+    }
+
+    .decision-tool.either {
+      color: var(--plan-primary);
+      background: var(--plan-glow);
+    }
+
+    /* ── Complementary pattern timeline ── */
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin-top: 24px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .timeline-block {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .timeline-block:last-child {
+      border-bottom: none;
+    }
+
+    .timeline-time {
+      padding: 16px 20px;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+    }
+
+    .timeline-block.copilot .timeline-time {
+      color: var(--compare-copilot);
+      background: linear-gradient(135deg, rgba(88, 166, 255, 0.08) 0%, rgba(88, 166, 255, 0.02) 100%);
+    }
+
+    .timeline-block.claude .timeline-time {
+      color: var(--compare-claude);
+      background: linear-gradient(135deg, rgba(246, 164, 76, 0.08) 0%, rgba(246, 164, 76, 0.02) 100%);
+    }
+
+    .timeline-desc {
+      padding: 16px 20px;
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      border-left: 1px solid var(--border-subtle);
+    }
+
+    .timeline-block.copilot .timeline-desc { border-left: 3px solid var(--compare-copilot); }
+    .timeline-block.claude .timeline-desc { border-left: 3px solid var(--compare-claude); }
+
+    .timeline-tagline {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    .closing-text {
+      margin-top: 24px;
+      font-size: 0.92rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      max-width: 800px;
+    }
+
+    .closing-statement {
+      margin-top: 20px;
+      padding: 20px 24px;
+      border-radius: 10px;
+      background: linear-gradient(160deg, rgba(88, 166, 255, 0.06) 0%, rgba(246, 164, 76, 0.06) 50%, rgba(15, 20, 35, 0.6) 100%);
+      border: 1px solid rgba(88, 166, 255, 0.15);
+      border-left: 3px solid var(--compare-copilot);
+      border-right: 3px solid var(--compare-claude);
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      text-align: center;
+      letter-spacing: -0.01em;
+    }
+
+    /* ── IDE edge callouts ── */
+    .edge-callouts {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .edge-callout {
+      padding: 16px 20px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-subtle);
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+    }
+
+    .edge-callout.copilot {
+      border-left: 3px solid var(--compare-copilot);
+    }
+
+    .edge-callout.claude {
+      border-left: 3px solid var(--compare-claude);
+    }
+
+    .edge-callout strong.copilot-strong { color: var(--compare-copilot); }
+    .edge-callout strong.claude-strong { color: var(--compare-claude); }
+
+    /* ── Agent HQ callout ── */
+    .agenthq-callout {
+      margin-top: 24px;
+      padding: 24px;
+      border-radius: 12px;
+      background: linear-gradient(160deg, rgba(88, 166, 255, 0.06) 0%, rgba(246, 164, 76, 0.03) 100%);
+      border: 1px solid rgba(88, 166, 255, 0.15);
+    }
+
+    .agenthq-callout h3 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .agenthq-does, .agenthq-doesnt {
+      padding: 16px 20px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-subtle);
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+      margin-top: 12px;
+    }
+
+    .agenthq-does {
+      border-left: 3px solid var(--compare-copilot);
+    }
+
+    .agenthq-doesnt {
+      border-left: 3px solid var(--compare-claude);
+    }
+
+    .agenthq-does strong { color: var(--compare-copilot); }
+    .agenthq-doesnt strong { color: var(--compare-claude); }
+
+    /* ── Sources section ── */
+    .sources-group {
+      margin-top: 24px;
+    }
+
+    .sources-group + .sources-group {
+      margin-top: 28px;
+    }
+
+    .sources-group-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .sources-group-header .sources-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+
+    .sources-group.copilot .sources-group-header { color: var(--compare-copilot); }
+    .sources-group.copilot .sources-dot { background: var(--compare-copilot); }
+
+    .sources-group.claude .sources-group-header { color: var(--compare-claude); }
+    .sources-group.claude .sources-dot { background: var(--compare-claude); }
+
+    .sources-group.neutral .sources-group-header { color: var(--text-secondary); }
+    .sources-group.neutral .sources-dot { background: var(--text-secondary); }
+
+    .sources-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .sources-list li {
+      padding: 5px 0 5px 16px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      position: relative;
+    }
+
+    .sources-list li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      border-radius: 1px;
+    }
+
+    .sources-group.copilot .sources-list li::before { background: rgba(88, 166, 255, 0.25); }
+    .sources-group.claude .sources-list li::before { background: rgba(246, 164, 76, 0.25); }
+    .sources-group.neutral .sources-list li::before { background: rgba(148, 163, 184, 0.2); }
+
+    .sources-list li a {
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .sources-group.copilot .sources-list li a {
+      color: var(--compare-copilot);
+      border-bottom-color: rgba(88, 166, 255, 0.3);
+    }
+    .sources-group.copilot .sources-list li a:hover {
+      border-bottom-color: var(--compare-copilot);
+    }
+
+    .sources-group.claude .sources-list li a {
+      color: var(--compare-claude);
+      border-bottom-color: rgba(246, 164, 76, 0.3);
+    }
+    .sources-group.claude .sources-list li a:hover {
+      border-bottom-color: var(--compare-claude);
+    }
+
+    .sources-group.neutral .sources-list li a {
+      color: var(--text-secondary);
+      border-bottom-color: rgba(148, 163, 184, 0.3);
+    }
+    .sources-group.neutral .sources-list li a:hover {
+      color: var(--text-primary);
+      border-bottom-color: var(--text-secondary);
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .arch-columns { grid-template-columns: 1fr; }
+      .differ-columns { grid-template-columns: 1fr; }
+      .pricing-columns { grid-template-columns: 1fr; }
+      .edge-callouts { grid-template-columns: 1fr; }
+      .sources-group + .sources-group { margin-top: 24px; }
+
+      .compare-header,
+      .compare-row {
+        grid-template-columns: 120px 1fr 1fr;
+      }
+
+      .differ-header,
+      .differ-row {
+        grid-template-columns: 120px 1fr 1fr 80px;
+      }
+
+      .decision-header,
+      .decision-row {
+        grid-template-columns: 1fr 100px 1fr;
+      }
+
+      .timeline-block {
+        grid-template-columns: 100px 1fr;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .compare-header,
+      .compare-row {
+        grid-template-columns: 1fr;
+      }
+
+      .compare-header-cell:not(:first-child),
+      .compare-cell:not(:first-child) {
+        border-left: none;
+        border-top: 1px solid var(--border-subtle);
+      }
+
+      .compare-cell.label {
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      .differ-header,
+      .differ-row {
+        grid-template-columns: 1fr;
+      }
+
+      .differ-header-cell:not(:first-child),
+      .differ-cell:not(:first-child) {
+        border-left: none;
+        border-top: 1px solid var(--border-subtle);
+      }
+
+      .decision-header,
+      .decision-row {
+        grid-template-columns: 1fr;
+      }
+
+      .decision-header-cell:not(:first-child),
+      .decision-cell:not(:first-child) {
+        border-left: none;
+        border-top: 1px solid var(--border-subtle);
+      }
+
+      .timeline-block {
+        grid-template-columns: 1fr;
+      }
+
+      .timeline-desc {
+        border-left: none !important;
+        border-top: 1px solid var(--border-subtle);
+      }
+
+      .timeline-block.copilot .timeline-desc { border-left: 3px solid var(--compare-copilot) !important; }
+      .timeline-block.claude .timeline-desc { border-left: 3px solid var(--compare-claude) !important; }
+    }
+
+    @media (max-width: 600px) {
+      .page-wrapper {
+        padding: 40px 20px 60px;
+      }
+
+      .section-card {
+        padding: 28px 20px;
+      }
+
+      .compare-header { display: none; }
+      .differ-header { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-wrapper">
+
+  <!-- Header -->
+  <header>
+    <div class="badge">Comparison</div>
+    <h1>Claude Code vs<br>GitHub Copilot</h1>
+    <p class="subtitle">
+      Two agentic coding platforms. One grew from inline autocomplete into a multi-surface ecosystem. The other was built terminal-first as an autonomous reasoning engine. The meaningful difference: <strong>platform breadth vs agent depth</strong>.
+    </p>
+  </header>
+
+  <!-- Section 1: Two Platforms, Two Strengths -->
+  <div class="section">
+    <div class="section-card">
+      <h2>Two Platforms, Two Strengths</h2>
+      <p class="section-intro">
+        Both tools are agentic in 2026. The meaningful difference is no longer &ldquo;autocomplete vs agent&rdquo;&hairsp;&mdash;&hairsp;it&rsquo;s platform breadth vs agent depth. Copilot covers more surfaces, more models, more ecosystem integrations, and now runs third-party agents within its platform. Claude Code goes deeper on agent customization, multi-agent orchestration, and extensibility packaging.
+      </p>
+
+      <div class="arch-columns">
+        <div class="arch-col copilot">
+          <div class="arch-col-image">
+            <img src="assets/teaser-copilot-architecture.png" alt="GitHub Copilot multi-surface platform architecture">
+          </div>
+          <div class="arch-col-header">
+            <h3>GitHub Copilot</h3>
+          </div>
+          <span class="arch-col-subtitle">Platform Breadth</span>
+          <p class="arch-col-desc">Launched June 2021 as inline autocomplete. Now a multi-surface platform with three distinct agent modes, a multi-vendor model marketplace, and deep GitHub ecosystem integration.</p>
+          <ul>
+            <li><strong>Inline completions</strong> &mdash; 35ms average latency. The original product and still the dominant daily interaction.</li>
+            <li><strong>Three agent surfaces</strong> &mdash; IDE agent mode (GA April 2025), async coding agent in GitHub Actions (GA September 2025), CLI agent (GA February 2026).</li>
+            <li><strong>Multi-model marketplace</strong> &mdash; GPT-4.1 default, plus models from OpenAI, Anthropic (including Claude Opus 4.6), Google, and xAI.</li>
+            <li><strong>GitHub Agent HQ</strong> &mdash; run Claude, Codex, and Copilot together inside github.com, GitHub Mobile, and VS Code.</li>
+            <li><strong>Ecosystem depth</strong> &mdash; PR summaries, code review, CodeQL scanning, secret scanning, Copilot Extensions marketplace, Actions integration.</li>
+          </ul>
+        </div>
+        <div class="arch-col claude">
+          <div class="arch-col-image">
+            <img src="assets/teaser-claude-code-architecture.png" alt="Claude Code agentic reasoning loop architecture">
+          </div>
+          <div class="arch-col-header">
+            <h3>Claude Code</h3>
+          </div>
+          <span class="arch-col-subtitle">Agent Depth</span>
+          <p class="arch-col-desc">Built by Anthropic. Terminal-first: open a CLI session, describe the problem, and Claude Code reads relevant files across the repository before proposing anything. 200k token context window allows full-project ingestion.</p>
+          <ul>
+            <li><strong>Agentic loop</strong> &mdash; gather context, take action, verify results. Chains dozens of tool calls, course-corrects at each step.</li>
+            <li><strong>Agent Teams</strong> &mdash; multiple instances work in parallel on a shared codebase with a lead agent coordinating via shared task lists.</li>
+            <li><strong>Agent SDK</strong> &mdash; full SDK for building custom agents. Used by Apple&rsquo;s Xcode integration.</li>
+            <li><strong>Plugin system</strong> &mdash; bundle skills, MCP servers, hooks, and subagents into versioned, shareable packages. No Copilot equivalent.</li>
+            <li><strong>Broader non-IDE surfaces</strong> &mdash; desktop app, web (claude.ai/code), Slack integration, Chrome extension for browser debugging.</li>
+          </ul>
+        </div>
+      </div>
+
+      <p class="arch-divider-note">Both are agentic. The question is breadth vs depth.</p>
+    </div>
+  </div>
+
+  <!-- Section 2: Agentic Capabilities Head-to-Head -->
+  <div class="section">
+    <div class="section-card">
+      <h2>Agentic Capabilities: Head-to-Head</h2>
+      <p class="section-intro">
+        Both tools have converged on many agentic features. This section separates what&rsquo;s shared from what&rsquo;s genuinely different.
+      </p>
+
+      <!-- Shared capabilities pill grid -->
+      <div class="shared-capabilities">
+        <h3>What Both Tools Share</h3>
+        <p class="shared-note">These are no longer differentiators.</p>
+        <div class="pill-grid">
+          <span class="pill">Agentic loops</span>
+          <span class="pill">Plan mode</span>
+          <span class="pill">MCP support</span>
+          <span class="pill">Custom instructions</span>
+          <span class="pill">Skills</span>
+          <span class="pill">Hooks</span>
+          <span class="pill">Custom agents</span>
+          <span class="pill">Checkpoint / undo</span>
+          <span class="pill">Model switching</span>
+          <span class="pill">Context compaction</span>
+          <span class="pill">CI/CD mode</span>
+        </div>
+      </div>
+
+      <!-- Shared capabilities detail table -->
+      <div class="compare-grid" style="margin-top: 16px;">
+        <div class="compare-header">
+          <div class="compare-header-cell">Capability</div>
+          <div class="compare-header-cell copilot">GitHub Copilot</div>
+          <div class="compare-header-cell claude">Claude Code</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell label">Agentic loop</div>
+          <div class="compare-cell">IDE agent mode, CLI agent, coding agent &mdash; all use reason&rarr;act&rarr;verify cycles</div>
+          <div class="compare-cell">Single agentic loop across all surfaces</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell label">Plan mode</div>
+          <div class="compare-cell">Shift+Tab in CLI; structured planning before coding</div>
+          <div class="compare-cell"><code>/plan</code> command; describe-then-approve workflow</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell label">MCP support</div>
+          <div class="compare-cell">Agent mode, CLI, and coding agent. GitHub MCP server. OAuth. Enterprise policies.</div>
+          <div class="compare-cell">HTTP, SSE, stdio transports. Project/user/managed scopes. Tool search optimization.</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell label">Custom instructions</div>
+          <div class="compare-cell"><code>.github/copilot-instructions.md</code> + scoped <code>.instructions.md</code> files</div>
+          <div class="compare-cell"><code>CLAUDE.md</code> files (project, directory, user, enterprise hierarchy)</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell label">Skills / commands</div>
+          <div class="compare-cell">Agent Skills (open standard), slash commands, community sharing</div>
+          <div class="compare-cell">Skills (auto-discovered), slash commands, team sharing</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell label">Hooks</div>
+          <div class="compare-cell">sessionStart, preToolUse, postToolUse, userPromptSubmitted, sessionEnd. <code>.github/hooks/*.json</code>.</div>
+          <div class="compare-cell">After edits, before commits, custom lifecycle points. Exit code 2 blocks + feeds error back.</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell label">Custom agents</div>
+          <div class="compare-cell"><code>.agent.md</code> files with own tools, MCP, instructions. Subagent with own context window.</div>
+          <div class="compare-cell"><code>.claude/agents/</code> Markdown files with YAML frontmatter. Own prompts, tools, permissions.</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell label">Checkpoint / undo</div>
+          <div class="compare-cell">Esc-Esc rewind in CLI. Session checkpoints. <code>/diff</code> review. VS Code chat checkpoints.</div>
+          <div class="compare-cell">Every prompt creates checkpoint. Rewind menu: restore code, conversation, or both. 30-day persistence.</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell label">Context compaction</div>
+          <div class="compare-cell">Automatic at 95% capacity in CLI</div>
+          <div class="compare-cell">Auto-compacts tool outputs, then summarizes conversation</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell label">Model switching</div>
+          <div class="compare-cell"><code>/model</code> mid-session across all surfaces</div>
+          <div class="compare-cell"><code>/model</code> mid-session or <code>--model</code> at launch</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell label">CI/CD mode</div>
+          <div class="compare-cell">GitHub Actions built-in, coding agent</div>
+          <div class="compare-cell">Headless mode for GitHub Actions and GitLab CI/CD</div>
+        </div>
+      </div>
+
+      <!-- Genuine differentiators -->
+      <h3 style="margin-top: 32px; font-size: 1rem; font-weight: 700; color: var(--text-primary);">Where They Genuinely Differ</h3>
+      <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 4px; font-style: italic;">The shared layer is large. The unique edges are where the real decision happens.</p>
+
+      <div class="differ-grid">
+        <div class="differ-header">
+          <div class="differ-header-cell">Capability</div>
+          <div class="differ-header-cell copilot">Copilot</div>
+          <div class="differ-header-cell claude">Claude Code</div>
+          <div class="differ-header-cell advantage">Advantage</div>
+        </div>
+        <div class="differ-row">
+          <div class="differ-cell label">Inline completions</div>
+          <div class="differ-cell">35ms autocomplete &mdash; the primary daily interaction for most devs</div>
+          <div class="differ-cell">No inline autocomplete</div>
+          <div class="differ-cell advantage-cell"><span class="advantage-tag copilot">Copilot</span></div>
+        </div>
+        <div class="differ-row">
+          <div class="differ-cell label">Async cloud agent</div>
+          <div class="differ-cell">Coding agent runs in GitHub Actions. Works while computer is off.</div>
+          <div class="differ-cell">No equivalent autonomous cloud agent</div>
+          <div class="differ-cell advantage-cell"><span class="advantage-tag copilot">Copilot</span></div>
+        </div>
+        <div class="differ-row">
+          <div class="differ-cell label">Multi-vendor models</div>
+          <div class="differ-cell">OpenAI, Anthropic, Google, xAI &mdash; 15+ models as first-party options</div>
+          <div class="differ-cell">Anthropic models only (third-party via config)</div>
+          <div class="differ-cell advantage-cell"><span class="advantage-tag copilot">Copilot</span></div>
+        </div>
+        <div class="differ-row">
+          <div class="differ-cell label">Agent HQ</div>
+          <div class="differ-cell">Run Claude, Codex, and Copilot together. One subscription. Multi-vendor agent platform.</div>
+          <div class="differ-cell">N/A</div>
+          <div class="differ-cell advantage-cell"><span class="advantage-tag copilot">Copilot</span></div>
+        </div>
+        <div class="differ-row">
+          <div class="differ-cell label">Cross-session memory</div>
+          <div class="differ-cell">Copilot Memory: automatic, cross-agent, repository-specific. 28-day expiry.</div>
+          <div class="differ-cell">Manual via CLAUDE.md. No automatic memory extraction.</div>
+          <div class="differ-cell advantage-cell"><span class="advantage-tag copilot">Copilot</span></div>
+        </div>
+        <div class="differ-row">
+          <div class="differ-cell label">Security scanning</div>
+          <div class="differ-cell">CodeQL, Advisory Database, secret scanning &mdash; built into coding agent</div>
+          <div class="differ-cell">External via MCP integrations</div>
+          <div class="differ-cell advantage-cell"><span class="advantage-tag copilot">Copilot</span></div>
+        </div>
+        <div class="differ-row">
+          <div class="differ-cell label">Extensions marketplace</div>
+          <div class="differ-cell">Third-party integrations (Sentry, Docker, Stripe, MongoDB). Growing ecosystem.</div>
+          <div class="differ-cell">N/A</div>
+          <div class="differ-cell advantage-cell"><span class="advantage-tag copilot">Copilot</span></div>
+        </div>
+        <div class="differ-row">
+          <div class="differ-cell label">Agent Teams</div>
+          <div class="differ-cell">Parallel agent execution, but no lead-agent coordination or shared task lists</div>
+          <div class="differ-cell">Lead agent + task list + parallel workers on shared codebase. Research preview.</div>
+          <div class="differ-cell advantage-cell"><span class="advantage-tag claude">Claude Code</span></div>
+        </div>
+        <div class="differ-row">
+          <div class="differ-cell label">Agent SDK</div>
+          <div class="differ-cell">N/A (Copilot SDK exists but different in scope)</div>
+          <div class="differ-cell">Full SDK for custom agents. Used by Apple&rsquo;s Xcode.</div>
+          <div class="differ-cell advantage-cell"><span class="advantage-tag claude">Claude Code</span></div>
+        </div>
+        <div class="differ-row">
+          <div class="differ-cell label">Plugin system</div>
+          <div class="differ-cell">No equivalent bundling mechanism</div>
+          <div class="differ-cell">Packages skills + MCP + hooks + subagents into versioned bundles</div>
+          <div class="differ-cell advantage-cell"><span class="advantage-tag claude">Claude Code</span></div>
+        </div>
+        <div class="differ-row">
+          <div class="differ-cell label">Context approach</div>
+          <div class="differ-cell">Retrieval-augmented: repo indexing + Spaces + Memory</div>
+          <div class="differ-cell">Direct ingestion: 200k token window with files loaded in context</div>
+          <div class="differ-cell advantage-cell"><span class="advantage-tag claude">Claude Code</span></div>
+        </div>
+        <div class="differ-row">
+          <div class="differ-cell label">Checkpoint granularity</div>
+          <div class="differ-cell">File-level rewind</div>
+          <div class="differ-cell">Code + conversation independent restoration. Summarize-from-here.</div>
+          <div class="differ-cell advantage-cell"><span class="advantage-tag claude">Claude Code</span></div>
+        </div>
+        <div class="differ-row">
+          <div class="differ-cell label">Non-IDE surfaces</div>
+          <div class="differ-cell">GitHub.com, GitHub Mobile</div>
+          <div class="differ-cell">Desktop app, web (claude.ai/code), Slack, Chrome extension</div>
+          <div class="differ-cell advantage-cell"><span class="advantage-tag claude">Claude Code</span></div>
+        </div>
+        <div class="differ-row">
+          <div class="differ-cell label">IP indemnity</div>
+          <div class="differ-cell">Business and Enterprise plans</div>
+          <div class="differ-cell">Not announced</div>
+          <div class="differ-cell advantage-cell"><span class="advantage-tag copilot">Copilot</span></div>
+        </div>
+        <div class="differ-row">
+          <div class="differ-cell label">Pricing entry</div>
+          <div class="differ-cell">Free tier; $10/month Pro</div>
+          <div class="differ-cell">$20/month Pro (no free tier)</div>
+          <div class="differ-cell advantage-cell"><span class="advantage-tag copilot">Copilot</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 3: Feature Comparison -->
+  <div class="section">
+    <div class="section-card">
+      <h2>Feature Comparison</h2>
+      <p class="section-intro">
+        Complete side-by-side breakdown of capabilities, updated for February 2026.
+      </p>
+
+      <div class="compare-grid">
+        <div class="compare-header">
+          <div class="compare-header-cell">Dimension</div>
+          <div class="compare-header-cell copilot">GitHub Copilot</div>
+          <div class="compare-header-cell claude">Claude Code</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell label">Primary interface</div>
+          <div class="compare-cell">IDE-embedded + CLI (GA Feb 2026) + GitHub.com</div>
+          <div class="compare-cell">Terminal-first CLI + IDE extensions + desktop app + web</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell label">Core interaction</div>
+          <div class="compare-cell">Inline completions + agentic modes (IDE, CLI, cloud)</div>
+          <div class="compare-cell">Agentic loop: reason, act, verify, repeat</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell label">Context scope</div>
+          <div class="compare-cell">Repository indexing + Copilot Spaces + Copilot Memory</div>
+          <div class="compare-cell">Full project via 200k token context window</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell label">Model strategy</div>
+          <div class="compare-cell">Multi-vendor marketplace (OpenAI, Anthropic, Google, xAI)</div>
+          <div class="compare-cell">Anthropic models (Sonnet, Opus, Haiku); third-party via config</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell label">Agent surfaces</div>
+          <div class="compare-cell">IDE agent mode + async coding agent (Actions) + CLI agent</div>
+          <div class="compare-cell">Single agentic loop across terminal, IDE, desktop, web, Slack</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell label">Multi-agent</div>
+          <div class="compare-cell">Parallel specialized agents; custom agents (.agent.md); Agent HQ (Claude + Codex + Copilot)</div>
+          <div class="compare-cell">Agent Teams with lead coordination; custom subagents; Agent SDK</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell label">Extensibility</div>
+          <div class="compare-cell">MCP, Agent Skills, hooks, Copilot Extensions marketplace</div>
+          <div class="compare-cell">MCP, skills, hooks, plugins (bundled packages), Claude Code as MCP server</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell label">Custom instructions</div>
+          <div class="compare-cell"><code>.github/copilot-instructions.md</code> + scoped <code>.instructions.md</code></div>
+          <div class="compare-cell"><code>CLAUDE.md</code> hierarchy (project &rarr; directory &rarr; user &rarr; enterprise)</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell label">Code review</div>
+          <div class="compare-cell">Built-in &mdash; mention @copilot on PRs, blends LLM + CodeQL</div>
+          <div class="compare-cell">Via skills/hooks, or headless mode in CI</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell label">Security scanning</div>
+          <div class="compare-cell">CodeQL, Advisory Database, secret scanning built-in</div>
+          <div class="compare-cell">External via MCP integrations</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell label">CLI experience</div>
+          <div class="compare-cell">GA Feb 2026 &mdash; plan mode, autopilot, specialized agents, memory</div>
+          <div class="compare-cell">Native from inception &mdash; terminal is primary interface</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell label">Execution model</div>
+          <div class="compare-cell">Inline suggestions + multi-step agentic execution + autonomous cloud agent</div>
+          <div class="compare-cell">Runs commands, edits files, creates commits autonomously</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell label">Safety model</div>
+          <div class="compare-cell">Checkpoint rewind (Esc-Esc), /diff review, sandboxed coding agent</div>
+          <div class="compare-cell">Checkpoints, permission modes, rewind menu (code + conversation)</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell label">Cross-session memory</div>
+          <div class="compare-cell">Copilot Memory (automatic, cross-agent, validated, 28-day)</div>
+          <div class="compare-cell">CLAUDE.md (manual, persistent), session resume (--continue)</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell label">Enterprise governance</div>
+          <div class="compare-cell">Audit logs, content filters, policy controls, IP indemnity, MCP policies</div>
+          <div class="compare-cell">Managed MCP, compliance API, managed settings, permission modes</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 4: IDE and Surface Support -->
+  <div class="section">
+    <div class="section-card">
+      <h2>IDE and Surface Support</h2>
+      <p class="section-intro">
+        Where each tool is available, and how deep the integration goes.
+      </p>
+
+      <div class="compare-grid">
+        <div class="compare-header">
+          <div class="compare-header-cell">Surface</div>
+          <div class="compare-header-cell copilot">GitHub Copilot</div>
+          <div class="compare-header-cell claude">Claude Code</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell label">VS Code</div>
+          <div class="compare-cell">Completions, chat, agent mode (GA), edits, code review</div>
+          <div class="compare-cell">Native extension &mdash; inline diffs, @-mentions, plan review</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell label">JetBrains</div>
+          <div class="compare-cell">Completions, chat, agent mode, edits, code review, Agent Skills (preview)</div>
+          <div class="compare-cell">Plugin &mdash; diff viewing, selection sharing (beta)</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell label">Visual Studio</div>
+          <div class="compare-cell">Completions, chat, agent mode (preview), edits, code review</div>
+          <div class="compare-cell">Not available</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell label">Xcode</div>
+          <div class="compare-cell">Completions, chat, agent mode</div>
+          <div class="compare-cell">Native via Claude Agent SDK (Xcode 26.3+)</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell label">Eclipse</div>
+          <div class="compare-cell">Completions, chat, agent mode</div>
+          <div class="compare-cell">Not available</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell label">Vim/Neovim</div>
+          <div class="compare-cell">Completions only</div>
+          <div class="compare-cell">Not available</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell label">Terminal CLI</div>
+          <div class="compare-cell">GA Feb 2026 &mdash; plan mode, autopilot, specialized agents, memory</div>
+          <div class="compare-cell">Primary interface &mdash; full-featured from day one</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell label">Desktop App</div>
+          <div class="compare-cell">Not available</div>
+          <div class="compare-cell">Standalone app &mdash; visual diffs, multiple sessions</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell label">Web</div>
+          <div class="compare-cell">GitHub.com integration, Agent HQ</div>
+          <div class="compare-cell">claude.ai/code &mdash; no local setup, parallel sessions</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell label">Slack</div>
+          <div class="compare-cell">Not available</div>
+          <div class="compare-cell">@Claude mention &rarr; get a PR back</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell label">GitHub Mobile</div>
+          <div class="compare-cell">Copilot Chat, Agent HQ</div>
+          <div class="compare-cell">Not available</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell label">CI/CD</div>
+          <div class="compare-cell">GitHub Actions built-in, coding agent</div>
+          <div class="compare-cell">Headless mode for Actions and GitLab CI/CD</div>
+        </div>
+      </div>
+
+      <div class="edge-callouts">
+        <div class="edge-callout copilot">
+          <strong class="copilot-strong">Copilot&rsquo;s edge:</strong> broadest editor and platform coverage. Seven IDEs, GitHub Mobile, and Agent HQ as a multi-agent hub.
+        </div>
+        <div class="edge-callout claude">
+          <strong class="claude-strong">Claude Code&rsquo;s edge:</strong> unique surfaces. Desktop app, web interface, Slack integration, and Chrome extension for browser debugging &mdash; surfaces Copilot doesn&rsquo;t cover.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 5: Customization and Extensibility -->
+  <div class="section">
+    <div class="section-card">
+      <h2>Customization and Extensibility</h2>
+      <p class="section-intro">
+        How each tool lets developers and teams tailor behavior.
+      </p>
+
+      <div class="compare-grid">
+        <div class="compare-header">
+          <div class="compare-header-cell">Layer</div>
+          <div class="compare-header-cell copilot">GitHub Copilot</div>
+          <div class="compare-header-cell claude">Claude Code</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell label">Project instructions</div>
+          <div class="compare-cell"><code>.github/copilot-instructions.md</code> + scoped <code>.instructions.md</code></div>
+          <div class="compare-cell"><code>CLAUDE.md</code> hierarchy (project, directory, user, enterprise)</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell label">Skills</div>
+          <div class="compare-cell">Agent Skills: markdown files, auto-discovered, slash commands. Open standard shared with Claude Code.</div>
+          <div class="compare-cell">Skills: instruction folders, auto-discovered, slash commands. Same open standard.</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell label">Custom agents</div>
+          <div class="compare-cell"><code>.agent.md</code> with tools, MCP, instructions. Subagent gets own context window.</div>
+          <div class="compare-cell"><code>.claude/agents/</code> with YAML frontmatter, tool restrictions, permission modes.</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell label">Hooks</div>
+          <div class="compare-cell"><code>.github/hooks/*.json</code> &mdash; sessionStart, preToolUse, postToolUse, userPromptSubmitted, sessionEnd</div>
+          <div class="compare-cell">Settings-configured &mdash; after edits, before commits. Exit code 2 feeds error back to Claude.</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell label">MCP</div>
+          <div class="compare-cell">IDE, CLI, and coding agent. OAuth. Enterprise MCP policies. GitHub MCP server.</div>
+          <div class="compare-cell">HTTP/SSE/stdio. Project/user/managed scopes. Tool search. Claude Code as MCP server.</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell label">Plugins / Extensions</div>
+          <div class="compare-cell">Copilot Extensions marketplace (Sentry, Docker, Stripe, etc.)</div>
+          <div class="compare-cell">Plugins: bundles of skills + MCP + hooks + subagents. Pinnable to git SHAs.</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell label">Memory</div>
+          <div class="compare-cell">Copilot Memory (automatic, cross-agent, repository-specific, 28-day)</div>
+          <div class="compare-cell">CLAUDE.md (manual, persistent, survives compaction)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 6: Pricing Comparison -->
+  <div class="section">
+    <div class="section-card">
+      <h2>Pricing Comparison</h2>
+      <p class="section-intro">
+        What each tool costs as of February 2026.
+      </p>
+
+      <div class="pricing-columns">
+        <div class="pricing-stack copilot">
+          <div class="pricing-stack-header">GitHub Copilot</div>
+
+          <div class="pricing-card">
+            <span class="pricing-plan">Free</span>
+            <span class="pricing-price">$0</span>
+            <span class="pricing-highlights">2,000 completions/month, 50 chat messages, 50 premium requests</span>
+          </div>
+          <div class="pricing-card">
+            <span class="pricing-plan">Pro</span>
+            <span class="pricing-price">$10/mo</span>
+            <span class="pricing-highlights">Unlimited completions, coding agent, code review, 300 premium requests</span>
+          </div>
+          <div class="pricing-card">
+            <span class="pricing-plan">Pro+</span>
+            <span class="pricing-price">$39/mo</span>
+            <span class="pricing-highlights">All models, GitHub Spark, 1,500 premium requests</span>
+          </div>
+          <div class="pricing-card">
+            <span class="pricing-plan">Business</span>
+            <span class="pricing-price">$19/user/mo</span>
+            <span class="pricing-highlights">User management, usage metrics, IP indemnity, 300 premium requests</span>
+          </div>
+          <div class="pricing-card">
+            <span class="pricing-plan">Enterprise</span>
+            <span class="pricing-price">$39/user/mo</span>
+            <span class="pricing-highlights">All models incl. Opus 4.6, full admin controls, 1,000 premium requests</span>
+          </div>
+        </div>
+
+        <div class="pricing-stack claude">
+          <div class="pricing-stack-header">Claude Code</div>
+
+          <div class="pricing-card">
+            <span class="pricing-plan">Pro</span>
+            <span class="pricing-price">$20/mo</span>
+            <span class="pricing-highlights">Claude Code access with Sonnet and Opus models</span>
+          </div>
+          <div class="pricing-card">
+            <span class="pricing-plan">Max Expanded</span>
+            <span class="pricing-price">$100/mo</span>
+            <span class="pricing-highlights">5x Pro usage, priority access to new features</span>
+          </div>
+          <div class="pricing-card">
+            <span class="pricing-plan">Max Maximum</span>
+            <span class="pricing-price">$200/mo</span>
+            <span class="pricing-highlights">20x Pro usage, for daily heavy users</span>
+          </div>
+          <div class="pricing-card">
+            <span class="pricing-plan">Team</span>
+            <span class="pricing-price">Per-seat</span>
+            <span class="pricing-highlights">Self-serve seat management, spend controls, analytics</span>
+          </div>
+          <div class="pricing-card">
+            <span class="pricing-plan">Enterprise</span>
+            <span class="pricing-price">Per-seat</span>
+            <span class="pricing-highlights">Managed policies, compliance API, granular admin controls</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pricing-callout">
+        Copilot offers a free tier and lower entry price ($10/month vs $20/month). For individual developers, Copilot is the more accessible starting point. For teams already invested in the Anthropic ecosystem or needing deep agent orchestration (Agent Teams, Agent SDK, plugins), Claude Code&rsquo;s pricing aligns with its deeper capability set. Both offer enterprise tiers with governance controls. Note: Copilot Pro+ and Enterprise subscribers get access to Claude models within Copilot via Agent HQ.
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 7: Enterprise and Governance -->
+  <div class="section">
+    <div class="section-card">
+      <h2>Enterprise and Governance</h2>
+      <p class="section-intro">
+        Both tools address enterprise concerns &mdash; through different mechanisms.
+      </p>
+
+      <div class="compare-grid">
+        <div class="compare-header">
+          <div class="compare-header-cell">Concern</div>
+          <div class="compare-header-cell copilot">GitHub Copilot</div>
+          <div class="compare-header-cell claude">Claude Code</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell label">Policy management</div>
+          <div class="compare-cell">Org/enterprise owners control features, models, access. MCP policies.</div>
+          <div class="compare-cell">Managed settings.json, permission modes, CLAUDE.md hierarchy</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell label">Audit</div>
+          <div class="compare-cell">Audit logs (180 days), action-searchable</div>
+          <div class="compare-cell">Checkpoint history, compliance API</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell label">Content filtering</div>
+          <div class="compare-cell">Content exclusion for files/repos</div>
+          <div class="compare-cell">Permission rules (deny/ask/allow), tool restrictions</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell label">IP protection</div>
+          <div class="compare-cell">IP indemnity on Business and Enterprise</div>
+          <div class="compare-cell">No IP indemnity announced</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell label">Usage tracking</div>
+          <div class="compare-cell">Per-org adoption metrics</div>
+          <div class="compare-cell">Spend controls, usage analytics on Team/Enterprise</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell label">Sandbox/isolation</div>
+          <div class="compare-cell">Coding agent in sandboxed Actions environment</div>
+          <div class="compare-cell">OS-level sandbox mode, git worktree isolation</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell label">Hook-based policy</div>
+          <div class="compare-cell">preToolUse hooks can block operations, enforce standards</div>
+          <div class="compare-cell">Exit code 2 blocks operations, feeds error to agent</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 8: The GitHub Agent HQ Factor -->
+  <div class="section">
+    <div class="section-card">
+      <h2>The GitHub Agent HQ Factor</h2>
+      <p class="section-intro">
+        A development that changes the competitive landscape: as of February 2026, GitHub Agent HQ runs Claude, Codex, and Copilot together inside github.com, GitHub Mobile, and VS Code. No additional subscription required for Copilot paid users.
+      </p>
+
+      <div class="agenthq-callout">
+        <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.65; margin-bottom: 12px;">
+          This means a team using Copilot Business or Enterprise gets access to Claude&rsquo;s reasoning within the Copilot platform. The &ldquo;which tool to choose&rdquo; question becomes less binary &mdash; you can use Claude <em>through</em> Copilot rather than alongside it.
+        </p>
+
+        <div class="agenthq-does">
+          <strong>What Agent HQ does:</strong> lets developers assign different AI agents to different tasks based on strengths. Claude for complex reasoning, Codex for rapid generation, Copilot for ecosystem integration. Agents run asynchronously by default. GitHub is also working with Google, Cognition, and xAI to bring more agents.
+        </div>
+
+        <div class="agenthq-doesnt">
+          <strong>What Agent HQ doesn&rsquo;t do:</strong> provide Claude Code&rsquo;s full feature set. Agent HQ runs Claude as an agent within Copilot&rsquo;s framework &mdash; it doesn&rsquo;t provide Agent Teams, the Agent SDK, the plugin system, CLAUDE.md, or Claude Code&rsquo;s checkpoint system. For Claude Code&rsquo;s deepest capabilities, you still need Claude Code itself.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 9: When to Use Which -->
+  <div class="section">
+    <div class="section-card">
+      <h2>When to Use Which</h2>
+      <p class="section-intro">
+        A decision guide based on the task, the workflow, and the ecosystem you&rsquo;re already in.
+      </p>
+
+      <div class="decision-grid">
+        <div class="decision-header">
+          <div class="decision-header-cell">Task</div>
+          <div class="decision-header-cell">Tool</div>
+          <div class="decision-header-cell">Why</div>
+        </div>
+        <div class="decision-row">
+          <div class="decision-cell task">Inline completions while typing</div>
+          <div class="decision-cell"><span class="decision-tool copilot">Copilot</span></div>
+          <div class="decision-cell">35ms autocomplete. Claude Code has no equivalent.</div>
+        </div>
+        <div class="decision-row">
+          <div class="decision-cell task">Refactoring across many files</div>
+          <div class="decision-cell"><span class="decision-tool either">Either</span></div>
+          <div class="decision-cell">Both have agentic loops. Claude Code&rsquo;s 200k context gives an edge on very large scopes.</div>
+        </div>
+        <div class="decision-row">
+          <div class="decision-cell task">Async background issue resolution</div>
+          <div class="decision-cell"><span class="decision-tool copilot">Copilot</span></div>
+          <div class="decision-cell">Coding agent works autonomously in GitHub Actions. No Claude Code equivalent.</div>
+        </div>
+        <div class="decision-row">
+          <div class="decision-cell task">PR code review</div>
+          <div class="decision-cell"><span class="decision-tool copilot">Copilot</span></div>
+          <div class="decision-cell">Native @copilot mention, blends LLM + CodeQL. Claude Code requires CI setup.</div>
+        </div>
+        <div class="decision-row">
+          <div class="decision-cell task">Security vulnerability scanning</div>
+          <div class="decision-cell"><span class="decision-tool copilot">Copilot</span></div>
+          <div class="decision-cell">CodeQL + Advisory Database + secret scanning built in.</div>
+        </div>
+        <div class="decision-row">
+          <div class="decision-cell task">Complex terminal-driven development</div>
+          <div class="decision-cell"><span class="decision-tool either">Either</span></div>
+          <div class="decision-cell">Both have full-featured CLI agents with plan mode. Claude Code has more experience here.</div>
+        </div>
+        <div class="decision-row">
+          <div class="decision-cell task">Multi-agent coordinated development</div>
+          <div class="decision-cell"><span class="decision-tool claude">Claude Code</span></div>
+          <div class="decision-cell">Agent Teams with lead agent, task lists, and branch isolation.</div>
+        </div>
+        <div class="decision-row">
+          <div class="decision-cell task">Custom agent ecosystem (bundled tools)</div>
+          <div class="decision-cell"><span class="decision-tool claude">Claude Code</span></div>
+          <div class="decision-cell">Plugin system packages skills + MCP + hooks. No Copilot equivalent.</div>
+        </div>
+        <div class="decision-row">
+          <div class="decision-cell task">Connecting external tools via MCP</div>
+          <div class="decision-cell"><span class="decision-tool either">Either</span></div>
+          <div class="decision-cell">Both support MCP. Copilot has enterprise MCP policies; Claude Code has more transport options.</div>
+        </div>
+        <div class="decision-row">
+          <div class="decision-cell task">Onboarding to a legacy codebase</div>
+          <div class="decision-cell"><span class="decision-tool either">Either</span></div>
+          <div class="decision-cell">Both can analyze full repos. Claude Code&rsquo;s direct context ingestion may provide more thorough understanding.</div>
+        </div>
+        <div class="decision-row">
+          <div class="decision-cell task">Already in the GitHub ecosystem</div>
+          <div class="decision-cell"><span class="decision-tool copilot">Copilot</span></div>
+          <div class="decision-cell">Deepest GitHub integration. Agent HQ adds Claude reasoning when needed.</div>
+        </div>
+        <div class="decision-row">
+          <div class="decision-cell task">Need model variety</div>
+          <div class="decision-cell"><span class="decision-tool copilot">Copilot</span></div>
+          <div class="decision-cell">Multi-vendor marketplace with 15+ models.</div>
+        </div>
+        <div class="decision-row">
+          <div class="decision-cell task">Building custom agent applications</div>
+          <div class="decision-cell"><span class="decision-tool claude">Claude Code</span></div>
+          <div class="decision-cell">Agent SDK for fully custom agents. Used by Apple&rsquo;s Xcode.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 10: The Complementary Pattern -->
+  <div class="section">
+    <div class="section-card">
+      <h2>The Complementary Pattern</h2>
+      <p class="section-intro">
+        The emerging pattern among high-productivity developers: run both. Not as redundancy &mdash; as division of labor.
+      </p>
+
+      <div class="timeline">
+        <div class="timeline-block copilot">
+          <div class="timeline-time">Morning</div>
+          <div class="timeline-desc">Copilot autocompletes as you write new API endpoints. 35ms inline, zero friction.</div>
+        </div>
+        <div class="timeline-block claude">
+          <div class="timeline-time">Mid-morning</div>
+          <div class="timeline-desc">Claude Code Agent Teams refactor the authentication module across 12 files. Multi-agent, deep reasoning.</div>
+        </div>
+        <div class="timeline-block copilot">
+          <div class="timeline-time">Afternoon</div>
+          <div class="timeline-desc">Assign a bug-fix issue to Copilot&rsquo;s coding agent. It works in the background while you move on.</div>
+        </div>
+        <div class="timeline-block claude">
+          <div class="timeline-time">Late afternoon</div>
+          <div class="timeline-desc">Claude Code explains the payment system architecture to a new team member. Full-project context.</div>
+        </div>
+        <div class="timeline-block copilot">
+          <div class="timeline-time">End of day</div>
+          <div class="timeline-desc">Copilot reviews your PR with CodeQL and suggests improvements. GitHub-native.</div>
+        </div>
+      </div>
+
+      <p class="timeline-tagline">Copilot for the rhythm. Claude Code for the inflection points.</p>
+
+      <p class="closing-text">
+        Copilot handles the constant rhythm of daily coding &mdash; inline completions, test generation, PR reviews, security scanning, background issue resolution. Claude Code handles the inflection points &mdash; the deep refactors, the multi-agent coordinated changes, the custom tool integrations that shape how the codebase evolves.
+      </p>
+      <p class="closing-text">
+        With Agent HQ, the line blurs further &mdash; Copilot subscribers can access Claude&rsquo;s reasoning within the Copilot platform for specific tasks, while still reaching for standalone Claude Code when they need its full depth (Agent Teams, plugins, Agent SDK).
+      </p>
+
+      <div class="closing-statement">
+        The question isn&rsquo;t which to choose. It&rsquo;s how to combine them.
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 11: Sources -->
+  <div class="section">
+    <div class="section-card">
+      <h2>Sources</h2>
+
+      <!-- Comparison / Both -->
+      <div class="sources-group neutral">
+        <div class="sources-group-header">
+          <span class="sources-dot"></span> Comparison
+        </div>
+        <ul class="sources-list">
+          <li><a href="https://www.youtube.com/watch?v=rNojsNYFBd4" target="_blank" rel="noopener">GitHub Copilot vs Claude Code</a> &mdash; Trader Jono Blueprint (Feb 2026)</li>
+        </ul>
+      </div>
+
+      <!-- GitHub Copilot -->
+      <div class="sources-group copilot">
+        <div class="sources-group-header">
+          <span class="sources-dot"></span> GitHub Copilot
+        </div>
+        <ul class="sources-list">
+          <li><a href="https://docs.github.com/en/copilot/get-started/features" target="_blank" rel="noopener">GitHub Copilot Features</a> &mdash; GitHub docs</li>
+          <li><a href="https://docs.github.com/en/copilot/reference/copilot-feature-matrix" target="_blank" rel="noopener">Copilot Feature Matrix</a> &mdash; GitHub docs</li>
+          <li><a href="https://docs.github.com/en/copilot/reference/ai-models/supported-models" target="_blank" rel="noopener">Supported AI Models in GitHub Copilot</a> &mdash; GitHub docs</li>
+          <li><a href="https://github.blog/ai-and-ml/github-copilot/agent-mode-101-all-about-github-copilots-powerful-mode/" target="_blank" rel="noopener">Agent Mode 101</a> &mdash; GitHub blog</li>
+          <li><a href="https://docs.github.com/en/copilot/concepts/agents/coding-agent/about-coding-agent" target="_blank" rel="noopener">About GitHub Copilot Coding Agent</a> &mdash; GitHub docs</li>
+          <li><a href="https://github.blog/changelog/2026-02-25-github-copilot-cli-is-now-generally-available/" target="_blank" rel="noopener">GitHub Copilot CLI GA</a> &mdash; GitHub blog</li>
+          <li><a href="https://github.blog/changelog/2026-01-14-github-copilot-cli-enhanced-agents-context-management-and-new-ways-to-install/" target="_blank" rel="noopener">Copilot CLI Enhanced Agents</a> &mdash; GitHub blog</li>
+          <li><a href="https://github.blog/changelog/2026-01-21-github-copilot-cli-plan-before-you-build-steer-as-you-go/" target="_blank" rel="noopener">Copilot CLI Plan Mode</a> &mdash; GitHub blog</li>
+          <li><a href="https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/create-custom-agents-for-cli" target="_blank" rel="noopener">Creating Custom Agents for CLI</a> &mdash; GitHub docs</li>
+          <li><a href="https://docs.github.com/en/copilot/concepts/context/mcp" target="_blank" rel="noopener">About MCP in Copilot</a> &mdash; GitHub docs</li>
+          <li><a href="https://docs.github.com/copilot/customizing-copilot/adding-custom-instructions-for-github-copilot" target="_blank" rel="noopener">Adding Custom Instructions</a> &mdash; GitHub docs</li>
+          <li><a href="https://code.visualstudio.com/docs/copilot/customization/agent-skills" target="_blank" rel="noopener">Agent Skills in VS Code</a> &mdash; VS Code docs</li>
+          <li><a href="https://docs.github.com/en/copilot/how-tos/copilot-cli/use-hooks" target="_blank" rel="noopener">Using Hooks with Copilot CLI</a> &mdash; GitHub docs</li>
+          <li><a href="https://docs.github.com/en/copilot/reference/hooks-configuration" target="_blank" rel="noopener">Hooks Configuration</a> &mdash; GitHub docs</li>
+          <li><a href="https://github.blog/ai-and-ml/github-copilot/building-an-agentic-memory-system-for-github-copilot/" target="_blank" rel="noopener">Building an Agentic Memory System</a> &mdash; GitHub blog</li>
+          <li><a href="https://github.blog/news-insights/company-news/pick-your-agent-use-claude-and-codex-on-agent-hq/" target="_blank" rel="noopener">Pick Your Agent: Agent HQ</a> &mdash; GitHub blog</li>
+          <li><a href="https://github.blog/changelog/2026-02-26-claude-and-codex-now-available-for-copilot-business-pro-users/" target="_blank" rel="noopener">Claude and Codex for Business &amp; Pro</a> &mdash; GitHub blog</li>
+          <li><a href="https://code.visualstudio.com/docs/copilot/chat/chat-checkpoints" target="_blank" rel="noopener">VS Code Chat Checkpoints</a> &mdash; VS Code docs</li>
+          <li><a href="https://github.com/features/copilot/extensions" target="_blank" rel="noopener">Copilot Extensions</a> &mdash; GitHub</li>
+          <li><a href="https://github.com/features/copilot/plans" target="_blank" rel="noopener">GitHub Copilot Plans &amp; Pricing</a> &mdash; GitHub</li>
+        </ul>
+      </div>
+
+      <!-- Claude Code -->
+      <div class="sources-group claude">
+        <div class="sources-group-header">
+          <span class="sources-dot"></span> Claude Code
+        </div>
+        <ul class="sources-list">
+          <li><a href="https://code.claude.com/docs/en/overview" target="_blank" rel="noopener">Claude Code Overview</a> &mdash; Anthropic docs</li>
+          <li><a href="https://code.claude.com/docs/en/how-claude-code-works" target="_blank" rel="noopener">How Claude Code Works</a> &mdash; Anthropic docs</li>
+          <li><a href="https://www.anthropic.com/claude-code" target="_blank" rel="noopener">Claude Code Product Page</a> &mdash; Anthropic</li>
+          <li><a href="https://code.claude.com/docs/en/checkpointing" target="_blank" rel="noopener">Claude Code Checkpointing</a> &mdash; Anthropic docs</li>
+          <li><a href="https://code.claude.com/docs/en/mcp" target="_blank" rel="noopener">Claude Code MCP</a> &mdash; Anthropic docs</li>
+          <li><a href="https://code.claude.com/docs/en/sub-agents" target="_blank" rel="noopener">Claude Code Subagents</a> &mdash; Anthropic docs</li>
+          <li><a href="https://claude.com/blog/skills" target="_blank" rel="noopener">Introducing Agent Skills</a> &mdash; Anthropic blog</li>
+          <li><a href="https://www.anthropic.com/news/enabling-claude-code-to-work-more-autonomously" target="_blank" rel="noopener">Enabling Claude Code to Work More Autonomously</a> &mdash; Anthropic</li>
+          <li><a href="https://www.anthropic.com/news/claude-code-plugins" target="_blank" rel="noopener">Claude Code Plugins</a> &mdash; Anthropic</li>
+          <li><a href="https://www.anthropic.com/news/apple-xcode-claude-agent-sdk" target="_blank" rel="noopener">Claude Agent SDK in Xcode</a> &mdash; Anthropic</li>
+          <li><a href="https://www.anthropic.com/pricing" target="_blank" rel="noopener">Anthropic Pricing</a> &mdash; Anthropic</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- Source attribution bottom-left -->
+<div class="source-attribution">
+  Trader Jono Blueprint<br>
+  <a href="https://www.youtube.com/watch?v=rNojsNYFBd4" target="_blank" rel="noopener">YouTube &mdash; Feb 2026</a>
+</div>
+
+</body>
+</html>

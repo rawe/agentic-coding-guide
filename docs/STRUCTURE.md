@@ -1,6 +1,6 @@
 # Document Structure & Reading Order
 
-22 guides organized into 4 groups following a **progressive depth** principle: understand what it is, learn the mental models, build your toolbox, master advanced patterns.
+23 guides organized into 4 groups following a **progressive depth** principle: understand what it is, learn the mental models, build your toolbox, master advanced patterns.
 
 ## 01 — Orientation
 
@@ -12,6 +12,7 @@
 | 2 | **Three Layers, Three Jobs** | Narrows to the 3 extensibility mechanisms (Skills vs MCP vs Commands) with a side-by-side comparison. Sets vocabulary for everything that follows. |
 | 3 | **Claude Code Reference** | Complete quick-reference covering all features in one page. Serves as a lookup companion while reading the deeper pages that follow. |
 | 4 | **The Five-Feature Decision Matrix** | Practical decision framework for choosing between CLAUDE.md, skills, subagents, hooks, and MCP servers. One question per feature, context window cost comparison, and a real-world setup example. Bridges the reference page with the deep dives that follow. |
+| 5 | **Claude Code vs GitHub Copilot** | Side-by-side comparison of architectures, features, pricing, IDE support, and enterprise governance. Helps teams understand where each tool excels and why they complement rather than compete. |
 
 ## 02 — Foundations
 
@@ -19,9 +20,9 @@
 
 | # | Document | Why here |
 |---|----------|----------|
-| 5 | **Master Your Context Window** | The single most important concept. Context engineering underpins every other practice — CLAUDE.md sizing, skill design, subagent isolation, session hygiene. Must come before CLAUDE.md because it explains *why* configuration choices matter. |
-| 6 | **Mastering CLAUDE.md** | The configuration system you interact with daily. Covers the full 7-layer hierarchy, rules files, and anti-patterns. Depends on understanding context pressure from the previous page. |
-| 7 | **Research → Plan → Implement** | The foundational workflow pattern. Three-phase progressive compression shows how to apply context engineering to real tasks. Bridges theory (context) with practice (extensibility). |
+| 6 | **Master Your Context Window** | The single most important concept. Context engineering underpins every other practice — CLAUDE.md sizing, skill design, subagent isolation, session hygiene. Must come before CLAUDE.md because it explains *why* configuration choices matter. |
+| 7 | **Mastering CLAUDE.md** | The configuration system you interact with daily. Covers the full 7-layer hierarchy, rules files, and anti-patterns. Depends on understanding context pressure from the previous page. |
+| 8 | **Research → Plan → Implement** | The foundational workflow pattern. Three-phase progressive compression shows how to apply context engineering to real tasks. Bridges theory (context) with practice (extensibility). |
 
 ## 03 — Extensibility
 
@@ -29,13 +30,13 @@
 
 | # | Document | Why here |
 |---|----------|----------|
-| 8 | **The Command & Skill Journey** | Conceptual roadmap. The 4-stage maturity model (ad-hoc → commands → skills → composed) frames everything that follows. Read before the hands-on pages. |
-| 9 | **Commands in Practice** | Hands-on commands. How to create, use $ARGUMENTS, and orchestrate skills via thin command files. |
-| 10 | **Skills — The Knowledge Layer** | Skills anatomy. File structure, frontmatter fields, progressive disclosure (3 loading layers), and the Skills vs Commands distinction table. |
-| 11 | **Skills in Practice** | Hands-on skills. Installing, using, and composing skills with real examples (doc-processing → summarize chain). |
-| 12 | **Skills Reference** | Complete spec. Every frontmatter field, string substitution, installation path, and context budget number. Lookup table, not a tutorial. |
-| 13 | **Writing Better Skills** | Authoring best practices. Description triggers, body structure, named patterns (Thin Command → Rich Skill, Meta-Skill, Domain Router), and anti-patterns. |
-| 14 | **MCP Servers in Practice** | The tools layer in practice. How to connect Claude Code to external tools via `.mcp.json`, common servers (Sentry, GitHub, Playwright, databases), scoping, and security. Complements the conceptual overview in "Three Layers, Three Jobs". |
+| 9 | **The Command & Skill Journey** | Conceptual roadmap. The 4-stage maturity model (ad-hoc → commands → skills → composed) frames everything that follows. Read before the hands-on pages. |
+| 10 | **Commands in Practice** | Hands-on commands. How to create, use $ARGUMENTS, and orchestrate skills via thin command files. |
+| 11 | **Skills — The Knowledge Layer** | Skills anatomy. File structure, frontmatter fields, progressive disclosure (3 loading layers), and the Skills vs Commands distinction table. |
+| 12 | **Skills in Practice** | Hands-on skills. Installing, using, and composing skills with real examples (doc-processing → summarize chain). |
+| 13 | **Skills Reference** | Complete spec. Every frontmatter field, string substitution, installation path, and context budget number. Lookup table, not a tutorial. |
+| 14 | **Writing Better Skills** | Authoring best practices. Description triggers, body structure, named patterns (Thin Command → Rich Skill, Meta-Skill, Domain Router), and anti-patterns. |
+| 15 | **MCP Servers in Practice** | The tools layer in practice. How to connect Claude Code to external tools via `.mcp.json`, common servers (Sentry, GitHub, Playwright, databases), scoping, and security. Complements the conceptual overview in "Three Layers, Three Jobs". |
 
 **Why 7 pages on extensibility?** Commands and skills are where most teams spend their customization time. MCP servers complete the toolbox — they provide the external capabilities that skills teach Claude how to use. The journey page provides the conceptual frame, then each page goes one level deeper.
 
@@ -45,19 +46,21 @@
 
 | # | Document | Why here |
 |---|----------|----------|
-| 15 | **The Developer's Daily Loop** | Capstone page. References skills, commands, CLAUDE.md, context management, subagents, MCP, and debugging. Six workflow patterns from Boris Cherny (Claude Code creator). Ties all prior knowledge together. |
-| 16 | **Subagents vs Agent Teams** | Multi-agent architecture decision. Hub-and-spoke (subagents) vs mesh (teams) with a single decision axis: do workers need to communicate? |
-| 17 | **Custom Subagents** | How to define specialized subagent personas in `.claude/agents/`. File format, tool restrictions, model selection, practical examples (code reviewer, debugger). Builds on subagent concepts from the previous page. |
-| 18 | **The Skill-Agent Fork Pattern** | How to combine a skill (`context: fork`) and a custom agent into a repeatable, isolated workflow. Three-component architecture (activator skill + agent + knowledge skill), real implementation trace, and fork vs agent-only comparison. Requires understanding both skills and custom subagents. |
-| 19 | **Hooks** | Event-driven automation. Shell commands and LLM prompts triggered by lifecycle events (PreToolUse, PostToolUse, Stop, etc.) to enforce guardrails, format code, and validate output. The only mechanism that can intercept and block Claude's actions. |
-| 20 | **Debugging with Claude in Chrome** | Specialized tool integration. Chrome MCP extension for DOM inspection, console reading, and network monitoring — concrete debugging workflows for frontend developers. |
-| 21 | **Remote Control** | Mobile and remote access to Claude Code sessions. Setup methods, three security strategies (server isolation, sandboxing, proxy filtering), and comparison with OpenClaw. Assumes familiarity with skills, MCP servers, permissions, and settings configuration from Groups 1-3. |
+| 16 | **The Developer's Daily Loop** | Capstone page. References skills, commands, CLAUDE.md, context management, subagents, MCP, and debugging. Six workflow patterns from Boris Cherny (Claude Code creator). Ties all prior knowledge together. |
+| 17 | **Subagents vs Agent Teams** | Multi-agent architecture decision. Hub-and-spoke (subagents) vs mesh (teams) with a single decision axis: do workers need to communicate? |
+| 18 | **Custom Subagents** | How to define specialized subagent personas in `.claude/agents/`. File format, tool restrictions, model selection, practical examples (code reviewer, debugger). Builds on subagent concepts from the previous page. |
+| 19 | **The Skill-Agent Fork Pattern** | How to combine a skill (`context: fork`) and a custom agent into a repeatable, isolated workflow. Three-component architecture (activator skill + agent + knowledge skill), real implementation trace, and fork vs agent-only comparison. Requires understanding both skills and custom subagents. |
+| 20 | **Hooks** | Event-driven automation. Shell commands and LLM prompts triggered by lifecycle events (PreToolUse, PostToolUse, Stop, etc.) to enforce guardrails, format code, and validate output. The only mechanism that can intercept and block Claude's actions. |
+| 21 | **Debugging with Claude in Chrome** | Specialized tool integration. Chrome MCP extension for DOM inspection, console reading, and network monitoring — concrete debugging workflows for frontend developers. |
+| 22 | **Remote Control** | Mobile and remote access to Claude Code sessions. Setup methods, three security strategies (server isolation, sandboxing, proxy filtering), and comparison with OpenClaw. Assumes familiarity with skills, MCP servers, permissions, and settings configuration from Groups 1-3. |
 
 ## Design Decisions
 
 **Reference in Orientation, not an appendix**: The reference page covers every feature but assumes no prior knowledge — it's a map, not a tutorial. Placing it third in Orientation (after the "why" and the vocabulary) gives readers a lookup companion for all the deep-dive pages that follow. It fills the #3 slot left by the removed community-claude-difference page.
 
 **Decision Matrix in Orientation, not Foundations**: The decision matrix provides a practical "which feature do I use?" framework that complements the reference page. It assumes no deep knowledge of any feature — just the vocabulary from the first three pages. Placing it last in Orientation gives readers a decision tool before the deep dives begin.
+
+**Copilot vs Claude Code in Orientation**: A comparative page that helps readers position Claude Code relative to something they likely already know. It requires no Claude Code internals knowledge — just awareness of what both tools do. Placed last in Orientation because it's supplementary context, not prerequisite reading for the deep dives.
 
 **Context Window before CLAUDE.md**: Understanding context pressure explains *why* you right-size CLAUDE.md, *why* skills use progressive disclosure, and *why* subagents isolate context. It's the conceptual foundation.
 

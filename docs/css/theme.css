@@ -89,6 +89,13 @@
   --matrix-secondary: #a3e635;
   --matrix-glow: rgba(132, 204, 22, 0.15);
 
+  --compare-copilot: #58a6ff;
+  --compare-copilot-glow: rgba(88, 166, 255, 0.15);
+  --compare-claude: #f6a44c;
+  --compare-claude-glow: rgba(246, 164, 76, 0.15);
+  --compare-primary: #58a6ff;
+  --compare-glow: rgba(88, 166, 255, 0.15);
+
   --warn: #f06e6e;
 
   --text-primary: #f1f5f9;
