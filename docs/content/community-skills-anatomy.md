@@ -95,4 +95,4 @@ Each card has a who-label, title, and short description. -->
 
 ## Sources
 
-- Frontend Community Day — Claude Code Skills
+- Claude Code Skills — The Knowledge Layer
