@@ -10,4 +10,4 @@ Original source: [coleam00/context-engineering-intro](https://github.com/coleam0
 ## Related Materials
 
 An HTML presentation page covering "Subagents vs Agent Teams" was created based on this and related sources:
-`public/subagents-vs-teams.html`
+`docs/subagents-vs-teams.html`

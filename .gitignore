@@ -35,5 +35,5 @@ public2/
 sources/**/_raw-source/
 
 # Original full-resolution images (keep .gitkeep only)
-public/assets/originals/*
-!public/assets/originals/.gitkeep
+docs/assets/originals/*
+!docs/assets/originals/.gitkeep

@@ -14,7 +14,7 @@ The `context: fork` pattern solves this. A skill defines WHAT to do. An agent de
 
 ## Meet generate-html-page
 
-To make this concrete, we'll trace through a real implementation: `/generate-html-page`, which takes a YouTube source folder (containing `summary.md` and `meta.md`) and produces a dark-themed HTML presentation page in `public/`.
+To make this concrete, we'll trace through a real implementation: `/generate-html-page`, which takes a YouTube source folder (containing `summary.md` and `meta.md`) and produces a dark-themed HTML presentation page in `docs/`.
 
 Three pieces make it work:
 
@@ -85,7 +85,7 @@ The main conversation's context window stays clean. The sub-agent had all the ro
 name: generate-html-page
 description: Generate a presentation-ready HTML page from a source folder.
   Use when converting YouTube or document summaries into dark-themed
-  HTML guides for public/.
+  HTML guides for docs/.
 user-invocable: true
 argument-hint: <source-folder-path> [page-name]
 context: fork
@@ -104,13 +104,13 @@ If `$ARGUMENTS[1]` is provided, use it. Otherwise, derive a slug.
 Read STRUCTURE.md, content/README.md, and 1 similar page.
 
 ## Step 4 — Draft content markdown
-Write public/content/<page-name>.md.
+Write docs/content/<page-name>.md.
 
 ## Step 5 — Choose accent colors
 Read theme.css. Reuse existing variables where possible.
 
 ## Step 6 — Build HTML
-Read one existing page as template. Build public/<page-name>.html.
+Read one existing page as template. Build docs/<page-name>.html.
 
 ## Step 7 — Update index and structure
 Add card to index.html. Add entry to STRUCTURE.md.
@@ -141,7 +141,7 @@ model: opus
 skills: html-pages
 ---
 
-You produce presentation-ready HTML pages for the public/ directory.
+You produce presentation-ready HTML pages for the docs/ directory.
 
 The `html-pages` skill (preloaded) is your reference for all HTML/CSS
 decisions. Follow it exactly.
@@ -173,14 +173,14 @@ What each part does:
 ---
 name: html-pages
 description: Create and maintain dark-themed HTML presentation pages
-  in public/. Covers page structure, theme colors, teaser images,
+  in docs/. Covers page structure, theme colors, teaser images,
   image optimization, and index page integration.
 ---
 
 # HTML Presentation Pages
 
 ## Project Structure
-public/ — index.html, css/theme.css, assets/, individual *.html pages
+docs/ — index.html, css/theme.css, assets/, individual *.html pages
 
 ## Theme & Colors
 All accents in theme.css as CSS variables. Never hardcode hex.

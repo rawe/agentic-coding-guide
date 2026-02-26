@@ -1,14 +1,14 @@
 # Content Markdown Files
 
-Markdown representations of the HTML guide pages in `public/`. These serve as the **editable source of truth** — markdown is easier to adjust, review, and iterate on than raw HTML. Changes flow: markdown → HTML.
+Markdown representations of the HTML guide pages in `docs/`. These serve as the **editable source of truth** — markdown is easier to adjust, review, and iterate on than raw HTML. Changes flow: markdown → HTML.
 
 ## Pattern
 
-Each HTML file in `public/` has a corresponding markdown file here with the same base name:
+Each HTML file in `docs/` has a corresponding markdown file here with the same base name:
 
 ```
-public/skills-mcp-commands.html  →  public/content/skills-mcp-commands.md
-public/context-engineering.html  →  public/content/context-engineering.md
+docs/skills-mcp-commands.html  →  docs/content/skills-mcp-commands.md
+docs/context-engineering.html  →  docs/content/context-engineering.md
 ```
 
 ## Structure

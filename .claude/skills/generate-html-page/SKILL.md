@@ -1,6 +1,6 @@
 ---
 name: generate-html-page
-description: Generate a presentation-ready HTML page from a source folder. Use when converting YouTube or document summaries into dark-themed HTML guides for public/.
+description: Generate a presentation-ready HTML page from a source folder. Use when converting YouTube or document summaries into dark-themed HTML guides for docs/.
 user-invocable: true
 argument-hint: <source-folder-path> [page-name]
 context: fork
@@ -19,20 +19,20 @@ If `$ARGUMENTS[1]` is provided, use it as the page name. Otherwise, derive a sho
 
 ## Step 3 — Study existing pages
 
-Read `public/STRUCTURE.md` for reading order. Read `public/content/README.md` for the content markdown format. Read 1 similar content file from `public/content/` as a structural reference.
+Read `docs/STRUCTURE.md` for reading order. Read `docs/content/README.md` for the content markdown format. Read 1 similar content file from `docs/content/` as a structural reference.
 
 ## Step 4 — Draft content markdown
 
-Write `public/content/<page-name>.md` following the established format. Include `<!-- Visualization: ... -->` comments describing any diagrams.
+Write `docs/content/<page-name>.md` following the established format. Include `<!-- Visualization: ... -->` comments describing any diagrams.
 
 ## Step 5 — Choose accent colors
 
-Read `public/css/theme.css`. Reuse existing color variables where they fit. Add new ones to theme.css only if needed.
+Read `docs/css/theme.css`. Reuse existing color variables where they fit. Add new ones to theme.css only if needed.
 
 ## Step 6 — Build HTML
 
-Read one existing HTML page as a template reference. Build `public/<page-name>.html` following the html-pages skill.
+Read one existing HTML page as a template reference. Build `docs/<page-name>.html` following the html-pages skill.
 
 ## Step 7 — Update index and structure
 
-Add the page card to `public/index.html`. Add the page to the appropriate group in `public/STRUCTURE.md` with a "Why here" note.
+Add the page card to `docs/index.html`. Add the page to the appropriate group in `docs/STRUCTURE.md` with a "Why here" note.

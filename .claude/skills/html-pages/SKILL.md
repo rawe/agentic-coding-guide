@@ -1,6 +1,6 @@
 ---
 name: html-pages
-description: Create and maintain dark-themed HTML presentation pages in public/. Use when asked to create a new HTML page from markdown content, add a presentation page, build a guide page, or work with existing pages in public/. Covers page structure, theme colors, teaser images, image optimization, and index page integration.
+description: Create and maintain dark-themed HTML presentation pages in docs/. Use when asked to create a new HTML page from markdown content, add a presentation page, build a guide page, or work with existing pages in docs/. Covers page structure, theme colors, teaser images, image optimization, and index page integration.
 ---
 
 # HTML Presentation Pages
@@ -8,7 +8,7 @@ description: Create and maintain dark-themed HTML presentation pages in public/.
 ## Project Structure
 
 ```
-public/
+docs/
 ├── index.html                    # Links to all guide pages
 ├── css/theme.css                 # Shared color variables and base styles
 ├── assets/
@@ -21,7 +21,7 @@ public/
 
 ## Theme & Colors
 
-All accent colors live in `public/css/theme.css` as CSS variables. Never hardcode hex values in page styles.
+All accent colors live in `docs/css/theme.css` as CSS variables. Never hardcode hex values in page styles.
 
 Existing variable groups:
 - `--research-primary`, `--research-glow` (blue #38bdf8)
@@ -104,17 +104,17 @@ Key requirements:
 
 Generated images are large (1024x1024+). Always optimize before use:
 
-1. Save originals to `public/assets/originals/` first (never delete these)
+1. Save originals to `docs/assets/originals/` first (never delete these)
 2. Determine the actual display size from the HTML/CSS context (container width, aspect-ratio, object-fit). Multiply by 2 for retina.
    - Example: card images in a 360px-wide card with `aspect-ratio: 16/10` → 720x450px
    - Example: a hero banner at 1200px wide → 2400px wide at 2x
 3. Resize to the determined dimensions: `sips --resampleWidth <W> --resampleHeight <H> <file>`
-4. Optimized images go in `public/assets/`, originals stay in `originals/`
+4. Optimized images go in `docs/assets/`, originals stay in `originals/`
 5. Do NOT commit originals (they stay local only)
 
 ## Index Page Integration
 
-When adding a new page, update `public/index.html`. Note: the index h1 gradient uses its own variables (`--index-gradient-*` in `theme.css`) and is never modified when adding pages.
+When adding a new page, update `docs/index.html`. Note: the index h1 gradient uses its own variables (`--index-gradient-*` in `theme.css`) and is never modified when adding pages.
 
 ### 1. Add a card variant
 

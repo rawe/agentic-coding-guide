@@ -90,7 +90,7 @@ The video demonstrates a three-skill pipeline on a fitness app landing page:
 
 1. **Frontend Design skill** — Rewrites a bland, AI-slop landing page into a professional-looking fitness brand site. Colors, fonts, layout all improved.
 2. **Image Generator skill** (custom, using Nano Banana Pro / Gemini API) — Generates a photo-realistic image of a woman jogging on a beach with an AI assistant chatbot floating behind her.
-3. **Image Optimizer skill** (custom) — Takes the 631KB generated PNG, resizes for web hero section, converts to WebP, outputs 56KB. Stored in `public/assets/`.
+3. **Image Optimizer skill** (custom) — Takes the 631KB generated PNG, resizes for web hero section, converts to WebP, outputs 56KB. Stored in `docs/assets/`.
 4. **Browser Use skill** — Agent opens browser (non-headless), visually verifies the page looks correct.
 
 Result: Placeholder image replaced with AI-generated, web-optimized image. Four skills, one session.

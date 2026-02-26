@@ -1,11 +1,11 @@
-# public/
+# docs/
 
 HTML presentation pages visualizing concepts from collected sources.
 
 ## Structure
 
 ```
-public/
+docs/
   assets/            # Shared images (backgrounds, icons)
   css/
     theme.css        # Global theme: variables, reset, fonts, base link styles

@@ -614,7 +614,7 @@
     <div class="section-card">
       <h2>Meet generate-html-page</h2>
       <p class="section-intro">
-        To make this concrete, we&rsquo;ll trace through a real implementation: <code>/generate-html-page</code>, which takes a YouTube source folder (containing <code>summary.md</code> and <code>meta.md</code>) and produces a dark-themed HTML presentation page in <code>public/</code>.
+        To make this concrete, we&rsquo;ll trace through a real implementation: <code>/generate-html-page</code>, which takes a YouTube source folder (containing <code>summary.md</code> and <code>meta.md</code>) and produces a dark-themed HTML presentation page in <code>docs/</code>.
       </p>
       <p class="section-intro">Three pieces make it work:</p>
 
@@ -834,7 +834,7 @@
 <span class="frontmatter">name:</span> <span class="string">generate-html-page</span>
 <span class="frontmatter">description:</span> <span class="string">Generate a presentation-ready HTML page from a source folder.
   Use when converting YouTube or document summaries into dark-themed
-  HTML guides for public/.</span>
+  HTML guides for docs/.</span>
 <span class="frontmatter">user-invocable:</span> <span class="string">true</span>
 <span class="frontmatter">argument-hint:</span> <span class="string">&lt;source-folder-path&gt; [page-name]</span>
 <span class="frontmatter">context:</span> <span class="keyword">fork</span>
@@ -853,13 +853,13 @@ If <span class="argument">`$ARGUMENTS[1]`</span> is provided, use it. Otherwise,
 Read STRUCTURE.md, content/README.md, and 1 similar page.
 
 <span class="comment">## Step 4 — Draft content markdown</span>
-Write public/content/&lt;page-name&gt;.md.
+Write docs/content/&lt;page-name&gt;.md.
 
 <span class="comment">## Step 5 — Choose accent colors</span>
 Read theme.css. Reuse existing variables where possible.
 
 <span class="comment">## Step 6 — Build HTML</span>
-Read one existing page as template. Build public/&lt;page-name&gt;.html.
+Read one existing page as template. Build docs/&lt;page-name&gt;.html.
 
 <span class="comment">## Step 7 — Update index and structure</span>
 Add card to index.html. Add entry to STRUCTURE.md.</div>
@@ -914,7 +914,7 @@ Add card to index.html. Add entry to STRUCTURE.md.</div>
 <span class="frontmatter">skills:</span> <span class="keyword">html-pages</span>
 <span class="frontmatter">---</span>
 
-You produce presentation-ready HTML pages for the public/ directory.
+You produce presentation-ready HTML pages for the docs/ directory.
 
 The <span class="keyword">`html-pages`</span> skill (preloaded) is your reference for all HTML/CSS
 decisions. Follow it exactly.
@@ -965,14 +965,14 @@ These pages teach. Every section should help the reader understand fast.
 <span class="frontmatter">---</span>
 <span class="frontmatter">name:</span> <span class="string">html-pages</span>
 <span class="frontmatter">description:</span> <span class="string">Create and maintain dark-themed HTML presentation pages
-  in public/. Covers page structure, theme colors, teaser images,
+  in docs/. Covers page structure, theme colors, teaser images,
   image optimization, and index page integration.</span>
 <span class="frontmatter">---</span>
 
 <span class="comment"># HTML Presentation Pages</span>
 
 <span class="comment">## Project Structure</span>
-public/ &mdash; index.html, css/theme.css, assets/, individual *.html pages
+docs/ &mdash; index.html, css/theme.css, assets/, individual *.html pages
 
 <span class="comment">## Theme &amp; Colors</span>
 All accents in theme.css as CSS variables. Never hardcode hex.

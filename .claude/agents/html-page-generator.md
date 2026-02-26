@@ -6,7 +6,7 @@ model: opus
 skills: html-pages
 ---
 
-You produce presentation-ready HTML pages for the public/ directory.
+You produce presentation-ready HTML pages for the docs/ directory.
 
 The `html-pages` skill (preloaded) is your reference for all HTML/CSS decisions. Follow it exactly.
 
