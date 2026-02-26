@@ -811,14 +811,16 @@ Always validate input with zod.</div>
       <h3 style="font-size: 1rem; font-weight: 700; color: var(--text-primary); margin: 24px 0 12px;">Key Frontmatter Fields</h3>
       <table class="mini-table">
         <tr><th>Field</th><th>Purpose</th></tr>
+        <tr><td><code>name</code></td><td>Display name for the skill. Falls back to directory name if omitted.</td></tr>
         <tr><td><code>description</code></td><td>Helps Claude decide when to auto-trigger. Write like a search query.</td></tr>
         <tr><td><code>argument-hint</code></td><td>Autocomplete hint shown in <code>/</code> menu, e.g. <code>[issue-number]</code></td></tr>
         <tr><td><code>disable-model-invocation</code></td><td>Only user can invoke (<code>/name</code>), not Claude</td></tr>
         <tr><td><code>user-invocable: false</code></td><td>Hidden from <code>/</code> menu &mdash; only Claude triggers it</td></tr>
-        <tr><td><code>allowed-tools</code></td><td>Restrict tool access: <code>Read, Grep, Glob</code></td></tr>
+        <tr><td><code>allowed-tools</code></td><td>Tools permitted without prompting: <code>Read, Grep, Glob</code></td></tr>
         <tr><td><code>model</code></td><td>Override model: <code>sonnet</code>, <code>haiku</code>, <code>opus</code></td></tr>
         <tr><td><code>context: fork</code></td><td>Run in forked subagent context (isolated window)</td></tr>
-        <tr><td><code>agent</code></td><td>Agent type when forked: <code>Explore</code>, <code>Plan</code>, <code>general-purpose</code></td></tr>
+        <tr><td><code>agent</code></td><td>Agent type when forked: built-in (<code>Explore</code>, <code>Plan</code>, <code>general-purpose</code>) or custom from <code>.claude/agents/</code></td></tr>
+        <tr><td><code>hooks</code></td><td>Lifecycle hooks scoped to this skill (pre/post tool-use)</td></tr>
       </table>
 
       <div class="info-grid" style="margin-top: 20px;">

@@ -105,14 +105,16 @@ my-skill/
 
 | Field | Purpose |
 |-------|---------|
+| `name` | Display name for the skill. Falls back to directory name if omitted. |
 | `description` | Helps Claude decide when to auto-trigger. Write like a search query. |
 | `argument-hint` | Autocomplete hint shown in `/` menu, e.g. `[issue-number]` |
 | `disable-model-invocation` | Only user can invoke (`/name`), not Claude |
 | `user-invocable: false` | Hidden from `/` menu — only Claude triggers it |
-| `allowed-tools` | Restrict tool access: `Read, Grep, Glob` |
+| `allowed-tools` | Tools permitted without prompting: `Read, Grep, Glob` |
 | `model` | Override model: `sonnet`, `haiku`, `opus` |
 | `context: fork` | Run in forked subagent context (isolated window) |
-| `agent` | Agent type when forked: `Explore`, `Plan`, `general-purpose` |
+| `agent` | Agent type when forked: built-in (`Explore`, `Plan`, `general-purpose`) or custom from `.claude/agents/` |
+| `hooks` | Lifecycle hooks scoped to this skill (pre/post tool-use) |
 
 ### String Substitutions
 
