@@ -29,6 +29,7 @@ _temp-ideas/
 
 # Generated content
 generated-images/
+public2/
 
 # Raw source documents (PDFs, docx, etc. — not committed)
 sources/**/_raw-source/
