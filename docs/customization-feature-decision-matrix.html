@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Five-Feature Decision Matrix &mdash; Stop Cramming Everything into CLAUDE.md</title>
+  <link rel="stylesheet" href="css/theme.css">
+  <style>
+    /* ── Background image & overlay ── */
+    body {
+      background-image: url('assets/bg-dark-abstract.png');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(10, 14, 26, 0.92) 0%,
+        rgba(10, 14, 26, 0.80) 40%,
+        rgba(10, 14, 26, 0.88) 100%
+      );
+      z-index: 0;
+    }
+
+    .page-wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 60px 40px 80px;
+    }
+
+    /* ── Header ── */
+    header {
+      text-align: center;
+      margin-bottom: 72px;
+    }
+
+    .badge {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--matrix-primary);
+      background: var(--matrix-glow);
+      border: 1px solid rgba(132, 204, 22, 0.2);
+      padding: 6px 16px;
+      border-radius: 20px;
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      font-size: clamp(2.2rem, 5vw, 3.6rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, var(--matrix-primary) 0%, var(--matrix-secondary) 40%, var(--journey-primary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      font-size: 1.15rem;
+      color: var(--text-secondary);
+      max-width: 640px;
+      margin: 0 auto;
+      line-height: 1.6;
+      font-weight: 400;
+    }
+
+    /* ── Section shared ── */
+    .section {
+      margin-bottom: 72px;
+    }
+
+    .section-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 40px;
+    }
+
+    .section-card h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+
+    .section-card .section-intro {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 28px;
+      max-width: 700px;
+    }
+
+    /* ── Inline code ── */
+    code {
+      font-family: var(--font-mono);
+      font-size: 0.85em;
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.06);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    /* ── Callout ── */
+    .callout {
+      margin-top: 24px;
+      padding: 20px 24px;
+      border-radius: 10px;
+      background: linear-gradient(160deg, rgba(132, 204, 22, 0.06) 0%, rgba(15, 20, 35, 0.6) 100%);
+      border: 1px solid rgba(132, 204, 22, 0.15);
+      border-left: 3px solid var(--matrix-primary);
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .callout strong {
+      color: var(--matrix-primary);
+    }
+
+    /* ── Problem section ── */
+    .problem-text {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      max-width: 740px;
+    }
+
+    .problem-text strong {
+      color: var(--text-primary);
+    }
+
+    .problem-metaphor {
+      margin-top: 20px;
+      padding: 16px 20px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-subtle);
+      border-left: 3px solid var(--warn);
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+
+    .problem-metaphor strong {
+      color: var(--warn);
+    }
+
+    /* ── Feature grid ── */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+      margin-top: 24px;
+    }
+
+    .feature-card {
+      padding: 24px 18px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .feature-card .feature-label {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 6px;
+    }
+
+    .feature-card h4 {
+      font-size: 0.88rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: var(--text-primary);
+    }
+
+    .feature-card p {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .feature-card .feature-loading {
+      margin-top: 10px;
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      opacity: 0.8;
+    }
+
+    /* Feature color variants */
+    .fc-claudemd { border-top: 3px solid var(--claudemd-primary); }
+    .fc-claudemd .feature-label { color: var(--claudemd-primary); background: var(--claudemd-glow); }
+    .fc-claudemd h4 { color: var(--claudemd-primary); }
+
+    .fc-skills { border-top: 3px solid var(--skills-primary); }
+    .fc-skills .feature-label { color: var(--skills-primary); background: var(--skills-glow); }
+    .fc-skills h4 { color: var(--skills-primary); }
+
+    .fc-subagents { border-top: 3px solid var(--subagent-primary); }
+    .fc-subagents .feature-label { color: var(--subagent-primary); background: var(--subagent-glow); }
+    .fc-subagents h4 { color: var(--subagent-primary); }
+
+    .fc-hooks { border-top: 3px solid var(--hooks-primary); }
+    .fc-hooks .feature-label { color: var(--hooks-primary); background: var(--hooks-glow); }
+    .fc-hooks h4 { color: var(--hooks-primary); }
+
+    .fc-mcp { border-top: 3px solid var(--mcp-primary); }
+    .fc-mcp .feature-label { color: var(--mcp-primary); background: var(--mcp-glow); }
+    .fc-mcp h4 { color: var(--mcp-primary); }
+
+    /* ── Decision matrix ── */
+    .matrix-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .matrix-row {
+      display: grid;
+      grid-template-columns: 1fr auto 160px;
+      align-items: center;
+      gap: 16px;
+      padding: 18px 24px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .matrix-question {
+      font-size: 0.92rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      line-height: 1.4;
+    }
+
+    .matrix-arrow {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      opacity: 0.5;
+    }
+
+    .matrix-answer {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .matrix-row.mr-claudemd { border-left: 3px solid var(--claudemd-primary); }
+    .matrix-row.mr-claudemd .matrix-answer { color: var(--claudemd-primary); background: var(--claudemd-glow); }
+
+    .matrix-row.mr-skills { border-left: 3px solid var(--skills-primary); }
+    .matrix-row.mr-skills .matrix-answer { color: var(--skills-primary); background: var(--skills-glow); }
+
+    .matrix-row.mr-subagents { border-left: 3px solid var(--subagent-primary); }
+    .matrix-row.mr-subagents .matrix-answer { color: var(--subagent-primary); background: var(--subagent-glow); }
+
+    .matrix-row.mr-hooks { border-left: 3px solid var(--hooks-primary); }
+    .matrix-row.mr-hooks .matrix-answer { color: var(--hooks-primary); background: var(--hooks-glow); }
+
+    .matrix-row.mr-mcp { border-left: 3px solid var(--mcp-primary); }
+    .matrix-row.mr-mcp .matrix-answer { color: var(--mcp-primary); background: var(--mcp-glow); }
+
+    /* ── Context cost ── */
+    .cost-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+      margin-top: 24px;
+    }
+
+    .cost-card {
+      padding: 20px 16px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+
+    .cost-card .cost-feature {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 6px;
+    }
+
+    .cost-card .cost-level {
+      font-size: 1.1rem;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .cost-card .cost-why {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
+    .cost-high .cost-feature { color: var(--claudemd-primary); background: var(--claudemd-glow); }
+    .cost-high .cost-level { color: var(--warn); }
+    .cost-high { border-top: 3px solid var(--warn); }
+
+    .cost-low .cost-feature { color: var(--skills-primary); background: var(--skills-glow); }
+    .cost-low .cost-level { color: var(--plan-primary); }
+    .cost-low { border-top: 3px solid var(--plan-primary); }
+
+    .cost-zero-sub .cost-feature { color: var(--subagent-primary); background: var(--subagent-glow); }
+    .cost-zero-sub .cost-level { color: var(--plan-primary); }
+    .cost-zero-sub { border-top: 3px solid var(--plan-primary); }
+
+    .cost-zero-hook .cost-feature { color: var(--hooks-primary); background: var(--hooks-glow); }
+    .cost-zero-hook .cost-level { color: var(--plan-primary); }
+    .cost-zero-hook { border-top: 3px solid var(--plan-primary); }
+
+    .cost-moderate .cost-feature { color: var(--mcp-primary); background: var(--mcp-glow); }
+    .cost-moderate .cost-level { color: #f59e0b; }
+    .cost-moderate { border-top: 3px solid #f59e0b; }
+
+    /* ── Real-world setup ── */
+    .setup-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .setup-card {
+      padding: 22px 20px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .setup-card h4 {
+      font-size: 0.88rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .setup-card ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .setup-card ul li {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      padding: 3px 0;
+      padding-left: 16px;
+      position: relative;
+    }
+
+    .setup-card ul li::before {
+      content: '\2192';
+      position: absolute;
+      left: 0;
+      color: var(--text-muted);
+      opacity: 0.5;
+    }
+
+    .setup-claudemd { border-left: 3px solid var(--claudemd-primary); }
+    .setup-claudemd h4 { color: var(--claudemd-primary); }
+
+    .setup-skills { border-left: 3px solid var(--skills-primary); }
+    .setup-skills h4 { color: var(--skills-primary); }
+
+    .setup-subagents { border-left: 3px solid var(--subagent-primary); }
+    .setup-subagents h4 { color: var(--subagent-primary); }
+
+    .setup-hooks { border-left: 3px solid var(--hooks-primary); }
+    .setup-hooks h4 { color: var(--hooks-primary); }
+
+    .setup-mcp {
+      border-left: 3px solid var(--mcp-primary);
+      grid-column: 1 / -1;
+    }
+    .setup-mcp h4 { color: var(--mcp-primary); }
+    .setup-mcp ul { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px 16px; }
+
+    /* ── Sources section ── */
+    .sources-list {
+      list-style: none;
+      margin-top: 16px;
+    }
+
+    .sources-list li {
+      padding: 8px 0;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .sources-list li a {
+      color: var(--matrix-primary);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(132, 204, 22, 0.3);
+      transition: border-color 0.2s ease;
+    }
+
+    .sources-list li a:hover {
+      border-bottom-color: var(--matrix-primary);
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .feature-grid { grid-template-columns: repeat(3, 1fr); }
+      .cost-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    @media (max-width: 700px) {
+      .feature-grid { grid-template-columns: 1fr 1fr; }
+      .cost-grid { grid-template-columns: 1fr 1fr; }
+      .setup-grid { grid-template-columns: 1fr; }
+      .setup-mcp ul { grid-template-columns: 1fr; }
+      .matrix-row { grid-template-columns: 1fr; gap: 8px; }
+      .matrix-arrow { display: none; }
+    }
+
+    @media (max-width: 600px) {
+      .page-wrapper {
+        padding: 40px 20px 60px;
+      }
+
+      .section-card {
+        padding: 28px 20px;
+      }
+
+      .feature-grid { grid-template-columns: 1fr; }
+      .cost-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-wrapper">
+
+  <!-- Header -->
+  <header>
+    <div class="badge">Orientation</div>
+    <h1>The Five-Feature<br>Decision Matrix</h1>
+    <p class="subtitle">
+      Claude Code has five customization features. Each loads differently, costs differently, and solves a different problem. One question per feature tells you which to use.
+    </p>
+  </header>
+
+  <!-- Section 1: The Problem -->
+  <div class="section">
+    <div class="section-card">
+      <h2>The Problem</h2>
+      <p class="problem-text">
+        Most developers only use CLAUDE.md. PR review checklists, deployment procedures, commit message formats, brand guidelines&hairsp;&mdash;&hairsp;all crammed into one file. <strong>That file loads into every conversation.</strong> Your deployment procedure consumes tokens while you&rsquo;re debugging a memory leak. Your PR checklist sits in context while you&rsquo;re writing unit tests.
+      </p>
+      <div class="problem-metaphor">
+        <strong>The desk metaphor:</strong> Keeping everything in CLAUDE.md is like keeping your entire reference library on your desk at all times. It works, but it&rsquo;s wasteful, cluttered, and expensive.
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 2: Five Features at a Glance -->
+  <div class="section">
+    <div class="section-card">
+      <h2>Five Features at a Glance</h2>
+      <p class="section-intro">
+        Each feature has a distinct loading behavior and context window cost. Choosing the right one means matching the problem to the loading pattern.
+      </p>
+
+      <div class="feature-grid">
+        <div class="feature-card fc-claudemd">
+          <span class="feature-label">CLAUDE.md</span>
+          <h4>Always-On Instructions</h4>
+          <p>Non-negotiable project standards. Loads every session, no exceptions. Hierarchical cascade: enterprise &rarr; personal &rarr; project &rarr; local.</p>
+          <div class="feature-loading">Loads: always</div>
+        </div>
+        <div class="feature-card fc-skills">
+          <span class="feature-label">Skills</span>
+          <h4>On-Demand Expertise</h4>
+          <p>Task-specific knowledge that activates when matched. Only the description sits in context; full instructions load on demand.</p>
+          <div class="feature-loading">Loads: on match</div>
+        </div>
+        <div class="feature-card fc-subagents">
+          <span class="feature-label">Subagents</span>
+          <h4>Isolated Workers</h4>
+          <p>Separate context window for verbose tasks. Exploration output stays contained; only a summary returns to the main conversation.</p>
+          <div class="feature-loading">Loads: separate context</div>
+        </div>
+        <div class="feature-card fc-hooks">
+          <span class="feature-label">Hooks</span>
+          <h4>Event-Driven Automation</h4>
+          <p>Shell commands that fire on lifecycle events. Deterministic&hairsp;&mdash;&hairsp;no relying on LLM judgment. Can block, allow, or modify actions.</p>
+          <div class="feature-loading">Loads: outside context</div>
+        </div>
+        <div class="feature-card fc-mcp">
+          <span class="feature-label">MCP Servers</span>
+          <h4>External Integrations</h4>
+          <p>Open protocol connecting Claude to external services. Sentry, Postgres, GitHub, Figma. Tool search loads tools dynamically on demand.</p>
+          <div class="feature-loading">Loads: on demand</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 3: Decision Matrix -->
+  <div class="section">
+    <div class="section-card">
+      <h2>Decision Matrix</h2>
+      <p class="section-intro">
+        Five questions, one per feature. Ask them in order. The first &ldquo;yes&rdquo; tells you where to put it.
+      </p>
+
+      <div class="matrix-grid">
+        <div class="matrix-row mr-claudemd">
+          <div class="matrix-question">Should Claude <strong>always</strong> know this, every session, regardless of task?</div>
+          <div class="matrix-arrow">&rarr;</div>
+          <div class="matrix-answer">CLAUDE.md</div>
+        </div>
+        <div class="matrix-row mr-skills">
+          <div class="matrix-question">Should Claude know this <strong>sometimes</strong>, only when the task is relevant?</div>
+          <div class="matrix-arrow">&rarr;</div>
+          <div class="matrix-answer">Skill</div>
+        </div>
+        <div class="matrix-row mr-subagents">
+          <div class="matrix-question">Should this work run in <strong>isolation</strong>, keeping verbose output out of context?</div>
+          <div class="matrix-arrow">&rarr;</div>
+          <div class="matrix-answer">Subagent</div>
+        </div>
+        <div class="matrix-row mr-hooks">
+          <div class="matrix-question">Should this happen <strong>automatically</strong> on every matching lifecycle event?</div>
+          <div class="matrix-arrow">&rarr;</div>
+          <div class="matrix-answer">Hook</div>
+        </div>
+        <div class="matrix-row mr-mcp">
+          <div class="matrix-question">Does Claude need <strong>external tools</strong> or data from outside services?</div>
+          <div class="matrix-arrow">&rarr;</div>
+          <div class="matrix-answer">MCP Server</div>
+        </div>
+      </div>
+
+      <div class="callout">
+        <strong>These features compose.</strong> A real-world project uses multiple features simultaneously. Skills can reference MCP tools. Hooks can invoke subagents. CLAUDE.md sets the ground rules that everything else builds on.
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 4: Context Window Cost -->
+  <div class="section">
+    <div class="section-card">
+      <h2>Context Window Cost</h2>
+      <p class="section-intro">
+        Your context window is finite. Each feature trades off differently between availability and token consumption.
+      </p>
+
+      <div class="cost-grid">
+        <div class="cost-card cost-high">
+          <span class="cost-feature">CLAUDE.md</span>
+          <div class="cost-level">High</div>
+          <p class="cost-why">Loaded every session whether relevant or not</p>
+        </div>
+        <div class="cost-card cost-low">
+          <span class="cost-feature">Skills</span>
+          <div class="cost-level">Low</div>
+          <p class="cost-why">Description only until invoked; full content on demand</p>
+        </div>
+        <div class="cost-card cost-zero-sub">
+          <span class="cost-feature">Subagents</span>
+          <div class="cost-level">Zero</div>
+          <p class="cost-why">Own context window; only summary returns</p>
+        </div>
+        <div class="cost-card cost-zero-hook">
+          <span class="cost-feature">Hooks</span>
+          <div class="cost-level">Zero</div>
+          <p class="cost-why">Run outside Claude&rsquo;s context entirely</p>
+        </div>
+        <div class="cost-card cost-moderate">
+          <span class="cost-feature">MCP</span>
+          <div class="cost-level">Moderate</div>
+          <p class="cost-why">Tool search loads tools dynamically to mitigate cost</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 5: CLAUDE.md vs Skills -->
+  <div class="section">
+    <div class="section-card">
+      <h2>CLAUDE.md vs Skills: The Key Distinction</h2>
+      <p class="section-intro">
+        The most common mistake is putting task-specific knowledge in CLAUDE.md instead of a skill. Use this rule:
+      </p>
+
+      <div class="matrix-grid">
+        <div class="matrix-row mr-claudemd">
+          <div class="matrix-question">&ldquo;Use TypeScript strict mode&rdquo; &mdash; applies to <strong>every task</strong></div>
+          <div class="matrix-arrow">&rarr;</div>
+          <div class="matrix-answer">CLAUDE.md</div>
+        </div>
+        <div class="matrix-row mr-skills">
+          <div class="matrix-question">&ldquo;PR review checklist&rdquo; &mdash; only relevant <strong>when reviewing</strong></div>
+          <div class="matrix-arrow">&rarr;</div>
+          <div class="matrix-answer">Skill</div>
+        </div>
+        <div class="matrix-row mr-claudemd">
+          <div class="matrix-question">&ldquo;Never modify the database schema directly&rdquo; &mdash; <strong>non-negotiable rule</strong></div>
+          <div class="matrix-arrow">&rarr;</div>
+          <div class="matrix-answer">CLAUDE.md</div>
+        </div>
+        <div class="matrix-row mr-skills">
+          <div class="matrix-question">&ldquo;Deployment procedure&rdquo; &mdash; only needed <strong>when deploying</strong></div>
+          <div class="matrix-arrow">&rarr;</div>
+          <div class="matrix-answer">Skill</div>
+        </div>
+      </div>
+
+      <div class="callout">
+        <strong>The rule is simple.</strong> Project-wide standards that always apply &rarr; CLAUDE.md. Task-specific expertise that&rsquo;s only relevant sometimes &rarr; Skill. If you&rsquo;re repeating the same explanation to Claude, that&rsquo;s a skill waiting to be written.
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 6: Real-World Setup -->
+  <div class="section">
+    <div class="section-card">
+      <h2>Real-World Setup</h2>
+      <p class="section-intro">
+        A well-configured project uses all five features simultaneously. Each handles its own specialty.
+      </p>
+
+      <div class="setup-grid">
+        <div class="setup-card setup-claudemd">
+          <h4>CLAUDE.md &mdash; Always-On Standards</h4>
+          <ul>
+            <li>Use pnpm, never npm</li>
+            <li>TypeScript strict mode</li>
+            <li>Never mutate the database directly</li>
+          </ul>
+        </div>
+        <div class="setup-card setup-skills">
+          <h4>Skills &mdash; Task-Specific Expertise</h4>
+          <ul>
+            <li>PR review skill with team checklist</li>
+            <li>Deployment skill with step-by-step procedure</li>
+            <li>Commit message skill with format rules</li>
+          </ul>
+        </div>
+        <div class="setup-card setup-subagents">
+          <h4>Subagents &mdash; Isolated Delegation</h4>
+          <ul>
+            <li>Code reviewer with read-only access</li>
+            <li>Researcher that explores docs without cluttering context</li>
+          </ul>
+        </div>
+        <div class="setup-card setup-hooks">
+          <h4>Hooks &mdash; Automated Guardrails</h4>
+          <ul>
+            <li>Auto-format every file Claude touches</li>
+            <li>Block destructive shell commands</li>
+            <li>Run tests after every edit</li>
+          </ul>
+        </div>
+        <div class="setup-card setup-mcp">
+          <h4>MCP Servers &mdash; External Services</h4>
+          <ul>
+            <li>GitHub for pull requests</li>
+            <li>Sentry for error monitoring</li>
+            <li>Postgres for data queries</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 7: Sources -->
+  <div class="section">
+    <div class="section-card">
+      <h2>Source</h2>
+      <ul class="sources-list">
+        <li><a href="https://www.youtube.com/watch?v=xuZ2meWfcKg" target="_blank" rel="noopener">Why Most Developers Are Using Claude Code Wrong (Here&rsquo;s What You&rsquo;re Missing)!</a> &mdash; DIY Smart Code (Feb 2026, 12 min)</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<!-- Source attribution bottom-left -->
+<div class="source-attribution">
+  DIY Smart Code<br>
+  <a href="https://www.youtube.com/watch?v=xuZ2meWfcKg" target="_blank" rel="noopener">YouTube &mdash; Feb 2026</a>
+</div>
+
+</body>
+</html>

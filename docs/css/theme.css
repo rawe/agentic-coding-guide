@@ -85,6 +85,10 @@
   --remote-secondary: #22d3ee;
   --remote-glow: rgba(6, 182, 212, 0.15);
 
+  --matrix-primary: #84cc16;
+  --matrix-secondary: #a3e635;
+  --matrix-glow: rgba(132, 204, 22, 0.15);
+
   --warn: #f06e6e;
 
   --text-primary: #f1f5f9;

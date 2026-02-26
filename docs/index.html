@@ -343,6 +343,18 @@
     }
     .index-card.aqua .card-title { color: var(--remote-primary); }
 
+    .index-card.lime {
+      --_accent: var(--matrix-primary);
+      background: linear-gradient(160deg, color-mix(in srgb, var(--_accent) 6%, transparent) 0%, var(--bg-card) 100%);
+      box-shadow: 0 0 40px color-mix(in srgb, var(--_accent) 4%, transparent);
+      border-left: 3px solid color-mix(in srgb, var(--_accent) 30%, transparent);
+    }
+    .index-card.lime:hover {
+      box-shadow: 0 8px 48px color-mix(in srgb, var(--_accent) 14%, transparent);
+      border-left-color: var(--_accent);
+    }
+    .index-card.lime .card-title { color: var(--matrix-primary); }
+
     .index-card .card-subtext {
       font-size: 0.95rem;
       color: var(--text-secondary);
@@ -428,6 +440,11 @@
       <a href="claude-code-reference.html" class="index-card cyan">
         <div class="card-title">Claude Code Reference</div>
         <p class="card-subtext">Everything in one page &mdash; installation, CLAUDE.md, skills, hooks, subagents, MCP, settings, CLI, and best practices.</p>
+        <span class="card-arrow">&rsaquo;</span>
+      </a>
+      <a href="customization-feature-decision-matrix.html" class="index-card lime">
+        <div class="card-title">The Five-Feature Decision Matrix</div>
+        <p class="card-subtext">One question per feature &mdash; choose between CLAUDE.md, skills, subagents, hooks, and MCP based on loading behavior and context cost.</p>
         <span class="card-arrow">&rsaquo;</span>
       </a>
     </div>
